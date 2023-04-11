@@ -1,0 +1,26 @@
+/home/mp74207/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/231.8109.222/bin/cmake/linux/x64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/home/mp74207/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/231.8109.222/bin/ninja/linux/x64/ninja -DCMAKE_C_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/23.3/compilers/bin/nvc -DCMAKE_CXX_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/23.3/compilers/bin/nvc++ -G Ninja -S /home/mp74207/CLionProjects/GalaxyFormationSingleFile -B /home/mp74207/CLionProjects/GalaxyFormationSingleFile/cmake-build-debug
+-- The CUDA compiler identification is NVIDIA 12.0.140
+-- The CXX compiler identification is NVHPC 23.3.0
+-- Detecting CUDA compiler ABI info
+-- Detecting CUDA compiler ABI info - done
+-- Check for working CUDA compiler: /usr/bin/nvcc - skipped
+-- Detecting CUDA compile features
+-- Detecting CUDA compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /opt/nvidia/hpc_sdk/Linux_x86_64/23.3/compilers/bin/nvc++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+/home/mp74207/CLionProjects/GalaxyFormationSingleFile/cmake-build-debug
+-- Found Python: /usr/bin/python3.10 (found version "3.10.6") found components: Interpreter Development NumPy Development.Module Development.Embed 
+-- Boost toolset is unknown (compiler NVHPC 23.3.0)
+-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake (found version "1.74.0") found components: Python 
+-- Configuring done
+-- Generating done
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    CMAKE_C_COMPILER
+
+
+-- Build files have been written to: /home/mp74207/CLionProjects/GalaxyFormationSingleFile/cmake-build-debug

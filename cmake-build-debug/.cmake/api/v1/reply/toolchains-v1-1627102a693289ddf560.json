@@ -1,0 +1,122 @@
+{
+	"kind" : "toolchains",
+	"toolchains" : 
+	[
+		{
+			"compiler" : 
+			{
+				"id" : "NVIDIA",
+				"implicit" : 
+				{
+					"includeDirectories" : 
+					[
+						"/opt/nvidia/hpc_sdk/Linux_x86_64/23.3/cuda/12.0/include",
+						"/opt/nvidia/hpc_sdk/Linux_x86_64/23.3/math_libs/12.0/include",
+						"/opt/nvidia/hpc_sdk/Linux_x86_64/23.3/comm_libs/12.0/nccl/include",
+						"/opt/nvidia/hpc_sdk/Linux_x86_64/23.3/comm_libs/12.0/nvshmem/include",
+						"/usr/include/c++/12",
+						"/usr/include/x86_64-linux-gnu/c++/12",
+						"/usr/include/c++/12/backward",
+						"/usr/lib/gcc/x86_64-linux-gnu/12/include",
+						"/usr/local/include",
+						"/usr/include/x86_64-linux-gnu",
+						"/usr/include"
+					],
+					"linkDirectories" : 
+					[
+						"/opt/nvidia/hpc_sdk/Linux_x86_64/23.3/cuda/12.0/lib64",
+						"/opt/nvidia/hpc_sdk/Linux_x86_64/23.3/math_libs/12.0/lib64",
+						"/opt/nvidia/hpc_sdk/Linux_x86_64/23.3/comm_libs/12.0/nccl/lib",
+						"/opt/nvidia/hpc_sdk/Linux_x86_64/23.3/comm_libs/12.0/nvshmem/lib",
+						"/opt/nvidia/hpc_sdk/Linux_x86_64/23.3/cuda/12.0/targets/x86_64-linux/lib/stubs",
+						"/opt/nvidia/hpc_sdk/Linux_x86_64/23.3/cuda/12.0/targets/x86_64-linux/lib",
+						"/usr/lib/gcc/x86_64-linux-gnu/12",
+						"/usr/lib/x86_64-linux-gnu",
+						"/usr/lib",
+						"/lib/x86_64-linux-gnu",
+						"/lib"
+					],
+					"linkFrameworkDirectories" : [],
+					"linkLibraries" : 
+					[
+						"stdc++",
+						"m",
+						"gcc_s",
+						"gcc",
+						"c",
+						"gcc_s",
+						"gcc"
+					]
+				},
+				"path" : "/usr/bin/nvcc",
+				"version" : "12.0.140"
+			},
+			"language" : "CUDA",
+			"sourceFileExtensions" : 
+			[
+				"cu"
+			]
+		},
+		{
+			"compiler" : 
+			{
+				"id" : "NVHPC",
+				"implicit" : 
+				{
+					"includeDirectories" : 
+					[
+						"/usr/include"
+					],
+					"linkDirectories" : 
+					[
+						"/opt/nvidia/hpc_sdk/Linux_x86_64/23.3/compilers/lib",
+						"/usr/lib64",
+						"/usr/lib/gcc/x86_64-linux-gnu/12"
+					],
+					"linkFrameworkDirectories" : [],
+					"linkLibraries" : 
+					[
+						"atomic",
+						"nvhpcatm",
+						"stdc++",
+						"nvomp",
+						"dl",
+						"nvhpcatm",
+						"atomic",
+						"pthread",
+						"nvcpumath",
+						"nsnvc",
+						"nvc",
+						"gcc",
+						"c",
+						"gcc_s",
+						"m"
+					]
+				},
+				"path" : "/opt/nvidia/hpc_sdk/Linux_x86_64/23.3/compilers/bin/nvc++",
+				"version" : "23.3.0"
+			},
+			"language" : "CXX",
+			"sourceFileExtensions" : 
+			[
+				"C",
+				"M",
+				"c++",
+				"cc",
+				"cpp",
+				"cxx",
+				"m",
+				"mm",
+				"mpp",
+				"CPP",
+				"ixx",
+				"cppm"
+			]
+		}
+	],
+	"version" : 
+	{
+		"major" : 1,
+		"minor" : 0
+	}
+}

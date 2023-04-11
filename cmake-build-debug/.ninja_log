@@ -1,0 +1,12 @@
+# ninja log v5
+0	8263	1681212672124001609	CMakeFiles/mainProg.dir/src/main.cu.o	3e0d9f894a45ea33
+8266	8357	1681212672224009405	/home/mp74207/CLionProjects/GalaxyFormationSingleFile/bin/mainProg	1d204bec2e9d8764
+4	98	1681212712723164720	/home/mp74207/CLionProjects/GalaxyFormationSingleFile/bin/mainProg	1d204bec2e9d8764
+3	8164	1681213986067848328	CMakeFiles/mainProg.dir/src/main.cu.o	3e0d9f894a45ea33
+8164	8252	1681213986163857511	/home/mp74207/CLionProjects/GalaxyFormationSingleFile/bin/mainProg	1d204bec2e9d8764
+3	8433	1681216836372029451	CMakeFiles/mainProg.dir/src/main.cu.o	3e0d9f894a45ea33
+8433	8522	1681216836468038054	/home/mp74207/CLionProjects/GalaxyFormationSingleFile/bin/mainProg	1d204bec2e9d8764
+4	8484	1681218351766520075	CMakeFiles/mainProg.dir/src/main.cu.o	3e0d9f894a45ea33
+8484	8587	1681218351878530332	/home/mp74207/CLionProjects/GalaxyFormationSingleFile/bin/mainProg	1d204bec2e9d8764
+7	8806	1681233618058735624	CMakeFiles/mainProg.dir/src/main.cu.o	3e0d9f894a45ea33
+8806	8921	1681233618178746671	/home/mp74207/CLionProjects/GalaxyFormationSingleFile/bin/mainProg	1d204bec2e9d8764

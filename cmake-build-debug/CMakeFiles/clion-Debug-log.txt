@@ -11,16 +11,14 @@
 -- Check for working CXX compiler: /opt/nvidia/hpc_sdk/Linux_x86_64/23.3/compilers/bin/nvc++ - skipped
 -- Detecting CXX compile features
 -- Detecting CXX compile features - done
-/home/mp74207/CLionProjects/GalaxyFormationSingleFile/cmake-build-debug
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Found CUDA: /opt/nvidia/hpc_sdk/Linux_x86_64/23.3/cuda/12.0 (found version "12.0") 
 -- Found Python: /usr/bin/python3.10 (found version "3.10.6") found components: Interpreter Development NumPy Development.Module Development.Embed 
 -- Boost toolset is unknown (compiler NVHPC 23.3.0)
 -- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake (found version "1.74.0") found components: Python 
+-- Found CUDAToolkit: /opt/nvidia/hpc_sdk/Linux_x86_64/23.3/cuda/12.0/include (found version "12.0.140") 
 -- Configuring done
 -- Generating done
-CMake Warning:
-  Manually-specified variables were not used by the project:
-
-    CMAKE_C_COMPILER
-
-
 -- Build files have been written to: /home/mp74207/CLionProjects/GalaxyFormationSingleFile/cmake-build-debug

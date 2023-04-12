@@ -1,29 +1,28 @@
 cmake_minimum_required(VERSION 3.20)
 project(mainProg LANGUAGES CUDA CXX)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-message(${CMAKE_BINARY_DIR})
+
 set(PYTHON_EXECUTABLE "/home/mp74207/anaconda3/envs/Cosmos/bin/python")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(Boost_INCLUDE_DIR /usr/include/)
 set(BOOST_LIBRARY_DIR /usr/lib/x86_64-linux-gnu/)
 set(Boost_PYTHON_LIBRARY /usr/lib/x86_64-linux-gnu/libboost_python310.so)
-
-# Set the path to the directory containing FindNumPy.cmake
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+find_package(CUDA REQUIRED)
 find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
 find_package(Boost REQUIRED COMPONENTS Python)
-
-# Disable compiler tests
-set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
-
-# Rest of your CMake code goes here
-
-# Set minimum compute capability
-set(CMAKE_CUDA_ARCHITECTURES "50")
-# Set C++ standard
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
 set(CMAKE_CUDA_STANDARD 14)
 set(CMAKE_CXX_COMPILER_WORKS TRUE)
 set(CMAKE_CUDA_COMPILER_WORKS TRUE)
+
+find_package(CUDAToolkit)
+# Set minimum compute capability
+set(CMAKE_CUDA_ARCHITECTURES "50")
+# Set C++ standard
+set(CMAKE_C_COMPILER /opt/nvidia/hpc_sdk/Linux_x86_64/23.3/compilers/bin/nvcc)
+set(CMAKE_CXX_COMPILER /opt/nvidia/hpc_sdk/Linux_x86_64/23.3/compilers/bin/nvc++)
 
 if(CMAKE_CUDA_COMPILER_ID MATCHES "NVIDIA")
     set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -arch=sm_50")
@@ -31,6 +30,7 @@ endif()
 
 # Set include directories
 include_directories(
+        ${Boost_INCLUDE_DIRS}
         /usr/include/
         /home/mp74207/anaconda3/envs/Cosmos/include/python3.9/
         /home/mp74207/anaconda3/lib/python3.9/site-packages/numpy/core/include
@@ -39,15 +39,20 @@ include_directories(
 
 set(SOURCE_FILES
         src/main.cu
+        src/lib0.cu
         )
 
-add_executable(mainProg src/main.cu
+
+
+add_executable(${PROJECT_NAME} src/main.cu src/lib0.cu
         /home/mp74207/anaconda3/lib/python3.9/site-packages/numpy/core/include//numpy/arrayobject.h
         /home/mp74207/anaconda3/envs/Cosmos/include/python3.9/Python.h
         /usr/include
         )
-#set_target_properties(GalaxyFormationGCC_Use PROPERTIES LINKER_LANGUAGE CUDA)
-target_link_libraries(mainProg
+
+#target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_11)
+
+target_link_libraries(${PROJECT_NAME}
         ${Python_LIBRARIES}
         boost_python310
         cudart

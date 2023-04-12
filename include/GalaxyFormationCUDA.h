@@ -11,7 +11,7 @@ std::vector<float> get_all_g_cuda(float G, float dv0,
                                   const std::vector<float>& rho, float redshift=0.0,  bool radial=true);
 
 std::vector<float> calculate_rotational_velocity(float G, float dv0,
-                                                 const std::vector<float>& r_sampling,
+                                                 std::vector<float> r_sampling,
                                                  const std::vector<float>& r,
                                                  const std::vector<float>& z,
                                                  const std::vector<float>& costheta,

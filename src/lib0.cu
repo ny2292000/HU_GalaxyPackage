@@ -13,11 +13,11 @@
 #include <iostream>
 #include <future>
 
-float pi =  3.141592653589793;
+double pi =  3.141592653589793;
 
-std::vector<float> zeros(int points)
+std::vector<double> zeros(int points)
 {
-    std::vector<float> res(points);
+    std::vector<double> res(points);
     for (unsigned int i=0; i<points; i++)
     {
         res[i] = 0.0;
@@ -26,20 +26,20 @@ std::vector<float> zeros(int points)
 }
 
 
-float get_g_cpu( int ii, int jj, float G, float dv0, const std::vector<float>& r, const std::vector<float>& z,
-                 const std::vector<float>& costheta, const std::vector<float>& sintheta, const std::vector<float>& rho)
+double get_g_cpu( int ii, int jj, double G, double dv0, const std::vector<double>& r, const std::vector<double>& z,
+                 const std::vector<double>& costheta, const std::vector<double>& sintheta, const std::vector<double>& rho)
 {
     unsigned int nr = r.size();
     unsigned int nz = z.size();
     unsigned int ntheta = costheta.size();
-    float res = 0.0;
+    double res = 0.0;
     for(unsigned int i=0;i<nr;i++)
     {
         for(unsigned int j=0;j<nz;j++)
         {
             for(unsigned int k=0;k<ntheta;k++)
             {
-                float d = pow(z[j] - z[jj], 2.0) + pow(r[ii] - r[i]*sintheta[k], 2.0) + r[i]*r[i]*costheta[k]*costheta[k];
+                double d = pow(z[j] - z[jj], 2.0) + pow(r[ii] - r[i]*sintheta[k], 2.0) + r[i]*r[i]*costheta[k]*costheta[k];
                 res += G*rho[i]*r[i]*dv0*(z[j] - z[jj])/pow( d, 1.5);
             }
         }
@@ -69,13 +69,13 @@ float get_g_cpu( int ii, int jj, float G, float dv0, const std::vector<float>& r
 
 
 // # CPU functions
-std::vector<float> get_all_g_impl_cpu(int nr, int nz, float G, float dv0, const std::vector<float>& r, const std::vector<float>& z,
-                                      const std::vector<float>& costheta, const std::vector<float>& sintheta, const std::vector<float>& rho)
+std::vector<double> get_all_g_impl_cpu(int nr, int nz, double G, double dv0, const std::vector<double>& r, const std::vector<double>& z,
+                                      const std::vector<double>& costheta, const std::vector<double>& sintheta, const std::vector<double>& rho)
 {
-    std::vector<std::future<float>> futures;
+    std::vector<std::future<double>> futures;
     futures.reserve(nr * nz);
     // Spawn threads
-    std::vector<float> f_z = zeros(nr*nz);
+    std::vector<double> f_z = zeros(nr*nz);
     for(unsigned int i = 0; i < nr; i++)
     {
         for(unsigned int j = 0; j < nz; j++)
@@ -99,28 +99,28 @@ std::vector<float> get_all_g_impl_cpu(int nr, int nz, float G, float dv0, const 
 
 // CUDA kernel to compute the gravitational acceleration f_z
 // for all points in r and z
-__global__ void get_all_g_kernel(int nr, int nz, int nr_sampling, int nz_sampling, float G, float dv0,
-                                 const float *r_sampling, const float *z_sampling,
-                                 const float *grid_data, const float *rho,
-                                 int costheta_size, bool radial, float *f_z) {
+__global__ void get_all_g_kernel(int nr, int nz, int nr_sampling, int nz_sampling, double G, double dv0,
+                                 const double *r_sampling, const double *z_sampling,
+                                 const double *grid_data, const double *rho,
+                                 int costheta_size, bool radial, double *f_z) {
 
     // Get the indices of the point in r and z for this thread
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     int j = blockIdx.y * blockDim.y + threadIdx.y;
 
     // Use shared memory for caching intermediate results
-    extern __shared__ float shared_data[];
+    extern __shared__ double shared_data[];
 
     if (i < nr && j < nz) {
         // Initialize the result variable for this thread
-        float res = 0.0;
+        double res = 0.0;
         // Loop over all r and z points in the sampling vectors
         for (int ir = 0; ir < nr_sampling; ir++) {
             for (int iz = 0; iz < nz_sampling; iz++) {
                 // Loop over all theta angles in the costheta vector
                 for (int k = 0; k < costheta_size; k++) {
                     // Compute the distance between the sampling point and the point in r and z for this thread
-                    float d = pow(z_sampling[iz] - grid_data[nz + j], 2.0) + pow(r_sampling[i] - grid_data[i] * grid_data[2 * nz + k], 2.0)
+                    double d = pow(z_sampling[iz] - grid_data[nz + j], 2.0) + pow(r_sampling[i] - grid_data[i] * grid_data[2 * nz + k], 2.0)
                               + grid_data[i] * grid_data[i] * grid_data[3 * nz + k] * grid_data[3 * nz + k];
                     // Compute the contribution to the result variable for this thread from this sampling point
                     if (radial) {
@@ -137,11 +137,11 @@ __global__ void get_all_g_kernel(int nr, int nz, int nr_sampling, int nz_samplin
 }
 
 
-std::vector<float> get_all_g_impl_cuda(float G, float dv0,
-                                       const std::vector<float> &r_sampling, const std::vector<float> &z_sampling,
-                                       const std::vector<float> &r, const std::vector<float> &z,
-                                       const std::vector<float> &costheta, const std::vector<float> &sintheta,
-                                       const std::vector<float> &rho, bool radial = true) {
+std::vector<double> get_all_g_impl_cuda(double G, double dv0,
+                                       const std::vector<double> &r_sampling, const std::vector<double> &z_sampling,
+                                       const std::vector<double> &r, const std::vector<double> &z,
+                                       const std::vector<double> &costheta, const std::vector<double> &sintheta,
+                                       const std::vector<double> &rho, bool radial = true) {
 //    This function computes the gravitational force at all points in a 2D grid using CUDA. The function takes
 //    in several input parameters:
 //
@@ -158,33 +158,33 @@ std::vector<float> get_all_g_impl_cuda(float G, float dv0,
 //            the integration variables to add up the contribution from elements of volume dv0 and the sampling
 //            vectors to calculate the distance between points. The kernel corrects G for epoch and computes the
 //            gravitational force at all points in the grid. Finally, the function copies the results back to the
-//            host and returns them as a vector of floats.
+//            host and returns them as a vector of doubles.
     int nr_sampling = r_sampling.size();
     int nz_sampling = z_sampling.size();
     int nr = r.size();
     int nz = z.size();
 
     // Combine r, z, costheta, and sintheta into a single vector (grid_data) for cudaMemcpy
-    std::vector<float> grid_data(r);
+    std::vector<double> grid_data(r);
     grid_data.insert(grid_data.end(), z.begin(), z.end());
     grid_data.insert(grid_data.end(), costheta.begin(), costheta.end());
     grid_data.insert(grid_data.end(), sintheta.begin(), sintheta.end());
 
     // Allocate and copy device memory
-    float *dev_r_sampling, *dev_z_sampling, *dev_grid_data, *dev_rho, *dev_f_z;
-    cudaMalloc((void **)&dev_r_sampling, nr_sampling * sizeof(float));
-    cudaMemcpy(dev_r_sampling, r_sampling.data(), nr_sampling * sizeof(float), cudaMemcpyHostToDevice);
+    double *dev_r_sampling, *dev_z_sampling, *dev_grid_data, *dev_rho, *dev_f_z;
+    cudaMalloc((void **)&dev_r_sampling, nr_sampling * sizeof(double));
+    cudaMemcpy(dev_r_sampling, r_sampling.data(), nr_sampling * sizeof(double), cudaMemcpyHostToDevice);
 
-    cudaMalloc((void **)&dev_z_sampling, nz_sampling * sizeof(float));
-    cudaMemcpy(dev_z_sampling, z_sampling.data(), nz_sampling * sizeof(float), cudaMemcpyHostToDevice);
+    cudaMalloc((void **)&dev_z_sampling, nz_sampling * sizeof(double));
+    cudaMemcpy(dev_z_sampling, z_sampling.data(), nz_sampling * sizeof(double), cudaMemcpyHostToDevice);
 
-    cudaMalloc((void **)&dev_grid_data, grid_data.size() * sizeof(float));
-    cudaMemcpy(dev_grid_data, grid_data.data(), grid_data.size() * sizeof(float), cudaMemcpyHostToDevice);
+    cudaMalloc((void **)&dev_grid_data, grid_data.size() * sizeof(double));
+    cudaMemcpy(dev_grid_data, grid_data.data(), grid_data.size() * sizeof(double), cudaMemcpyHostToDevice);
 
-    cudaMalloc((void **)&dev_rho, nr * nz * sizeof(float));
-    cudaMemcpy(dev_rho, rho.data(), nr * nz * sizeof(float), cudaMemcpyHostToDevice);
+    cudaMalloc((void **)&dev_rho, nr * nz * sizeof(double));
+    cudaMemcpy(dev_rho, rho.data(), nr * nz * sizeof(double), cudaMemcpyHostToDevice);
 
-    cudaMalloc((void **)&dev_f_z, nr * nz * sizeof(float));
+    cudaMalloc((void **)&dev_f_z, nr * nz * sizeof(double));
 
     // Launch kernel
     int costheta_size = costheta.size();
@@ -197,8 +197,8 @@ std::vector<float> get_all_g_impl_cuda(float G, float dv0,
             radial, dev_f_z);
 
     // Copy results back to host
-    std::vector<float> f_z(nr * nz);
-    cudaMemcpy(f_z.data(), dev_f_z, nr * nz * sizeof(float), cudaMemcpyDeviceToHost);
+    std::vector<double> f_z(nr * nz);
+    cudaMemcpy(f_z.data(), dev_f_z, nr * nz * sizeof(double), cudaMemcpyDeviceToHost);
 
     // Free device memory
     cudaFree(dev_r_sampling);
@@ -213,11 +213,11 @@ std::vector<float> get_all_g_impl_cuda(float G, float dv0,
 
 
 
-std::vector<float> get_all_g(float G, float dv0,
-                             const std::vector<float> &r_sampling, const std::vector<float> &z_sampling,
-                             const std::vector<float> &r, const std::vector<float> &z,
-                             const std::vector<float> &costheta, const std::vector<float> &sintheta,
-                             const std::vector<float> &rho, bool radial = true) {
+std::vector<double> get_all_g(double G, double dv0,
+                             const std::vector<double> &r_sampling, const std::vector<double> &z_sampling,
+                             const std::vector<double> &r, const std::vector<double> &z,
+                             const std::vector<double> &costheta, const std::vector<double> &sintheta,
+                             const std::vector<double> &rho, bool radial = true) {
     int device_count = 0;
     cudaGetDeviceCount(&device_count);
     double factor = 1.11725076e-35; //cc.G.to(uu.km / uu.s ** 2 / uu.kg * uu.lyr ** 2).value/cc.G.si
@@ -235,7 +235,7 @@ std::vector<float> get_all_g(float G, float dv0,
 
 
 
-double massCalcX(float alpha, float rho, float h, float x) {
+double massCalcX(double alpha, double rho, double h, double x) {
     double factor = 0.0007126927557971729; // factor takes care of moving from rho as atom/cc to kg/lyr^3, with alpha = 1/lyr and h0 = in lyr div sun_mass
     double M_si = -2 * pi * h * rho * x * exp(-alpha * x) / alpha - 2 * pi * h * rho * exp(-alpha * x) / pow(alpha, 2) + 2 * pi * h * rho / pow(alpha, 2);
     M_si = M_si * factor;
@@ -243,7 +243,7 @@ double massCalcX(float alpha, float rho, float h, float x) {
 }
 
 
-double massCalc(float alpha, float rho, float h) {
+double massCalc(double alpha, double rho, double h) {
     double factor = 0.0007126927557971729; // factor takes care of moving from rho as atom/cc to kg/lyr^3, with alpha = 1/lyr and h0 = in lyr div sun_mass
     double Mtotal_si = 2 * pi * h * rho / pow(alpha, 2);
     Mtotal_si = Mtotal_si * factor;
@@ -252,13 +252,13 @@ double massCalc(float alpha, float rho, float h) {
 
 
 
-std::vector<float> calculate_rotational_velocity(float G, float dv0,
-                                                 std::vector<float> r_sampling,
-                                                 const std::vector<float> &r,
-                                                 const std::vector<float> &z,
-                                                 const std::vector<float> &costheta,
-                                                 const std::vector<float> &sintheta,
-                                                 const std::vector<float> &rho) {
+std::vector<double> calculate_rotational_velocity(double G, double dv0,
+                                                 std::vector<double> r_sampling,
+                                                 const std::vector<double> &r,
+                                                 const std::vector<double> &z,
+                                                 const std::vector<double> &costheta,
+                                                 const std::vector<double> &sintheta,
+                                                 const std::vector<double> &rho) {
 //#######################################################################################################
 //#######################################################################################################
 //#######################################################################################################
@@ -278,16 +278,16 @@ std::vector<float> calculate_rotational_velocity(float G, float dv0,
     int nr = sqrt(r.size());
     double km_lyr = 9460730472580.8; //uu.lyr.to(uu.km)
     // Allocate result vector
-    std::vector<float> z_sampling;
+    std::vector<double> z_sampling;
     z_sampling.push_back(0.0);
     bool radial = true;
-    std::vector<float> v_r(nr_sampling);
-    std::vector<float> f_z = get_all_g(G, dv0, r_sampling, z_sampling, r, z,
+    std::vector<double> v_r(nr_sampling);
+    std::vector<double> f_z = get_all_g(G, dv0, r_sampling, z_sampling, r, z,
                                        costheta, sintheta, rho, radial);
     // Calculate velocities
     for (int i = 0; i < nr_sampling; i++) {
         int idx = i * nr;
-        float v_squared = f_z[idx] * r_sampling[i] * km_lyr ;
+        double v_squared = f_z[idx] * r_sampling[i] * km_lyr ;
         v_r[i] = sqrt(v_squared); // 9460730777119.56 km
     }
 
@@ -296,39 +296,39 @@ std::vector<float> calculate_rotational_velocity(float G, float dv0,
 }
 
 
-std::vector<float> vec_from_array(PyArrayObject *array) {
-    // Check that input is a 1-dimensional array of floats
-    if (PyArray_NDIM(array) != 1 || PyArray_TYPE(array) != NPY_FLOAT) {
-        throw std::invalid_argument("Input must be a 1D NumPy array of floats");
+std::vector<double> vec_from_array(PyArrayObject *array) {
+    // Check that input is a 1-dimensional array of doubles
+    if (PyArray_NDIM(array) != 1 || PyArray_TYPE(array) != NPY_DOUBLE) {
+        throw std::invalid_argument("Input must be a 1D NumPy array of doubles");
     }
 
     // Get the size of the array and a pointer to its data
     int size = PyArray_SIZE(array);
-    float *data_ptr = static_cast<float *>(PyArray_DATA(array));
+    double *data_ptr = static_cast<double *>(PyArray_DATA(array));
 
     // Create a vector from the array data
-    std::vector<float> vec(data_ptr, data_ptr + size);
+    std::vector<double> vec(data_ptr, data_ptr + size);
 
     return vec;
 }
 
 
-PyArrayObject *array_from_vec(std::vector<float> vec) {
+PyArrayObject *array_from_vec(std::vector<double> vec) {
     // Create a 1D NumPy array of the same size as the input vector
     npy_intp size = vec.size();
-    PyObject *array = PyArray_SimpleNew(1, &size, NPY_FLOAT);
+    PyObject *array = PyArray_SimpleNew(1, &size, NPY_DOUBLE);
 
     // Copy the input vector data to the array data
-    float *data_ptr = static_cast<float *>(PyArray_DATA(reinterpret_cast<PyArrayObject *>(array)));
-    std::memcpy(data_ptr, vec.data(), size * sizeof(float));
+    double *data_ptr = static_cast<double *>(PyArray_DATA(reinterpret_cast<PyArrayObject *>(array)));
+    std::memcpy(data_ptr, vec.data(), size * sizeof(double));
 
     return reinterpret_cast<PyArrayObject *>(array);
 }
 
-std::vector<float> costhetaFunc(const std::vector<float> &theta)
+std::vector<double> costhetaFunc(const std::vector<double> &theta)
 {
     unsigned int points = theta.size();
-    std::vector<float> res(points);
+    std::vector<double> res(points);
     for (unsigned int i=0; i<points; i++)
     {
         res[i] = cos(theta[i]);
@@ -336,10 +336,10 @@ std::vector<float> costhetaFunc(const std::vector<float> &theta)
     return res;
 }
 
-std::vector<float> sinthetaFunc(const std::vector<float> &theta)
+std::vector<double> sinthetaFunc(const std::vector<double> &theta)
 {
     unsigned int points = theta.size();
-    std::vector<float> res(points);
+    std::vector<double> res(points);
     for (unsigned int i = 0; i < points; i++) {
         res[i] = sin(theta[i]);
     }
@@ -349,10 +349,10 @@ std::vector<float> sinthetaFunc(const std::vector<float> &theta)
 
 
 
-std::vector<float> linspace(float start, float end, size_t points)
+std::vector<double> linspace(double start, double end, size_t points)
 {
-    std::vector<float> res(points);
-    float step = (end - start) / (points - 1);
+    std::vector<double> res(points);
+    double step = (end - start) / (points - 1);
     size_t i = 0;
     for (auto& e : res)
     {
@@ -361,10 +361,10 @@ std::vector<float> linspace(float start, float end, size_t points)
     return res;
 }
 
-std::vector<float> density(float rho_0, float alpha_0, float rho_1, float alpha_1,std::vector<float> r )
+std::vector<double> density(double rho_0, double alpha_0, double rho_1, double alpha_1,std::vector<double> r )
 {
     unsigned int vecsize = r.size();
-    std::vector<float> density_(vecsize);
+    std::vector<double> density_(vecsize);
     // to kg/lyr^3
     rho_0 *= 1.4171253E27;  //(h_mass/uu.cm**3).to(uu.kg/uu.lyr**3) =<Quantity 1.41712531e+27 kg / lyr3>
     rho_1 *= 1.4171253E27;

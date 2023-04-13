@@ -26,7 +26,7 @@ std::vector<double> zeros(int points)
 }
 
 
-double get_g_cpu( int ii, int jj, double G, double dv0, const std::vector<double>& r, const std::vector<double>& z,
+double get_g_cpu( double r_sampling_ii, double z_sampling_jj, double G, double dv0, const std::vector<double>& r, const std::vector<double>& z,
                  const std::vector<double>& costheta, const std::vector<double>& sintheta, const std::vector<double>& rho)
 {
     unsigned int nr = r.size();
@@ -39,8 +39,8 @@ double get_g_cpu( int ii, int jj, double G, double dv0, const std::vector<double
         {
             for(unsigned int k=0;k<ntheta;k++)
             {
-                double d = pow(z[j] - z[jj], 2.0) + pow(r[ii] - r[i]*sintheta[k], 2.0) + r[i]*r[i]*costheta[k]*costheta[k];
-                res += G*rho[i]*r[i]*dv0*(z[j] - z[jj])/pow( d, 1.5);
+                double d = pow(z[j] - z_sampling_jj, 2.0) + pow(r_sampling_ii- r[i]*sintheta[k], 2.0) + r[i]*r[i]*costheta[k]*costheta[k];
+                res += G*rho[i]*r[i]*dv0*(z[j] - z_sampling_jj)/pow( d, 1.5);
             }
         }
     }
@@ -69,10 +69,16 @@ double get_g_cpu( int ii, int jj, double G, double dv0, const std::vector<double
 
 
 // # CPU functions
-std::vector<double> get_all_g_impl_cpu(int nr, int nz, double G, double dv0, const std::vector<double>& r, const std::vector<double>& z,
-                                      const std::vector<double>& costheta, const std::vector<double>& sintheta, const std::vector<double>& rho)
+
+std::vector<double> get_all_g_impl_cpu(double G, double dv0,
+                                        const std::vector<double> &r_sampling, const std::vector<double> &z_sampling,
+                                        const std::vector<double> &r, const std::vector<double> &z,
+                                        const std::vector<double> &costheta, const std::vector<double> &sintheta,
+                                        const std::vector<double> &rho, bool radial = true)
 {
     std::vector<std::future<double>> futures;
+    int nr = r_sampling.size();
+    int nz = z_sampling.size();
     futures.reserve(nr * nz);
     // Spawn threads
     std::vector<double> f_z = zeros(nr*nz);
@@ -80,7 +86,7 @@ std::vector<double> get_all_g_impl_cpu(int nr, int nz, double G, double dv0, con
     {
         for(unsigned int j = 0; j < nz; j++)
         {
-            futures.emplace_back(std::async(get_g_cpu, i, j, G, dv0, r, z, costheta, sintheta, rho));
+            futures.emplace_back(std::async(get_g_cpu, r_sampling[i], z_sampling[j], G, dv0, r, z, costheta, sintheta, rho));
         }
     }
 
@@ -220,16 +226,13 @@ std::vector<double> get_all_g(double G, double dv0,
                              const std::vector<double> &rho, bool radial = true) {
     int device_count = 0;
     cudaGetDeviceCount(&device_count);
-    double factor = 1.11725076e-35; //cc.G.to(uu.km / uu.s ** 2 / uu.kg * uu.lyr ** 2).value/cc.G.si
-    G *= factor;
+    device_count=0;
     if (device_count > 0) {
         // If CUDA devices are available, use the CUDA implementation
         return get_all_g_impl_cuda(G, dv0, r_sampling, z_sampling, r, z, costheta, sintheta, rho, radial);
     } else {
         // If no CUDA devices are available, use the CPU implementation
-        int nr = r.size();
-        int nz = z.size();
-        return get_all_g_impl_cpu(nr, nz, G, dv0, r, z, costheta, sintheta, rho);
+        return get_all_g_impl_cpu( G, dv0, r_sampling, z_sampling, r, z, costheta, sintheta, rho, radial);
     }
 }
 
@@ -275,22 +278,19 @@ std::vector<double> calculate_rotational_velocity(double G, double dv0,
 //
 //Finally, the function returns the v_r vector containing the calculated velocities.
     int nr_sampling = r_sampling.size();
-    int nr = sqrt(r.size());
     double km_lyr = 9460730472580.8; //uu.lyr.to(uu.km)
     // Allocate result vector
-    std::vector<double> z_sampling;
-    z_sampling.push_back(0.0);
+    std::vector<double> z_sampling = {0.0};
     bool radial = true;
     std::vector<double> v_r(nr_sampling);
     std::vector<double> f_z = get_all_g(G, dv0, r_sampling, z_sampling, r, z,
                                        costheta, sintheta, rho, radial);
     // Calculate velocities
+    double v_squared;
     for (int i = 0; i < nr_sampling; i++) {
-        int idx = i * nr;
-        double v_squared = f_z[idx] * r_sampling[i] * km_lyr ;
+        v_squared = f_z[i] * r_sampling[i] * pow(km_lyr, 3)/1000;
         v_r[i] = sqrt(v_squared); // 9460730777119.56 km
     }
-
     // Return result
     return v_r;
 }

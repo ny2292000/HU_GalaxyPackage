@@ -22,7 +22,12 @@
 #include <future>
 #include "lib0.hpp"
 
+void print(std::vector <double> const &a) {
+    std::cout << "The vector elements are : ";
 
+    for(int i=0; i < a.size(); i++)
+        std::cout << a.at(i) << ' ';
+}
 
 
 
@@ -32,7 +37,7 @@ public:             // Access specifier
     int nz;
     int nr_sampling;
     int nz_sampling;
-    double G;
+    const double G;
     double R_max;
     const double pi = 3.141592653589793;
     double dr;
@@ -131,6 +136,7 @@ public:             // Access specifier
                                                                rho) ;
         double error=0.0;
         for (int i=0; i< n_rotation_points; i++){ error += pow( (v_rotation_points[i]-vsim[i]), 2); }
+        std::cout << "Total Error = " << (error + error_mass) << "\n";
         return error + error_mass;
     }
 
@@ -250,5 +256,7 @@ int main(){
                         redshift);
     M33.read_galaxy_rotation_curve(m33_rotational_curve);
     std::vector<double> x0 = { rho_0, alpha_0, rho_1, alpha_1,  h0};
-    M33.gradient_descent(x0);
+    std::vector<double> xout = { rho_0, alpha_0, rho_1, alpha_1,  h0};
+    xout = M33.gradient_descent(x0);
+    print(xout);
 }

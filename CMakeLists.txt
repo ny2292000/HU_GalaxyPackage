@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 project(mainProg LANGUAGES CUDA CXX)
 
+find_package(NLopt CONFIG REQUIRED)
+
 set(PYTHON_EXECUTABLE "/home/mp74207/anaconda3/envs/Cosmos/bin/python")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(Boost_INCLUDE_DIR /usr/include/)
@@ -58,4 +60,5 @@ target_link_libraries(${PROJECT_NAME}
         cudart
         stdc++fs
         m
+        NLopt::nlopt
         )

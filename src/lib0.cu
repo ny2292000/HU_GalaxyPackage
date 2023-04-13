@@ -27,7 +27,7 @@ get_g_cpu(double r_sampling_ii, double z_sampling_jj, double G, const std::vecto
     unsigned int ntheta = costheta.size();
     double res = 0.0;
     for (unsigned int i = 0; i < nr; i++) {
-        if (r[i]> r_sampling_ii){
+        if (radial && r[i]> r_sampling_ii){
             break;}
         for (unsigned int j = 0; j < nz; j++) {
             for (unsigned int k = 0; k < ntheta; k++) {
@@ -114,6 +114,9 @@ __global__ void get_all_g_kernel(int nr, int nz, int nr_sampling, int nz_samplin
         double res = 0.0;
         // Loop over all r and z points in the sampling vectors
         for (int ir = 0; ir < nr_sampling; ir++) {
+            if (radial && r_sampling[ir] > grid_data[i]) {
+                break;
+            }
             for (int iz = 0; iz < nz_sampling; iz++) {
                 // Loop over all theta angles in the costheta vector
                 for (int k = 0; k < costheta_size; k++) {
@@ -209,7 +212,6 @@ get_all_g(double redshift, const std::vector<double> &dv0, const std::vector<dou
           const std::vector<double> &sintheta, const std::vector<double> &rho, bool radial = true) {
     int device_count = 0;
     cudaGetDeviceCount(&device_count);
-    device_count = 0;
     // G = cc.G.to(uu.km / uu.s ** 2 / uu.kg * uu.lyr ** 2).value *(1+redshift)
     double G = 7.456866768350099e-46 * (1 + redshift);
     if (device_count > 0) {

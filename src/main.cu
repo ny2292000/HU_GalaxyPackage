@@ -161,43 +161,6 @@ public:             // Access specifier
     }
 
 //// Objective function for optimization
-//    double objective(const std::vector<double> &x, std::vector<double> &grad, void *data) {
-//        // Compute the error for the given input parameters
-//        double error = error_function(x);
-//        // Compute the gradient of the error function if requested
-//        if (!grad.empty()) {
-//            // Compute the central difference approximation of the gradient
-//            double h = 1e-6;
-//            for (int i = 0; i < x.size(); i++) {
-//                std::vector<double> x1 = x;
-//                std::vector<double> x2 = x;
-//                x1[i] -= h;
-//                x2[i] += h;
-//                double f1 = error_function(x1);
-//                double f2 = error_function(x2);
-//                grad[i] = (f2 - f1) / (2 * h);
-//            }
-//        }
-//        return error;
-//    }
-//
-//// Define the Nelder-Mead optimizer
-//    std::vector<double>
-//    nelder_mead(const std::vector<double> &x0, int max_iter = 1000, double xtol_rel = 1e-6) {
-//        nlopt::opt opt(nlopt::LN_NELDERMEAD, x0.size());
-//        opt.set_min_objective(objective, NULL);
-//        opt.set_xtol_rel(xtol_rel);
-//        std::vector<double> x = x0;
-//        double minf;
-//        nlopt::result result = opt.optimize(x, minf);
-//        if (result < 0) {
-//            std::cerr << "nlopt failed: " << strerror(result) << std::endl;
-//        }
-//        return x;
-//    }
-
-
-
     static double objective_wrapper(const std::vector<double> &x, std::vector<double> &grad, void *data) {
         return reinterpret_cast<Galaxy*>(data)->error_function(x);
     }
@@ -216,8 +179,6 @@ public:             // Access specifier
         }
         return x;
     }
-
-
 
 
     // End of Galaxy Class
@@ -276,7 +237,8 @@ int main() {
                         redshift);
     M33.read_galaxy_rotation_curve(m33_rotational_curve);
     std::vector<double> x0 = {rho_0, alpha_0, rho_1, alpha_1, h0};
-    std::vector<double> xout = {rho_0, alpha_0, rho_1, alpha_1, h0};
+//    std::vector<double> xout = {rho_0, alpha_0, rho_1, alpha_1, h0};
+    std::vector<double> xout = {22.0752, 0.00049759, 0.122031, 1.71929e-05, 125235};
     xout = M33.nelder_mead(x0);
     print(xout);
 }

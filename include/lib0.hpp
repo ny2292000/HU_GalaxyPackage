@@ -47,8 +47,8 @@ std::vector<float> get_all_g(float G, float dv0,
                              const std::vector<float> &costheta, const std::vector<float> &sintheta,
                              const std::vector<float> &rho, float redshift = 0.0, bool radial = true);
 
-double massCalc(float alpha, float rho, float h, float x=0.0f);
-
+double massCalc(float alpha, float rho, float h);
+double massCalcX(float alpha, float rho, float h, float x);
 
 
 std::vector<float> calculate_rotational_velocity(float G, float dv0,
@@ -57,7 +57,6 @@ std::vector<float> calculate_rotational_velocity(float G, float dv0,
                                                  const std::vector<float> &z,
                                                  const std::vector<float> &costheta,
                                                  const std::vector<float> &sintheta,
-                                                 const std::vector<float> &rho,
-                                                 float redshift = 0.0);
+                                                 const std::vector<float> &rho);
 
 

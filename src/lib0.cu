@@ -141,7 +141,7 @@ std::vector<float> get_all_g_impl_cuda(float G, float dv0,
                                        const std::vector<float> &r_sampling, const std::vector<float> &z_sampling,
                                        const std::vector<float> &r, const std::vector<float> &z,
                                        const std::vector<float> &costheta, const std::vector<float> &sintheta,
-                                       const std::vector<float> &rho, float redshift = 0.0, bool radial = true) {
+                                       const std::vector<float> &rho, bool radial = true) {
 //    This function computes the gravitational force at all points in a 2D grid using CUDA. The function takes
 //    in several input parameters:
 //
@@ -191,9 +191,8 @@ std::vector<float> get_all_g_impl_cuda(float G, float dv0,
     dim3 block_size(32, 32);
     dim3 num_blocks((nr + block_size.x - 1) / block_size.x, (nz + block_size.y - 1) / block_size.y);
 
-    // Correct G for epoch
-    float G_corrected = G * (1 + redshift);
-    get_all_g_kernel<<<num_blocks, block_size>>>(nr, nz, nr_sampling, nz_sampling, G_corrected, dv0,
+    // G already corrected for epoch
+    get_all_g_kernel<<<num_blocks, block_size>>>(nr, nz, nr_sampling, nz_sampling, G, dv0,
             dev_r_sampling, dev_z_sampling, dev_grid_data, dev_rho, costheta_size,
             radial, dev_f_z);
 
@@ -218,13 +217,14 @@ std::vector<float> get_all_g(float G, float dv0,
                              const std::vector<float> &r_sampling, const std::vector<float> &z_sampling,
                              const std::vector<float> &r, const std::vector<float> &z,
                              const std::vector<float> &costheta, const std::vector<float> &sintheta,
-                             const std::vector<float> &rho, float redshift = 0.0, bool radial = true) {
+                             const std::vector<float> &rho, bool radial = true) {
     int device_count = 0;
     cudaGetDeviceCount(&device_count);
-
+    double factor = 1.11725076e-35; //cc.G.to(uu.km / uu.s ** 2 / uu.kg * uu.lyr ** 2).value/cc.G.si
+    G *= factor;
     if (device_count > 0) {
         // If CUDA devices are available, use the CUDA implementation
-        return get_all_g_impl_cuda(G, dv0, r_sampling, z_sampling, r, z, costheta, sintheta, rho, redshift, radial);
+        return get_all_g_impl_cuda(G, dv0, r_sampling, z_sampling, r, z, costheta, sintheta, rho, radial);
     } else {
         // If no CUDA devices are available, use the CPU implementation
         int nr = r.size();
@@ -235,12 +235,18 @@ std::vector<float> get_all_g(float G, float dv0,
 
 
 
-
-double massCalc(float alpha, float rho, float h, float x=0.0f) {
+double massCalcX(float alpha, float rho, float h, float x) {
+    double factor = 0.0007126927557971729; // factor takes care of moving from rho as atom/cc to kg/lyr^3, with alpha = 1/lyr and h0 = in lyr div sun_mass
     double M_si = -2 * pi * h * rho * x * exp(-alpha * x) / alpha - 2 * pi * h * rho * exp(-alpha * x) / pow(alpha, 2) + 2 * pi * h * rho / pow(alpha, 2);
-    M_si = M_si * 1.4171253E27;
+    M_si = M_si * factor;
+    return  M_si;
+}
+
+
+double massCalc(float alpha, float rho, float h) {
+    double factor = 0.0007126927557971729; // factor takes care of moving from rho as atom/cc to kg/lyr^3, with alpha = 1/lyr and h0 = in lyr div sun_mass
     double Mtotal_si = 2 * pi * h * rho / pow(alpha, 2);
-    Mtotal_si = Mtotal_si * 1.4171253E27;
+    Mtotal_si = Mtotal_si * factor;
     return  Mtotal_si;
 }
 
@@ -252,8 +258,7 @@ std::vector<float> calculate_rotational_velocity(float G, float dv0,
                                                  const std::vector<float> &z,
                                                  const std::vector<float> &costheta,
                                                  const std::vector<float> &sintheta,
-                                                 const std::vector<float> &rho,
-                                                 float redshift = 0.0) {
+                                                 const std::vector<float> &rho) {
 //#######################################################################################################
 //#######################################################################################################
 //#######################################################################################################
@@ -271,19 +276,19 @@ std::vector<float> calculate_rotational_velocity(float G, float dv0,
 //Finally, the function returns the v_r vector containing the calculated velocities.
     int nr_sampling = r_sampling.size();
     int nr = sqrt(r.size());
-
+    double km_lyr = 9460730472580.8; //uu.lyr.to(uu.km)
     // Allocate result vector
     std::vector<float> z_sampling;
     z_sampling.push_back(0.0);
     bool radial = true;
     std::vector<float> v_r(nr_sampling);
     std::vector<float> f_z = get_all_g(G, dv0, r_sampling, z_sampling, r, z,
-                                       costheta, sintheta, rho, redshift, radial);
+                                       costheta, sintheta, rho, radial);
     // Calculate velocities
     for (int i = 0; i < nr_sampling; i++) {
         int idx = i * nr;
-        float v_squared = f_z[idx] / r_sampling[i];
-        v_r[i] = sqrt(v_squared);
+        float v_squared = f_z[idx] * r_sampling[i] * km_lyr ;
+        v_r[i] = sqrt(v_squared); // 9460730777119.56 km
     }
 
     // Return result
@@ -361,7 +366,7 @@ std::vector<float> density(float rho_0, float alpha_0, float rho_1, float alpha_
     unsigned int vecsize = r.size();
     std::vector<float> density_(vecsize);
     // to kg/lyr^3
-    rho_0 *= 1.4171253E27;
+    rho_0 *= 1.4171253E27;  //(h_mass/uu.cm**3).to(uu.kg/uu.lyr**3) =<Quantity 1.41712531e+27 kg / lyr3>
     rho_1 *= 1.4171253E27;
     for(unsigned int i = 0; i < vecsize; i++)
     {

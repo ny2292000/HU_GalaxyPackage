@@ -83,31 +83,30 @@ public:             // Access specifier
         r_sampling = linspace(1,R_max, nr_sampling);
     }
 
-    std::vector<float> _rotational_velocity() {
+    std::vector<float> _rotational_velocity(float rho_0, float alpha_0, float rho_1, float alpha_1,  float h0) {
         // Allocate result vector
         std::vector<float> z_sampling;
         z_sampling.push_back(0.0);
-        std::vector<float> res = calculate_rotational_velocity(G, dv0,
-                                                             r_sampling,
-                                                             r,
-                                                             z,
-                                                             costheta,
-                                                             sintheta,
-                                                             rho,
-                                                             redshift);
+        std::vector<float> res = calculate_rotational_velocity(this->G, this->dv0,
+                                                             this->r_sampling,
+                                                             this->r,
+                                                             this->z,
+                                                             this->costheta,
+                                                             this->sintheta,
+                                                             density(rho_0, alpha_0, rho_1, alpha_1, this->r_sampling));
         return res;
     }
 
 
-    void find_galaxy_initial_density(const std::vector<float>  vin, std::vector<float> x0){
-        rotational_velocity_ = vin;
-        float alpha_0 =x0[0];
-        float rho_0 = x0[1];
-        float alpha_1 = x0[2];
-        float rho_1 = x0[3];
-
-
-    }
+//    void find_galaxy_initial_density(const std::vector<float>  vin, std::vector<float> x0){
+//        rotational_velocity_ = vin;
+//        float alpha_0 =x0[0];
+//        float rho_0 = x0[1];
+//        float alpha_1 = x0[2];
+//        float rho_1 = x0[3];
+//
+//
+//    }
 
     // Define the function to be minimized
     float error_function(const std::vector<float>& x) {
@@ -118,22 +117,18 @@ public:             // Access specifier
         float alpha_1 = x[3];
         float h0 = x[4];
         // Calculate the total mass of the galaxy
-        float Mtotal_si;
-        float error_mass;
-        Mtotal_si = massCalc(alpha_0, rho_0,h0)/sun_mass;
-        error_mass = pow( this->GalaxyMass-Mtotal_si,2);
-        // Allocate result vector
-        std::vector<float> z_sampling;
-        z_sampling.push_back(0.0);
+        double Mtotal_si=0.0;
+        double error_mass=0.0;
+        Mtotal_si = massCalc(alpha_0, rho_0,h0);  // Mtotal in Solar Masses
+        error_mass = pow( (this->GalaxyMass-Mtotal_si)/this->GalaxyMass,2);
         std::vector<float> rho = density(rho_0, alpha_0, rho_1, alpha_1, r);
-        std::vector<float> vsim = calculate_rotational_velocity(G, dv0,
-                                                               x_rotation_points,
-                                                               r,
-                                                               z,
-                                                               costheta,
-                                                               sintheta,
-                                                               rho,
-                                                               redshift); ;
+        std::vector<float> vsim = calculate_rotational_velocity(this->G, this->dv0,
+                                                               this->x_rotation_points,
+                                                               this->r,
+                                                               this->z,
+                                                               this->costheta,
+                                                               this->sintheta,
+                                                               rho) ;
         float error=0.0;
         for (int i=0; i< n_rotation_points; i++){ error += pow( (v_rotation_points[i]-vsim[i]), 2); }
         return error + error_mass;
@@ -157,9 +152,11 @@ public:             // Access specifier
 
     void read_galaxy_rotation_curve(std::vector<std::array<float, 2>> vin){
         n_rotation_points = vin.size();
+        this->x_rotation_points.clear();
+        this->v_rotation_points.clear();
         for (const auto &row : vin) {
-            x_rotation_points.push_back(row[0]); // Extract the first column (index 0)
-            v_rotation_points.push_back(row[1]); // Extract the first column (index 0)
+            this->x_rotation_points.push_back(row[0]); // Extract the first column (index 0)
+            this->v_rotation_points.push_back(row[1]); // Extract the first column (index 0)
         }
     }
 
@@ -230,7 +227,7 @@ int main(){
     const int ntheta = 102;
     const int nr_sampling=103;
     const int nz_sampling=104;
-    const float G = 7.456866768350099e-46;
+    const float G = 6.6743e-11;
     const float R_max = 50000.0;
     const float dr = R_max/nr;
     const float pi = 3.141592653589793;
@@ -252,6 +249,6 @@ int main(){
                         R_max, nr, nz, nr_sampling, nz_sampling, ntheta,
                         redshift);
     M33.read_galaxy_rotation_curve(m33_rotational_curve);
-    std::vector<float> x0 = {alpha_0, rho_0, alpha_1, rho_1, h0};
+    std::vector<float> x0 = { rho_0, alpha_0, rho_1, alpha_1,  h0};
     M33.gradient_descent(x0);
 }

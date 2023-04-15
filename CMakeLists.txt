@@ -3,6 +3,7 @@ project(mainProg LANGUAGES CUDA CXX)
 
 find_package(NLopt CONFIG REQUIRED)
 
+
 set(PYTHON_EXECUTABLE "/home/mp74207/anaconda3/envs/Cosmos/bin/python")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(Boost_INCLUDE_DIR /usr/include/)
@@ -41,24 +42,23 @@ include_directories(
 
 set(SOURCE_FILES
         src/main.cu
-        src/lib0.cu
         )
 
 
 
-add_executable(${PROJECT_NAME} src/main.cu src/lib0.cu
+add_executable(${PROJECT_NAME} src/main.cu
         /home/mp74207/anaconda3/lib/python3.9/site-packages/numpy/core/include//numpy/arrayobject.h
         /home/mp74207/anaconda3/envs/Cosmos/include/python3.9/Python.h
         /usr/include
         )
 
-#target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_11)
 
 target_link_libraries(${PROJECT_NAME}
-        ${Python_LIBRARIES}
-        boost_python310
         cudart
         stdc++fs
         m
+        boost_python310
+        ${Python_LIBRARIES}
         NLopt::nlopt
         )
+

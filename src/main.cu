@@ -212,7 +212,7 @@ __global__ void get_all_g_kernel(int nr, int nz, int ntheta, int nr_sampling, in
         double thisres = 0.0;
         // Loop over all r and z points in the grid
         for (int ir = 0; ir < nr; ir++) {
-            if (radial & (grid_data[ir] > r_sampling[i])) {
+            if (radial && (grid_data[ir] > r_sampling[i])) {
                 break;
             }
             for (int iz = 0; iz < nz; iz++) {
@@ -229,8 +229,9 @@ __global__ void get_all_g_kernel(int nr, int nz, int ntheta, int nr_sampling, in
                         res += thisres;
 //                        thisres = G * rho[i] * r[i] * dv0[i] * (r_sampling_ii - r[i] * sintheta[k]) / pow(d, 1.5);
                     } else {
-                        res += G * grid_data[2*nr+nz+2*ntheta+ir] * grid_data[ir] * grid_data[nr + nz + 2 * ntheta + ir] *
-                               (z_sampling[j] - grid_data[nr + iz])/ pow(d, 1.5);
+                        thisres = G * grid_data[2*nr+nz+2*ntheta+ir] * grid_data[ir] * grid_data[nr + nz + 2 * ntheta + ir] *
+                               ( grid_data[nr + iz]- z_sampling[j])/ pow(d, 1.5);
+                        res += thisres;
 //                        thisres = G * rho[i] * r[i] * dv0[i] * (z[j] - z_sampling_jj) / pow(d, 1.5);
                     }
                     if(debug){
@@ -303,9 +304,10 @@ std::vector<double> get_all_g_impl_cuda(double G, const std::vector<double> &dv0
 
 
     // Launch kernel
+    bool debug1 = true;
     get_all_g_kernel<<<num_blocks, block_size>>>(nr, nz,ntheta, nr_sampling, nz_sampling, G,
                                                  dev_r_sampling, dev_z_sampling, dev_grid_data,
-                                                 radial, dev_f_z, debug);
+                                                 radial, dev_f_z, debug1);
     // Copy results back to host
     std::vector<double> f_z_vec(nr_sampling * nz_sampling);
     cudaMemcpy(f_z_vec.data(), dev_f_z, nr_sampling * nz_sampling * sizeof(double), cudaMemcpyDeviceToHost);
@@ -639,9 +641,9 @@ int main() {
     std::vector<std::array<double, 2>> m33_rotational_curve = {
 //            {0.0f,       0.0f},
 //            {1508.7187f, 38.674137f},
-            {2873.3889f, 55.65067f},
+//            {2873.3889f, 55.65067f},
 //            {4116.755f,  67.91063f},
-//            {5451.099f,  79.22689f},
+            {5451.099f,  79.22689f},
 //            {6846.0957f, 85.01734f},
 //            {8089.462f,  88.38242f},
 //            {9393.48f,   92.42116f},
@@ -692,7 +694,7 @@ int main() {
 //    std::vector<double> xout = {22.0752, 0.00049759, 0.122031, 1.71929e-05, 125235};
 //    xout = M33.nelder_mead(x0);
 //    print(xout);
-    bool radial = true;
+    bool radial = false;
     bool cuda = false;
     f_z = M33.get_f_z(x0, radial, cuda);
     print(f_z);

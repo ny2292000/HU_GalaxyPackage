@@ -22,6 +22,10 @@
 #include <future>
 #include <nlopt.hpp>
 #include <string>
+#define MAX_GRID_DATA_SIZE 800
+
+
+__constant__ double const_grid_data[MAX_GRID_DATA_SIZE];
 
 double pi = 3.141592653589793;
 
@@ -171,13 +175,21 @@ void deleteCUDAVector(double *x_vector_device) {
 }
 
 std::pair<dim3, dim3> get_block_size(int n_i, int n_j, int threads_per_block) {
-    int n = n_i * n_j;
     int blocks_per_grid_x = (n_j + threads_per_block - 1) / threads_per_block;
     int blocks_per_grid_y = (n_i + threads_per_block - 1) / threads_per_block;
     dim3 block_size(threads_per_block, threads_per_block, 1);
     dim3 num_blocks(blocks_per_grid_x, blocks_per_grid_y, 1);
     return std::make_pair(num_blocks, block_size);
 }
+
+//std::pair<dim3, dim3> get_block_size3(int n_i, int n_j, int n_k, int threads_per_block) {
+//    int blocks_per_grid_x = (n_j + threads_per_block - 1) / threads_per_block;
+//    int blocks_per_grid_y = (n_i + threads_per_block - 1) / threads_per_block;
+//    int blocks_per_grid_z = (n_k + threads_per_block - 1) / threads_per_block;
+//    dim3 block_size(threads_per_block, threads_per_block, threads_per_block);
+//    dim3 num_blocks(blocks_per_grid_x, blocks_per_grid_y, threads_per_block);
+//    return std::make_pair(num_blocks, block_size);
+//}
 
 
 void check_device_memory_allocation(const void *device_pointer, const std::string &name) {
@@ -194,7 +206,84 @@ void check_device_memory_allocation(const void *device_pointer, const std::strin
 // CUDA kernel to compute the gravitational acceleration f_z
 // for points in r_sampling and z_sampling
 __global__ void get_all_g_kernel(int nr, int nz, int ntheta, int nr_sampling, int nz_sampling, double G,
-                                 const double *grid_data,
+                                 bool radial, double *f_z, bool debug) {
+
+    // Get the indices of the point in r and z for this thread
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    int j = blockIdx.y * blockDim.y + threadIdx.y;
+
+    if (i < nr_sampling && j < nz_sampling) {
+        int idx = i + j * nr_sampling;
+        // Initialize the result variable for this thread
+        double res = 0.0;
+        double thisres = 0.0;
+        // Loop over all r and z points in the grid
+        for (int ir = 0; ir < nr; ir++) {
+            double r_ir = const_grid_data[ir];
+            double dv0_ir = const_grid_data[nr + nz + 2 * ntheta + ir];
+            double rho_ir = const_grid_data[2 * nr + nz + 2 * ntheta + ir];
+            if (radial && (r_ir > const_grid_data[3 * nr + nz + 2 * ntheta + i])) {
+                break;
+            }
+            for (int iz = 0; iz < nz; iz++) {
+                double z_iz = const_grid_data[nr + iz];
+                for (int k = 0; k < ntheta; k++) {
+                    double costheta_k = const_grid_data[nr + nz + k];
+                    double sintheta_k = const_grid_data[nr + nz + ntheta + k];
+                    double r_sampling_i = const_grid_data[3 * nr + nz + 2 * ntheta + i];
+                    double z_sampling_j = const_grid_data[3 * nr + nr_sampling + nz + 2 * ntheta + j];
+
+                    // Compute the distance between the sampling point and the point in r and z for this thread
+                    double d_2 = (z_iz - z_sampling_j) * (z_iz - z_sampling_j) +
+                               (r_sampling_i - r_ir * sintheta_k) * (r_sampling_i - r_ir * sintheta_k) +
+                               r_ir * r_ir * costheta_k * costheta_k;
+                    double d_1 = sqrt(d_2);
+                    double d_3 = d_1 * d_1 * d_1;
+
+                    //                    d = pow(z[j] - z_sampling_jj, 2.0) + pow(r_sampling_ii - r[i] * sintheta[k], 2.0) +
+//                        r[i] * r[i] * costheta[k] * costheta[k];
+                    if (radial) {
+                        thisres= G * rho_ir * r_ir * dv0_ir *(r_sampling_i - r_ir * sintheta_k)/d_3;
+//                        thisres = G * rho[i] * r[i] * dv0[i] * (r_sampling_ii - r[i] * sintheta[k]) / pow(d, 1.5);
+                    } else {
+                        thisres = G * rho_ir * r_ir * dv0_ir *(z_iz - z_sampling_j )/d_3;;
+                        res += thisres;
+//                        thisres = G * rho[i] * r[i] * dv0[i] * (z[j] - z_sampling_jj) / pow(d, 1.5);
+                    }
+                    if(debug){
+                        if (ir==5 && iz==5 && k == 5) {
+//                            std::vector<double> shared_data(r);
+//                            shared_data.insert(shared_data.end(), z.begin(), z.end());
+//                            shared_data.insert(shared_data.end(), costheta.begin(), costheta.end());
+//                            shared_data.insert(shared_data.end(), sintheta.begin(), sintheta.end());
+//                            shared_data.insert(shared_data.end(), dv0.begin(), dv0.end());
+//                            shared_data.insert(shared_data.end(), rho.begin(), rho.end());
+//                            shared_data.insert(shared_data.end(), r_sampling.begin(), r_sampling.end());
+//                            shared_data.insert(shared_data.end(), z_sampling.begin(), z_sampling.end());
+                            printf("GPU \n");
+                            printf("The value of f_z is %e\n", thisres);
+                            printf("The value of distance is %fd\n", d_1);
+                            printf("The value of r[i] is %fd\n", r_ir);
+                            printf("The value of z[j] is %fd\n", z_iz);
+                            printf("The value of costheta is %fd\n", costheta_k);
+                            printf("The value of sintheta is %fd\n", sintheta_k);
+                            printf("The value of dv0 is %fd\n", dv0_ir);
+                            printf("The value of rho is %e\n", rho_ir);
+                            printf("The value of rsampling is %fd\n", r_sampling_i);
+                            printf("The value of zsampling is %fd\n", z_sampling_j);
+                            printf("The value of G is %e\n", G);
+                        }
+                    }
+
+                }
+            }
+        }
+        // Store the result variable for this thread in the output array
+        f_z[idx] = res;
+    }
+}
+
+__global__ void get_all_g_kernelold(int nr, int nz, int ntheta, int nr_sampling, int nz_sampling, double G,
                                  bool radial, double *f_z, bool debug) {
 
     // Get the indices of the point in r and z for this thread
@@ -204,6 +293,12 @@ __global__ void get_all_g_kernel(int nr, int nz, int ntheta, int nr_sampling, in
     // Use shared memory for caching intermediate results
     extern __shared__ double shared_data[];
 
+    // Load grid_data into shared memory
+    for (int idx = threadIdx.x; idx < (3 * nr + 2 * nz + 3 * ntheta + nr_sampling + nz_sampling); idx += blockDim.x) {
+        shared_data[idx] = const_grid_data[idx];
+    }
+    __syncthreads();
+
     if (i < nr_sampling && j < nz_sampling) {
         int idx = i + j * nr_sampling;
         // Initialize the result variable for this thread
@@ -211,49 +306,49 @@ __global__ void get_all_g_kernel(int nr, int nz, int ntheta, int nr_sampling, in
         double thisres = 0.0;
         // Loop over all r and z points in the grid
         for (int ir = 0; ir < nr; ir++) {
-            if (radial && (grid_data[ir] > grid_data[3*nr + nz + 2*ntheta + i])) {
+            if (radial && (shared_data[ir] > shared_data[3*nr + nz + 2*ntheta + i])) {
                 break;
             }
             for (int iz = 0; iz < nz; iz++) {
                 for (int k = 0; k < ntheta; k++) {
                     // Compute the distance between the sampling point and the point in r and z for this thread
-                    double d = pow(grid_data[3*nr + nr_sampling + nz + 2*ntheta + j] - grid_data[nr + iz], 2.0) +
-                               pow(grid_data[3*nr + nz + 2*ntheta + i] - grid_data[ir] * grid_data[nr + nz + ntheta + k], 2.0) +
-                               pow(grid_data[ir] * grid_data[nr + nz + k], 2.0);
+                    double d = pow(shared_data[3*nr + nr_sampling + nz + 2*ntheta + j] - shared_data[nr + iz], 2.0) +
+                               pow(shared_data[3*nr + nz + 2*ntheta + i] - shared_data[ir] * shared_data[nr + nz + ntheta + k], 2.0) +
+                               pow(shared_data[ir] * shared_data[nr + nz + k], 2.0);
 //                    d = pow(z[j] - z_sampling_jj, 2.0) + pow(r_sampling_ii - r[i] * sintheta[k], 2.0) +
 //                        r[i] * r[i] * costheta[k] * costheta[k];
                     if (radial) {
-                        thisres= G * grid_data[2*nr+nz+2*ntheta+ir] * grid_data[ir] * grid_data[nr + nz + 2*ntheta + ir] *
-                               (grid_data[3*nr + nz + 2*ntheta + i] - grid_data[ir] * grid_data[nr + nz + ntheta + k]) / pow(d, 1.5);
+                        thisres= G * shared_data[2*nr+nz+2*ntheta+ir] * shared_data[ir] * shared_data[nr + nz + 2*ntheta + ir] *
+                               (shared_data[3*nr + nz + 2*ntheta + i] - shared_data[ir] * shared_data[nr + nz + ntheta + k]) / pow(d, 1.5);
                         res += thisres;
 //                        thisres = G * rho[i] * r[i] * dv0[i] * (r_sampling_ii - r[i] * sintheta[k]) / pow(d, 1.5);
                     } else {
-                        thisres = G * grid_data[3*nr+nz+2*ntheta+ir] * grid_data[ir] * grid_data[nr + nz + 2 * ntheta + ir] *
-                               ( grid_data[nr + iz]- grid_data[3*nr + nr_sampling + nz + 2*ntheta + j])/ pow(d, 1.5);
+                        thisres = G * shared_data[3*nr+nz+2*ntheta+ir] * shared_data[ir] * shared_data[nr + nz + 2 * ntheta + ir] *
+                               ( shared_data[nr + iz]- shared_data[3*nr + nr_sampling + nz + 2*ntheta + j])/ pow(d, 1.5);
                         res += thisres;
 //                        thisres = G * rho[i] * r[i] * dv0[i] * (z[j] - z_sampling_jj) / pow(d, 1.5);
                     }
                     if(debug){
                         if (ir==5 && iz==5 && k == 5) {
-//                            std::vector<double> grid_data(r);
-//                            grid_data.insert(grid_data.end(), z.begin(), z.end());
-//                            grid_data.insert(grid_data.end(), costheta.begin(), costheta.end());
-//                            grid_data.insert(grid_data.end(), sintheta.begin(), sintheta.end());
-//                            grid_data.insert(grid_data.end(), dv0.begin(), dv0.end());
-//                            grid_data.insert(grid_data.end(), rho.begin(), rho.end());
-//                            grid_data.insert(grid_data.end(), r_sampling.begin(), r_sampling.end());
-//                            grid_data.insert(grid_data.end(), z_sampling.begin(), z_sampling.end());
+//                            std::vector<double> shared_data(r);
+//                            shared_data.insert(shared_data.end(), z.begin(), z.end());
+//                            shared_data.insert(shared_data.end(), costheta.begin(), costheta.end());
+//                            shared_data.insert(shared_data.end(), sintheta.begin(), sintheta.end());
+//                            shared_data.insert(shared_data.end(), dv0.begin(), dv0.end());
+//                            shared_data.insert(shared_data.end(), rho.begin(), rho.end());
+//                            shared_data.insert(shared_data.end(), r_sampling.begin(), r_sampling.end());
+//                            shared_data.insert(shared_data.end(), z_sampling.begin(), z_sampling.end());
                             printf("GPU \n");
                             printf("The value of f_z is %e\n", thisres);
                             printf("The value of distance is %fd\n", sqrt(d));
-                            printf("The value of r[i] is %fd\n", grid_data[ir]);
-                            printf("The value of z[j] is %fd\n", grid_data[nr + iz]);
-                            printf("The value of costheta is %fd\n", grid_data[nr + nz + k]);
-                            printf("The value of sintheta is %fd\n", grid_data[nr + nz + ntheta + k]);
-                            printf("The value of dv0 is %fd\n", grid_data[nr + nz + 2*ntheta + ir]);
-                            printf("The value of rho is %e\n", grid_data[2*nr+nz+2*ntheta+ir]);
-                            printf("The value of rsampling is %fd\n", grid_data[3*nr + nz + 2*ntheta + i]);
-                            printf("The value of zsampling is %fd\n", grid_data[3*nr + nr_sampling + nz + 2*ntheta + j]);
+                            printf("The value of r[i] is %fd\n", shared_data[ir]);
+                            printf("The value of z[j] is %fd\n", shared_data[nr + iz]);
+                            printf("The value of costheta is %fd\n", shared_data[nr + nz + k]);
+                            printf("The value of sintheta is %fd\n", shared_data[nr + nz + ntheta + k]);
+                            printf("The value of dv0 is %fd\n", shared_data[nr + nz + 2*ntheta + ir]);
+                            printf("The value of rho is %e\n", shared_data[2*nr+nz+2*ntheta+ir]);
+                            printf("The value of rsampling is %fd\n", shared_data[3*nr + nz + 2*ntheta + i]);
+                            printf("The value of zsampling is %fd\n", shared_data[3*nr + nr_sampling + nz + 2*ntheta + j]);
                             printf("The value of G is %e\n", G);
                         }
                     }
@@ -281,16 +376,24 @@ std::vector<double> get_all_g_impl_cuda(double G, const std::vector<double> &dv0
     grid_data.insert(grid_data.end(), rho.begin(), rho.end());
     grid_data.insert(grid_data.end(), r_sampling.begin(), r_sampling.end());
     grid_data.insert(grid_data.end(), z_sampling.begin(), z_sampling.end());
+
+    if (grid_data.size() > MAX_GRID_DATA_SIZE) {
+        // Handle error, e.g., return an empty vector or throw an exception
+        return std::vector<double>();
+    }
+
     int nr_sampling = r_sampling.size();
     int nz_sampling = z_sampling.size();
     int nr = r.size();
     int nz = z.size();
 
+    // Copy grid_data to const_grid_data
+    cudaMemcpyToSymbol(const_grid_data, grid_data.data(), grid_data.size() * sizeof(double));
 
 
     // Allocate and copy device memory
     double *f_z = new double(nr_sampling * nz_sampling);
-    double *dev_grid_data = createCUDAVector(grid_data);
+//    double *dev_grid_data = createCUDAVector(grid_data);
 //    double *dev_rho = createCUDAVector(rho);
     double *dev_f_z = createCUDAVector(f_z, nr_sampling * nz_sampling);
 //    double *dev_dv0 = createCUDAVector(dv0);
@@ -301,7 +404,6 @@ std::vector<double> get_all_g_impl_cuda(double G, const std::vector<double> &dv0
     // Get the block size for the tensor product kernel
     int ntheta = costheta.size();
     int threads_per_block = 32;
-//    std::pair<dim3, dim3> block_info = get_block_size(nr * nz * ntheta, threads_per_block);
     std::pair<dim3, dim3> block_info = get_block_size(nr_sampling * nz_sampling, threads_per_block);
     dim3 num_blocks = block_info.first;
     dim3 block_size = block_info.second;
@@ -309,7 +411,6 @@ std::vector<double> get_all_g_impl_cuda(double G, const std::vector<double> &dv0
 
     // Launch kernel
     get_all_g_kernel<<<num_blocks, block_size>>>(nr, nz,ntheta, nr_sampling, nz_sampling, G,
-                                                 dev_grid_data,
                                                  radial, dev_f_z, debug);
     // Copy results back to host
     std::vector<double> f_z_vec(nr_sampling * nz_sampling);
@@ -317,7 +418,6 @@ std::vector<double> get_all_g_impl_cuda(double G, const std::vector<double> &dv0
 
 
     // Free device memory
-    cudaFree(dev_grid_data);
     cudaFree(dev_f_z);
 
     // Return result
@@ -645,27 +745,27 @@ public:             // Access specifier
 
 int main() {
     std::vector<std::array<double, 2>> m33_rotational_curve = {
-            {0.0f,       0.0f},
-            {1508.7187f, 38.674137f},
-            {2873.3889f, 55.65067f},
-            {4116.755f,  67.91063f},
-            {5451.099f,  79.22689f},
-            {6846.0957f, 85.01734f},
+//            {0.0f,       0.0f},
+//            {1508.7187f, 38.674137f},
+//            {2873.3889f, 55.65067f},
+//            {4116.755f,  67.91063f},
+//            {5451.099f,  79.22689f},
+//            {6846.0957f, 85.01734f},
             {8089.462f,  88.38242f},
-            {9393.48f,   92.42116f},
-            {10727.824f, 95.11208f},
-            {11880.212f, 98.342697f},
-            {13275.208f, 99.82048f},
-            {14609.553f, 102.10709f},
-            {18521.607f, 104.25024f},
-            {22403.336f, 107.60643f},
-            {26406.369f, 115.40966f},
-            {30379.076f, 116.87875f},
-            {34382.107f, 116.05664f},
-            {38354.813f, 117.93005f},
-            {42266.87f, 121.42091f},
-            {46300.227f, 128.55017f},
-            {50212.285f, 132.84966f}
+//            {9393.48f,   92.42116f},
+//            {10727.824f, 95.11208f},
+//            {11880.212f, 98.342697f},
+//            {13275.208f, 99.82048f},
+//            {14609.553f, 102.10709f},
+//            {18521.607f, 104.25024f},
+//            {22403.336f, 107.60643f},
+//            {26406.369f, 115.40966f},
+//            {30379.076f, 116.87875f},
+//            {34382.107f, 116.05664f},
+//            {38354.813f, 117.93005f},
+//            {42266.87f, 121.42091f},
+//            {46300.227f, 128.55017f},
+//            {50212.285f, 132.84966f}
     };
 
 
@@ -702,7 +802,7 @@ int main() {
 //    print(xout);
     bool radial = true;
     bool cuda = false;
-    bool debug = false;
+    bool debug = true;
     auto start = std::chrono::high_resolution_clock::now();
     f_z = M33.get_f_z(x0, debug, radial, cuda);
     auto stop = std::chrono::high_resolution_clock::now();

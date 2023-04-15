@@ -193,47 +193,6 @@ std::pair<dim3, dim3> get_block_size(int n_i, int n_j, int threads_per_block) {
 }
 
 
-// CUDA kernel to compute the gravitational acceleration f_z
-// for all points in r and z
-__global__ void get_all_g_kernel(int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double G,
-                                 const double *dv0, const double *r_sampling, const double *z_sampling,
-                                 const double *grid_data, const double *rho, bool radial, double *f_z) {
-
-    // Get the indices of the point in r, z, and theta for this thread
-    int i = blockIdx.x * blockDim.x + threadIdx.x;
-    int j = blockIdx.y * blockDim.y + threadIdx.y;
-    int k = blockIdx.z * blockDim.z + threadIdx.z;
-
-    // Use shared memory for caching intermediate results
-    extern __shared__ double shared_data[];
-
-    if (i < nr && j < nz && k < ntheta) {
-        int idx = k + j * ntheta + i * nz * ntheta;
-        // Initialize the result variable for this thread
-        double res = 0.0;
-        // Loop over all r and z points in the sampling vectors
-        for (int ir = 0; ir < nr_sampling; ir++) {
-            for (int iz = 0; iz < nz_sampling; iz++) {
-                // Compute the distance between the sampling point and the point in r, z, and theta for this thread
-                double d = pow(z_sampling[iz] - grid_data[nz + j], 2.0) +
-                           pow(r_sampling[ir] - grid_data[i], 2.0) +
-                           pow(grid_data[nr + nz + k] - grid_data[nr + j], 2.0);
-                // Compute the contribution to the result variable for this thread from this sampling point
-                if (radial) {
-                    res += G * rho[ir] * grid_data[i] * dv0[ir] *
-                           (r_sampling[ir] - grid_data[i]) / pow(d, 1.5);
-                } else {
-                    res += G * rho[ir] * grid_data[i] * dv0[ir] * (z_sampling[iz] - grid_data[nz + j]) /
-                           pow(d, 1.5);
-                }
-            }
-        }
-        // Store the result variable for this thread in the output array
-        f_z[idx] = res;
-    }
-}
-
-
 void check_device_memory_allocation(const void *device_pointer, const std::string &name) {
     cudaError_t error = cudaGetLastError();
     if (error != cudaSuccess) {
@@ -243,6 +202,84 @@ void check_device_memory_allocation(const void *device_pointer, const std::strin
         std::cout << "Allocated memory on device for " << name << std::endl;
     }
 }
+
+
+// CUDA kernel to compute the gravitational acceleration f_z
+// for all points in r and z
+//__global__ void get_all_g_kernel(int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double G,
+//                                 const double *dv0, const double *r_sampling, const double *z_sampling,
+//                                 const double *grid_data, const double *rho, bool radial, double *f_z) {
+//
+//    // Get the indices of the point in r, z, and theta for this thread
+//    int i = blockIdx.x * blockDim.x + threadIdx.x;
+//    int j = blockIdx.y * blockDim.y + threadIdx.y;
+//    int k = blockIdx.z * blockDim.z + threadIdx.z;
+//
+//    // Use shared memory for caching intermediate results
+//    extern __shared__ double shared_data[];
+//
+//    if (i < nr && j < nz && k < ntheta) {
+//        int idx = k + j * ntheta + i * nz * ntheta;
+//        // Initialize the result variable for this thread
+//        double res = 0.0;
+//        // Loop over all r and z points in the sampling vectors
+//        for (int ir = 0; ir < nr_sampling; ir++) {
+//            for (int iz = 0; iz < nz_sampling; iz++) {
+//                // Compute the distance between the sampling point and the point in r, z, and theta for this thread
+//                double d = pow(z_sampling[iz] - grid_data[nz + j], 2.0) +
+//                           pow(r_sampling[ir] - grid_data[i], 2.0) +
+//                           pow(grid_data[nr + nz + k] - grid_data[nr + j], 2.0);
+//                // Compute the contribution to the result variable for this thread from this sampling point
+//                if (radial) {
+//                    res += G * rho[ir] * grid_data[i] * dv0[ir] *
+//                           (r_sampling[ir] - grid_data[i]) / pow(d, 1.5);
+//                } else {
+//                    res += G * rho[ir] * grid_data[i] * dv0[ir] * (z_sampling[iz] - grid_data[nz + j]) /
+//                           pow(d, 1.5);
+//                }
+//            }
+//        }
+//        // Store the result variable for this thread in the output array
+//        f_z[idx] = res;
+//    }
+//}
+
+// CUDA kernel to compute the gravitational acceleration f_z
+// for points in r_sampling and z_sampling
+__global__ void get_all_g_kernel(int nr, int nz, int nr_sampling, int nz_sampling, double G, double *dv0,
+                                 const double *r_sampling, const double *z_sampling,
+                                 const double *grid_data, const double *rho,
+                                 bool radial, double *f_z) {
+
+    // Get the indices of the point in r_sampling and z_sampling for this thread
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    int j = blockIdx.y * blockDim.y + threadIdx.y;
+
+    if (i < nr_sampling && j < nz_sampling) {
+        int idx = j + i * nz_sampling;
+        // Initialize the result variable for this thread
+        double res = 0.0;
+        // Loop over all r and z points
+        for (int ir = 0; ir < nr; ir++) {
+            for (int iz = 0; iz < nz; iz++) {
+                // Compute the distance between the sampling point and the point in r and z for this thread
+                double d = pow(z_sampling[j] - grid_data[nz + iz], 2.0) +
+                           pow(r_sampling[i] - grid_data[ir], 2.0);
+                // Compute the contribution to the result variable for this thread from this point
+                if (radial) {
+                    res += G * rho[ir] * grid_data[ir] * dv0[ir] *
+                           (r_sampling[i] - grid_data[ir]) / pow(d, 1.5);
+                } else {
+                    res += G * rho[ir] * grid_data[ir] * dv0[ir] * (z_sampling[j] - grid_data[nz + iz]) /
+                           pow(d, 1.5);
+                }
+            }
+        }
+        // Store the result variable for this thread in the output array
+        f_z[idx] = res;
+    }
+}
+
 
 
 std::vector<double> get_all_g_impl_cuda(double G, const std::vector<double> &dv0, const std::vector<double> &r_sampling,
@@ -278,17 +315,17 @@ std::vector<double> get_all_g_impl_cuda(double G, const std::vector<double> &dv0
     // Get the block size for the tensor product kernel
     int ntheta = costheta.size();
     int threads_per_block = 32;
-    std::pair<dim3, dim3> block_info = get_block_size(nr * nz * ntheta, threads_per_block);
+//    std::pair<dim3, dim3> block_info = get_block_size(nr * nz * ntheta, threads_per_block);
+    std::pair<dim3, dim3> block_info = get_block_size(nr_sampling * nz_sampling, threads_per_block);
     dim3 num_blocks = block_info.first;
     dim3 block_size = block_info.second;
 
 
     // Launch kernel
-    get_all_g_kernel<<<num_blocks, block_size>>>(nr, nz, nr_sampling, nz_sampling, ntheta, G, dev_dv0,
+    get_all_g_kernel<<<num_blocks, block_size>>>(nr, nz, nr_sampling, nz_sampling, G, dev_dv0,
                                                     dev_r_sampling, dev_z_sampling, dev_grid_data, dev_rho,
                                                     radial, dev_f_z);
     // Copy results back to host
-//    cudaMemcpy(f_z, dev_f_z, nr_sampling * nz_sampling  * sizeof(double), cudaMemcpyDeviceToHost);
     std::vector<double> f_z_vec(nr_sampling * nz_sampling);
     cudaMemcpy(f_z_vec.data(), dev_f_z, nr_sampling * nz_sampling * sizeof(double), cudaMemcpyDeviceToHost);
 

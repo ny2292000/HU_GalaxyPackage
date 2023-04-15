@@ -21,20 +21,18 @@
 #include <iostream>
 #include <future>
 #include <nlopt.hpp>
-#include <cuda_runtime.h>
-#include <cmath>
 #include <string>
-#include <sstream>
-#include <iostream>
-#include<vector>
 
 double pi = 3.141592653589793;
+bool debug = true;
+
 
 void print(const std::vector<double> a) {
     std::cout << "The vector elements are : ";
     for (int i = 0; i < a.size(); i++)
-        std::cout << a.at(i) << '\n';
+        std::cout << std::scientific << a.at(i) << '\n';
 }
+
 
 void deleteCUDAVector(double *x_vector_host, double *x_vector_device) {
     delete[] x_vector_host;
@@ -142,21 +140,10 @@ std::vector<double> zeros(int size) {
     return std::vector<double>(size, 0.0);
 }
 
-//__global__ void tensorial_product_kernel(double* v_i, double* v_j, int n_i, int n_j, double *v_ij) {
-//    int i = blockIdx.x * blockDim.x + threadIdx.x;
-//    int j = blockIdx.y * blockDim.y + threadIdx.y;
-//
-//    if (i < n_i && j < n_j) {
-//        int index = j  + i*n_j;
-//        v_ij[index] = v_i[i] * v_j[j];
-//        printf("The value of x is %f\n", v_ij[index]);
-//    }
-//}
 
-
-double* createCUDAVector(const double* hostPointer, int n) {
-    double* devicePointer;
-    cudaMalloc((void**)&devicePointer, n * sizeof(double));
+double *createCUDAVector(const double *hostPointer, int n) {
+    double *devicePointer;
+    cudaMalloc((void **) &devicePointer, n * sizeof(double));
     cudaMemcpy(devicePointer, hostPointer, n * sizeof(double), cudaMemcpyHostToDevice);
     cudaError_t error = cudaGetLastError();
     if (error != cudaSuccess) {
@@ -166,9 +153,9 @@ double* createCUDAVector(const double* hostPointer, int n) {
     return devicePointer;
 }
 
-double* createCUDAVector(const std::vector<double>& hostVector) {
-    double* devicePointer;
-    cudaMalloc((void**)&devicePointer, hostVector.size() * sizeof(double));
+double *createCUDAVector(const std::vector<double> &hostVector) {
+    double *devicePointer;
+    cudaMalloc((void **) &devicePointer, hostVector.size() * sizeof(double));
     cudaMemcpy(devicePointer, hostVector.data(), hostVector.size() * sizeof(double), cudaMemcpyHostToDevice);
     cudaError_t error = cudaGetLastError();
     if (error != cudaSuccess) {
@@ -179,7 +166,7 @@ double* createCUDAVector(const std::vector<double>& hostVector) {
 }
 
 
-void deleteCUDAVector(double * x_vector_device){
+void deleteCUDAVector(double *x_vector_device) {
     cudaFree(x_vector_device);
 }
 
@@ -205,89 +192,82 @@ void check_device_memory_allocation(const void *device_pointer, const std::strin
 
 
 // CUDA kernel to compute the gravitational acceleration f_z
-// for all points in r and z
-//__global__ void get_all_g_kernel(int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double G,
-//                                 const double *dv0, const double *r_sampling, const double *z_sampling,
-//                                 const double *grid_data, const double *rho, bool radial, double *f_z) {
-//
-//    // Get the indices of the point in r, z, and theta for this thread
-//    int i = blockIdx.x * blockDim.x + threadIdx.x;
-//    int j = blockIdx.y * blockDim.y + threadIdx.y;
-//    int k = blockIdx.z * blockDim.z + threadIdx.z;
-//
-//    // Use shared memory for caching intermediate results
-//    extern __shared__ double shared_data[];
-//
-//    if (i < nr && j < nz && k < ntheta) {
-//        int idx = k + j * ntheta + i * nz * ntheta;
-//        // Initialize the result variable for this thread
-//        double res = 0.0;
-//        // Loop over all r and z points in the sampling vectors
-//        for (int ir = 0; ir < nr_sampling; ir++) {
-//            for (int iz = 0; iz < nz_sampling; iz++) {
-//                // Compute the distance between the sampling point and the point in r, z, and theta for this thread
-//                double d = pow(z_sampling[iz] - grid_data[nz + j], 2.0) +
-//                           pow(r_sampling[ir] - grid_data[i], 2.0) +
-//                           pow(grid_data[nr + nz + k] - grid_data[nr + j], 2.0);
-//                // Compute the contribution to the result variable for this thread from this sampling point
-//                if (radial) {
-//                    res += G * rho[ir] * grid_data[i] * dv0[ir] *
-//                           (r_sampling[ir] - grid_data[i]) / pow(d, 1.5);
-//                } else {
-//                    res += G * rho[ir] * grid_data[i] * dv0[ir] * (z_sampling[iz] - grid_data[nz + j]) /
-//                           pow(d, 1.5);
-//                }
-//            }
-//        }
-//        // Store the result variable for this thread in the output array
-//        f_z[idx] = res;
-//    }
-//}
-
-// CUDA kernel to compute the gravitational acceleration f_z
 // for points in r_sampling and z_sampling
-__global__ void get_all_g_kernel(int nr, int nz, int nr_sampling, int nz_sampling, double G, double *dv0,
+__global__ void get_all_g_kernel(int nr, int nz, int ntheta, int nr_sampling, int nz_sampling, double G,
                                  const double *r_sampling, const double *z_sampling,
-                                 const double *grid_data, const double *rho,
-                                 bool radial, double *f_z) {
+                                 const double *grid_data,
+                                 bool radial, double *f_z, bool debug=false) {
 
-    // Get the indices of the point in r_sampling and z_sampling for this thread
+    // Get the indices of the point in r and z for this thread
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     int j = blockIdx.y * blockDim.y + threadIdx.y;
+
+    // Use shared memory for caching intermediate results
+    extern __shared__ double shared_data[];
 
     if (i < nr_sampling && j < nz_sampling) {
         int idx = j + i * nz_sampling;
         // Initialize the result variable for this thread
         double res = 0.0;
-        // Loop over all r and z points
+        double thisres = 0.0;
+        // Loop over all r and z points in the grid
         for (int ir = 0; ir < nr; ir++) {
+            if (radial & (grid_data[ir] > r_sampling[i])) {
+                break;
+            }
             for (int iz = 0; iz < nz; iz++) {
-                // Compute the distance between the sampling point and the point in r and z for this thread
-                double d = pow(z_sampling[j] - grid_data[nz + iz], 2.0) +
-                           pow(r_sampling[i] - grid_data[ir], 2.0);
-                // Compute the contribution to the result variable for this thread from this point
-                if (radial) {
-                    res += G * rho[ir] * grid_data[ir] * dv0[ir] *
-                           (r_sampling[i] - grid_data[ir]) / pow(d, 1.5);
-                } else {
-                    res += G * rho[ir] * grid_data[ir] * dv0[ir] * (z_sampling[j] - grid_data[nz + iz]) /
-                           pow(d, 1.5);
+                for (int k = 0; k < ntheta; k++) {
+                    // Compute the distance between the sampling point and the point in r and z for this thread
+                    double d = pow(z_sampling[j] - grid_data[nr + iz], 2.0) +
+                               pow(r_sampling[i] - grid_data[ir] * grid_data[nr + nz + ntheta + k], 2.0) +
+                               pow(grid_data[ir] * grid_data[nr + nz + k], 2.0);
+//                    d = pow(z[j] - z_sampling_jj, 2.0) + pow(r_sampling_ii - r[i] * sintheta[k], 2.0) +
+//                        r[i] * r[i] * costheta[k] * costheta[k];
+                    if (radial) {
+                        thisres= G * grid_data[2*nr+nz+2*ntheta+ir] * grid_data[ir] * grid_data[nr + nz + 2*ntheta + ir] *
+                               (r_sampling[i] - grid_data[ir] * grid_data[nr + nz + ntheta + k]) / pow(d, 1.5);
+                        res += thisres;
+//                        thisres = G * rho[i] * r[i] * dv0[i] * (r_sampling_ii - r[i] * sintheta[k]) / pow(d, 1.5);
+                    } else {
+                        res += G * grid_data[2*nr+nz+2*ntheta+ir] * grid_data[ir] * grid_data[nr + nz + 2 * ntheta + ir] *
+                               (z_sampling[j] - grid_data[nr + iz])/ pow(d, 1.5);
+//                        thisres = G * rho[i] * r[i] * dv0[i] * (z[j] - z_sampling_jj) / pow(d, 1.5);
+                    }
+                    if(debug){
+                        if (ir==5 && iz==5 && k == 5) {
+//                        std::vector<double> grid_data(r); grid[ir]
+//                        grid_data.insert(grid_data.end(), z.begin(), z.end()); grid[nr+iz]
+//                        grid_data.insert(grid_data.end(), costheta.begin(), costheta.end()); grid[nr+nz+k]
+//                        grid_data.insert(grid_data.end(), sintheta.begin(), sintheta.end());grid[nr+nz+ntheta+k]
+//                        grid_data.insert(grid_data.end(), dv0.begin(), dv0.end());grid[nr+nz+2*ntheta+ir]
+//                        grid_data.insert(grid_data.end(), rho.begin(), rho.end()); grid[2*nr+nz+2*ntheta+ir]
+                            printf("GPU \n");
+                            printf("The value of f_z is %e\n", thisres);
+                            printf("The value of distance is %fd\n", sqrt(d));
+                            printf("The value of dv0 is %fd\n", grid_data[nr + nz + 2*ntheta + ir]);
+                            printf("The value of costheta is %fd\n", grid_data[nr + nz + k]);
+                            printf("The value of sintheta is %fd\n", grid_data[nr + nz + ntheta + k]);
+                            printf("The value of rsampling is %fd\n", r_sampling[i]);
+                            printf("The value of zsampling is %fd\n", z_sampling[j]);
+                            printf("The value of rho is %e\n", grid_data[2*nr+nz+2*ntheta+ir]);
+                            printf("The value of G is %e\n", G);
+                        }
+                    }
                 }
             }
         }
+
         // Store the result variable for this thread in the output array
         f_z[idx] = res;
     }
 }
-
-
 
 std::vector<double> get_all_g_impl_cuda(double G, const std::vector<double> &dv0, const std::vector<double> &r_sampling,
                                         const std::vector<double> &z_sampling, const std::vector<double> &r,
                                         const std::vector<double> &z,
                                         const std::vector<double> &costheta, const std::vector<double> &sintheta,
                                         const std::vector<double> &rho,
-                                        bool radial = true) {
+                                        bool radial = true, bool debug=false) {
     int nr_sampling = r_sampling.size();
     int nz_sampling = z_sampling.size();
     int nr = r.size();
@@ -299,15 +279,16 @@ std::vector<double> get_all_g_impl_cuda(double G, const std::vector<double> &dv0
     grid_data.insert(grid_data.end(), costheta.begin(), costheta.end());
     grid_data.insert(grid_data.end(), sintheta.begin(), sintheta.end());
     grid_data.insert(grid_data.end(), dv0.begin(), dv0.end());
+    grid_data.insert(grid_data.end(), rho.begin(), rho.end());
 
     // Allocate and copy device memory
-    double *  f_z = new double(nr_sampling * nz_sampling);
+    double *f_z = new double(nr_sampling * nz_sampling);
     double *dev_r_sampling = createCUDAVector(r_sampling);
     double *dev_z_sampling = createCUDAVector(z_sampling);
     double *dev_grid_data = createCUDAVector(grid_data);
-    double *dev_rho = createCUDAVector(rho);
+//    double *dev_rho = createCUDAVector(rho);
     double *dev_f_z = createCUDAVector(f_z, nr_sampling * nz_sampling);
-    double *dev_dv0 = createCUDAVector(dv0);
+//    double *dev_dv0 = createCUDAVector(dv0);
 
 
 
@@ -322,9 +303,9 @@ std::vector<double> get_all_g_impl_cuda(double G, const std::vector<double> &dv0
 
 
     // Launch kernel
-    get_all_g_kernel<<<num_blocks, block_size>>>(nr, nz, nr_sampling, nz_sampling, G, dev_dv0,
-                                                    dev_r_sampling, dev_z_sampling, dev_grid_data, dev_rho,
-                                                    radial, dev_f_z);
+    get_all_g_kernel<<<num_blocks, block_size>>>(nr, nz,ntheta, nr_sampling, nz_sampling, G,
+                                                 dev_r_sampling, dev_z_sampling, dev_grid_data,
+                                                 radial, dev_f_z, debug);
     // Copy results back to host
     std::vector<double> f_z_vec(nr_sampling * nz_sampling);
     cudaMemcpy(f_z_vec.data(), dev_f_z, nr_sampling * nz_sampling * sizeof(double), cudaMemcpyDeviceToHost);
@@ -334,9 +315,9 @@ std::vector<double> get_all_g_impl_cuda(double G, const std::vector<double> &dv0
     cudaFree(dev_r_sampling);
     cudaFree(dev_z_sampling);
     cudaFree(dev_grid_data);
-    cudaFree(dev_rho);
+//    cudaFree(dev_rho);
     cudaFree(dev_f_z);
-    cudaFree(dev_dv0);
+//    cudaFree(dev_dv0);
 
     // Return result
     return f_z_vec;
@@ -349,11 +330,12 @@ get_g_cpu(double r_sampling_ii, double z_sampling_jj, double G, const std::vecto
           const std::vector<double> &r,
           const std::vector<double> &z,
           const std::vector<double> &costheta, const std::vector<double> &sintheta, const std::vector<double> &rho,
-          bool radial) {
+          bool radial, bool debug=false) {
     unsigned int nr = r.size();
     unsigned int nz = z.size();
     unsigned int ntheta = costheta.size();
     double res = 0.0;
+    double thisres = 0.0;
     for (unsigned int i = 0; i < nr; i++) {
         if (radial && (r[i] > r_sampling_ii)) {
             break;
@@ -363,11 +345,26 @@ get_g_cpu(double r_sampling_ii, double z_sampling_jj, double G, const std::vecto
                 double d = pow(z[j] - z_sampling_jj, 2.0) + pow(r_sampling_ii - r[i] * sintheta[k], 2.0) +
                            r[i] * r[i] * costheta[k] * costheta[k];
                 if (radial) {
-                    res += G * rho[i] * r[i] * dv0[i] * (r_sampling_ii - r[i] * sintheta[k]) / pow(d, 1.5);
+                    thisres = G * rho[i] * r[i] * dv0[i] * (r_sampling_ii - r[i] * sintheta[k]) / pow(d, 1.5);
+                    res += thisres;
                 } else {
-                    res += G * rho[i] * r[i] * dv0[i] * (z[j] - z_sampling_jj) / pow(d, 1.5);
+                    thisres = G * rho[i] * r[i] * dv0[i] * (z[j] - z_sampling_jj) / pow(d, 1.5);
+                    res += thisres;
                 }
-
+                if (debug) {
+                    if (i==5 && j==5 && k == 5){
+                        printf("CPU \n");
+                        printf("The value of f_z is %e\n", thisres);
+                        printf("The value of distance is %fd\n", sqrt(d));
+                        printf("The value of dv0 is %fd\n", dv0[i]);
+                        printf("The value of costheta is %fd\n", costheta[k]);
+                        printf("The value of sintheta is %fd\n", sintheta[k]);
+                        printf("The value of rsampling is %fd\n", r_sampling_ii);
+                        printf("The value of zsampling is %fd\n", z_sampling_jj);
+                        printf("The value of rho is %e\n", rho[i]);
+                        printf("The value of G is %e\n", G);
+                    }
+                }
             }
         }
     }
@@ -380,7 +377,7 @@ std::vector<double>
 get_all_g_impl_cpu(double G, const std::vector<double> &dv0, const std::vector<double> &r_sampling,
                    const std::vector<double> &z_sampling,
                    const std::vector<double> &r, const std::vector<double> &z, const std::vector<double> &costheta,
-                   const std::vector<double> &sintheta, const std::vector<double> &rho, bool radial = true) {
+                   const std::vector<double> &sintheta, const std::vector<double> &rho, bool radial = true, bool debug=false) {
     std::vector<std::future<double>> futures;
     int nr = r_sampling.size();
     int nz = z_sampling.size();
@@ -390,7 +387,7 @@ get_all_g_impl_cpu(double G, const std::vector<double> &dv0, const std::vector<d
     for (unsigned int i = 0; i < nr; i++) {
         for (unsigned int j = 0; j < nz; j++) {
             futures.emplace_back(
-                    std::async(get_g_cpu, r_sampling[i], z_sampling[j], G, dv0, r, z, costheta, sintheta, rho, radial));
+                    std::async(get_g_cpu, r_sampling[i], z_sampling[j], G, dv0, r, z, costheta, sintheta, rho, radial,debug));
         }
     }
 
@@ -415,10 +412,10 @@ get_all_g(double redshift, const std::vector<double> &dv0, const std::vector<dou
     double G = 7.456866768350099e-46 * (1 + redshift);
     if (device_count > 0 && cuda) {
         // If CUDA devices are available, use the CUDA implementation
-        return get_all_g_impl_cuda(G, dv0, r_sampling, z_sampling, r, z, costheta, sintheta, rho, radial);
+        return get_all_g_impl_cuda(G, dv0, r_sampling, z_sampling, r, z, costheta, sintheta, rho, radial, debug);
     } else {
         // If no CUDA devices are available, use the CPU implementation
-        return get_all_g_impl_cpu(G, dv0, r_sampling, z_sampling, r, z, costheta, sintheta, rho, radial);
+        return get_all_g_impl_cpu(G, dv0, r_sampling, z_sampling, r, z, costheta, sintheta, rho, radial, debug);
     }
 }
 
@@ -554,6 +551,10 @@ public:             // Access specifier
         for (int i = 1; i < nr; i++) {
             dv0.push_back((r[i] - r[i - 1]) * dz * dtheta);
         }
+        int dv0size = dv0.size();
+        if (dv0size != nr){
+            std::cout << "error on dv0";
+        }
     }
 
 
@@ -638,7 +639,7 @@ int main() {
     std::vector<std::array<double, 2>> m33_rotational_curve = {
 //            {0.0f,       0.0f},
 //            {1508.7187f, 38.674137f},
-//            {2873.3889f, 55.65067f},
+            {2873.3889f, 55.65067f},
 //            {4116.755f,  67.91063f},
 //            {5451.099f,  79.22689f},
 //            {6846.0957f, 85.01734f},
@@ -654,7 +655,7 @@ int main() {
 //            {30379.076f, 116.87875f},
 //            {34382.107f, 116.05664f},
 //            {38354.813f, 117.93005f},
-            {42266.87f, 121.42091f},
+//            {42266.87f, 121.42091f},
 //            {46300.227f, 128.55017f},
 //            {50212.285f, 132.84966f}
     };
@@ -664,8 +665,8 @@ int main() {
     const double Radius_Universe_4D = 14.03E9;
     double redshift = M33_Distance / (Radius_Universe_4D - M33_Distance);
     const int nr = 100;
-    const int nz = 101;
-    const int ntheta = 102;
+    const int nz = 100;
+    const int ntheta = 100;
     const int nr_sampling = 103;
     const int nz_sampling = 104;
     const double R_max = 50000.0;
@@ -691,12 +692,11 @@ int main() {
 //    std::vector<double> xout = {22.0752, 0.00049759, 0.122031, 1.71929e-05, 125235};
 //    xout = M33.nelder_mead(x0);
 //    print(xout);
-
     bool radial = true;
     bool cuda = false;
-    print(M33.get_f_z(x0, radial, cuda));
+    f_z = M33.get_f_z(x0, radial, cuda);
+    print(f_z);
     cuda = true;
     f_z = M33.get_f_z(x0, radial, cuda);
     print(f_z);
-
 }

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="CMakePresetLoader">{
+  &quot;useNewFormat&quot;: true
+}</component>
+  <component name="CMakeReloadState">
+    <option name="reloaded" value="true" />
+  </component>
+  <component name="CMakeRunConfigurationManager">
+    <generated>
+      <config projectName="MainProNonCUDA" targetName="TestGalaxy" />
+      <config projectName="MainProNonCUDA" targetName="libGalaxyLibNonCuda" />
+    </generated>
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" ENABLED="false" CONFIG_NAME="Debug" />
+      <configuration PROFILE_NAME="Release" ENABLED="true" CONFIG_NAME="Release" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="769725aa-a726-4b8d-9ad3-5599a4a8275f" name="Changes" comment="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package">
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CMakeListsFolder/CMakeListsCUDA.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CMakeListsFolder/CMakeListsLib.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CMakeListsFolder/CMakeListsProgNonCuda.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CMakeListsFolder/Working/BestSingleProg.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CMakeListsFolder/Working/CMakeListsMainProgSharedLibraryNonCUDA.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CMakeListsFolder/Working/CMakeLists_NonCUDA_Library.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CMakeListsMainProgSharedLibraryNonCUDA.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CMakeLists_NonCUDA_Library.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ChatGPT_Paper/ChatGPT_1" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ChatGPT_Paper/PaperOutline" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HU_Galaxy/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PriorVersions/mainSaveMe.cu" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/include/Galaxy.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/include/lib0.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/include/libCPU.cu" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/include/libCUDA.cu" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/liblibGalaxyLibNonCuda.so" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Galaxy.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/TestGalaxy.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/lib0.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/CMakeListsGCC.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/CMakeListsLIB.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeListsFolder/Working/CMakeLists_CUDA_LIB.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/mainProg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake/FindNumPy.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/FindNumPy.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/lib0.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.cu" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vcpkg.json" beforeDir="false" afterPath="$PROJECT_DIR$/vcpkg.json" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Release" />
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectApplicationVersion">
+    <option name="ide" value="CLion" />
+    <option name="majorVersion" value="2023" />
+    <option name="minorVersion" value="1.1" />
+  </component>
+  <component name="ProjectId" id="2OXGvFm3mJQ7G5fQZx1OlRFaUhE" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "last_opened_file_path": "/home/mp74207/CLionProjects/GalaxyFormationSingleFile",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "CMakeSettings",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/CMakeListsFolder/Working" />
+      <recent name="$PROJECT_DIR$/lib" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/ChatGPT_Paper" />
+      <recent name="$PROJECT_DIR$/include" />
+      <recent name="$PROJECT_DIR$/lib" />
+    </key>
+  </component>
+  <component name="RunManager" selected="CMake Application.TestGalaxy">
+    <configuration name="TestGalaxy" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="MainProNonCUDA" TARGET_NAME="TestGalaxy" CONFIG_NAME="Release" RUN_TARGET_PROJECT_NAME="MainProNonCUDA" RUN_TARGET_NAME="TestGalaxy">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="libGalaxyLibNonCuda" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="MainProNonCUDA" TARGET_NAME="libGalaxyLibNonCuda" CONFIG_NAME="Release">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="CMake Application.libGalaxyLibNonCuda" />
+      <item itemvalue="CMake Application.TestGalaxy" />
+    </list>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="769725aa-a726-4b8d-9ad3-5599a4a8275f" name="Changes" comment="" />
+      <created>1681699742217</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1681699742217</updated>
+      <workItem from="1681699743886" duration="5326000" />
+      <workItem from="1681724847962" duration="13758000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VCPKGProject">
+    <isAutomaticEditVcpkgJson value="false" />
+    <isAutomaticCheckingOnLaunch value="false" />
+    <isAutomaticFoundErrors value="true" />
+    <isAutomaticFoundErrors value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package" />
+    <option name="LAST_COMMIT_MESSAGE" value="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/TestGalaxy.cpp</url>
+          <line>9</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="CMakeLineBreakpoint">
+          <url>file://$PROJECT_DIR$/CMakeLists.txt</url>
+          <line>71</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

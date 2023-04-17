@@ -1,0 +1,63 @@
+cmake_minimum_required(VERSION 3.20)
+project(galaxy LANGUAGES CUDA CXX)
+
+find_package(NLopt CONFIG REQUIRED)
+
+
+set(PYTHON_EXECUTABLE "/home/mp74207/anaconda3/envs/Cosmos/bin/python")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+set(Boost_INCLUDE_DIR /usr/include/)
+set(BOOST_LIBRARY_DIR /usr/lib/x86_64-linux-gnu/)
+set(Boost_PYTHON_LIBRARY /usr/lib/x86_64-linux-gnu/libboost_python310.so)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+
+find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
+find_package(Boost REQUIRED COMPONENTS Python)
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
+# Set C++ standard
+#set(CMAKE_C_COMPILER /usr/bin/gcc)
+#set(CMAKE_CXX_COMPILER /usr/bin/g++)
+
+# Set include directories
+include_directories(
+        ${Boost_INCLUDE_DIRS}
+        /usr/include/
+        /home/mp74207/anaconda3/envs/Cosmos/include/python3.9/
+        /home/mp74207/anaconda3/lib/python3.9/site-packages/numpy/core/include
+        ${CMAKE_SOURCE_DIR}/include
+)
+
+# Create lib0 library
+add_library("libGalaxy" src/lib0.cpp)
+target_link_libraries("libGalaxy"
+        stdc++fs
+        m
+        boost_python310
+        ${Python_LIBRARIES}
+        NLopt::nlopt
+        )
+
+# Create Main Program
+set(SOURCE_FILES
+        src/lib0.cpp
+        )
+
+
+
+add_executable(${PROJECT_NAME} src/lib0.cpp
+        /home/mp74207/anaconda3/lib/python3.9/site-packages/numpy/core/include//numpy/arrayobject.h
+        /home/mp74207/anaconda3/envs/Cosmos/include/python3.9/Python.h
+)
+
+
+target_link_libraries(${PROJECT_NAME}
+        stdc++fs
+        m
+        boost_python310
+        ${Python_LIBRARIES}
+        NLopt::nlopt
+        )
+

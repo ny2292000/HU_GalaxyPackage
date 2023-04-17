@@ -1,0 +1,75 @@
+cmake_minimum_required(VERSION 3.20)
+project(mainProg LANGUAGES CUDA CXX)
+
+find_package(NLopt CONFIG REQUIRED)
+
+
+set(PYTHON_EXECUTABLE "/home/mp74207/anaconda3/envs/Cosmos/bin/python")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+set(Boost_INCLUDE_DIR /usr/include/)
+set(BOOST_LIBRARY_DIR /usr/lib/x86_64-linux-gnu/)
+set(Boost_PYTHON_LIBRARY /usr/lib/x86_64-linux-gnu/libboost_python310.so)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+find_package(CUDA REQUIRED)
+find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
+find_package(Boost REQUIRED COMPONENTS Python)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
+set(CMAKE_CUDA_STANDARD 14)
+set(CMAKE_CXX_COMPILER_WORKS TRUE)
+set(CMAKE_CUDA_COMPILER_WORKS TRUE)
+
+find_package(CUDAToolkit)
+# Set minimum compute capability
+set(CMAKE_CUDA_ARCHITECTURES "50")
+# Set C++ standard
+#set(CMAKE_C_COMPILER /opt/nvidia/hpc_sdk/Linux_x86_64/23.3/compilers/bin/nvcc)
+#set(CMAKE_CXX_COMPILER /opt/nvidia/hpc_sdk/Linux_x86_64/23.3/compilers/bin/nvc++)
+
+if(CMAKE_CUDA_COMPILER_ID MATCHES "NVIDIA")
+    set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -arch=sm_50")
+endif()
+
+# Set include directories
+include_directories(
+        ${Boost_INCLUDE_DIRS}
+        /usr/include/
+        /home/mp74207/anaconda3/envs/Cosmos/include/python3.9/
+        /home/mp74207/anaconda3/lib/python3.9/site-packages/numpy/core/include
+        ${CMAKE_SOURCE_DIR}/include
+)
+
+# Create lib0 library
+add_library("libGalaxy" src/lib0.cpp)
+target_link_libraries("libGalaxy"
+        cudart
+        stdc++fs
+        m
+        boost_python310
+        ${Python_LIBRARIES}
+        NLopt::nlopt
+        )
+
+# Create Main Program
+set(SOURCE_FILES
+        src/main.cu
+        )
+
+
+
+add_executable(${PROJECT_NAME} src/main.cu
+        /home/mp74207/anaconda3/lib/python3.9/site-packages/numpy/core/include//numpy/arrayobject.h
+        /home/mp74207/anaconda3/envs/Cosmos/include/python3.9/Python.h
+        /usr/include src/lib0.cpp)
+
+
+target_link_libraries(${PROJECT_NAME}
+        cudart
+        stdc++fs
+        m
+        boost_python310
+        ${Python_LIBRARIES}
+        NLopt::nlopt
+        )
+

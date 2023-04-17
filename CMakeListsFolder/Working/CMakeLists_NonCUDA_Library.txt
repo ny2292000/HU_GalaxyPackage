@@ -1,0 +1,79 @@
+cmake_minimum_required(VERSION 3.20)
+project(GalaxyLibNonCUDA LANGUAGES CXX)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  ${CMAKE_SOURCE_DIR}/lib)
+
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+set(Boost_INCLUDE_DIR /home/mp74207/anaconda3/pkgs/libboost-1.73.0-h28710b8_12/include)
+set(BOOST_LIBRARY_DIR /home/mp74207/anaconda3/pkgs/libboost-1.73.0-h28710b8_12/lib)
+set(Boost_PYTHON_LIBRARY /home/mp74207/anaconda3/lib/libboost_python.so)
+set(BUILD_SHARED_LIBS ON)
+
+# Set the path to the directory containing FindNumPy.cmake
+find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
+find_package(NumPy REQUIRED)
+find_package(Boost REQUIRED COMPONENTS Python)
+find_package(NLopt CONFIG REQUIRED)
+
+
+# Set include directories
+include_directories(
+        /home/mp74207/anaconda3/include/python3.9
+        /home/mp74207/anaconda3/lib/python3.9/site-packages/numpy/core/include
+        /usr/include/boost
+        /usr/include
+)
+
+
+
+# Set C++ standard
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_C_COMPILER /usr/lib/gcc)
+set(CMAKE_CXX_COMPILER /usr/bin/clang++)
+
+# Build GalaxyFormationCUDA library
+set(LIBRARY_NAME "GalaxyLibNonCUDA")
+set(SOURCE_FILES
+        src/lib0.cpp
+        )
+
+INCLUDE_DIRECTORIES(
+        /home/mp74207/anaconda3/lib/python3.9/include
+        /usr/include
+)
+
+add_library(${LIBRARY_NAME}_static STATIC ${SOURCE_FILES})
+target_link_libraries(${LIBRARY_NAME}_static PRIVATE
+        /home/mp74207/anaconda3/lib/libpython3.9.so
+        /home/mp74207/anaconda3/lib/libboost_python.so
+        ${PYTHON_LIBRARIES}
+        ${NUMPY_LIBRARIES}
+        ${Boost_LIBRARY_DIRS}
+        stdc++fs
+        m
+#        boost_python310
+        NLopt::nlopt
+        )
+
+install(TARGETS ${LIBRARY_NAME}_static
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        )
+
+add_library(${LIBRARY_NAME}_shared SHARED ${SOURCE_FILES})
+target_link_libraries(${LIBRARY_NAME}_shared PRIVATE
+        /home/mp74207/anaconda3/lib/libpython3.9.so
+        /home/mp74207/anaconda3/lib/libboost_python.so
+#        ${PYTHON_LIBRARIES}
+        ${NUMPY_LIBRARIES}
+#        ${Boost_LIBRARY_DIRS}
+        stdc++fs
+        m
+#        boost_python310
+        NLopt::nlopt
+        )
+
+install(TARGETS ${LIBRARY_NAME}_shared
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        )

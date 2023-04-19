@@ -3,14 +3,29 @@ project(MainProNonCUDA LANGUAGES CXX)
 set(LIBRARY_OUTPUT_PATH  ${CMAKE_SOURCE_DIR}/lib)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 
-message("executable path = "  ${EXECUTABLE_OUTPUT_PATH})
-message("library path = " ${LIBRARY_OUTPUT_PATH})
+# Set the path to the Anaconda Python environment
+set(ANACONDA_ENV $ENV{HOME}/anaconda3/envs/Cosmos)
+
+# Set C++ standard
+set(CMAKE_CXX_STANDARD 11)
+
+# Add subdirectories
+add_subdirectory(LibGalaxy)
+
+
+# Set the environment for module1 tests
+#set_property(
+#        TEST LibGalaxy_test
+#        PROPERTY ENVIRONMENT
+#        "PATH=${ANACONDA_ENV}/bin:$ENV{PATH}"
+#        "LD_LIBRARY_PATH=${ANACONDA_ENV}/lib:$ENV{LD_LIBRARY_PATH}"
+#)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-set(Boost_INCLUDE_DIR /usr/include/)
-set(BOOST_LIBRARY_DIR /usr/lib/x86_64-linux-gnu/)
-set(Boost_PYTHON_LIBRARY /usr/lib/x86_64-linux-gnu/libboost_python310.so)
-set(BUILD_SHARED_LIBS ON)
+#set(Boost_INCLUDE_DIR /usr/include/)
+#set(BOOST_LIBRARY_DIR /usr/lib/x86_64-linux-gnu/)
+#set(Boost_PYTHON_LIBRARY /usr/lib/x86_64-linux-gnu/libboost_python310.so)
+#set(BUILD_SHARED_LIBS ON)
 
 # Set the path to the directory containing FindNumPy.cmake
 find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
@@ -18,62 +33,22 @@ find_package(NumPy REQUIRED)
 find_package(Boost REQUIRED COMPONENTS Python)
 find_package(NLopt CONFIG REQUIRED)
 
+message("TOP Anaconda = " ${ANACONDA_ENV})
+message("TOP PYTHON_INCLUDE_DIRS = " ${Python_INCLUDE_DIRS})
 
-
-# Set C++ standard
-set(CMAKE_CXX_STANDARD 11)
-
-set(CMAKE_C_COMPILER /usr/lib/gcc)
-set(CMAKE_CXX_COMPILER /usr/bin/g++)
-
-# Build GalaxyFormationCUDA library
-set(PROGRAM_NAME "TestGalaxy")
-set(SOURCE_FILES
-        src/TestGalaxy.cpp
-        src/Galaxy.cpp src/lib0.cpp)
-
-# Set include directories
-include_directories(
-        ${CMAKE_SOURCE_DIR}/include
-        /home/mp74207/anaconda3/include/python3.9
-        /home/mp74207/anaconda3/lib/python3.9/site-packages/numpy/core/include
-        /usr/include/boost
-        /usr/include
-)
+#include_directories(${Python_INCLUDE_DIRS})
+# Set Boost and NLopt include directories
+#set(Boost_INCLUDE_DIRS "/usr/include")
+set(NLopt_INCLUDE_DIRS "/usr/local/include/nlopt")
+#set(Python_INCLUDE_DIRS ${ANACONDA_ENV}/include)
 
 
 
-# Create lib0 library
-set(GALAXY_LIB "libGalaxyLibNonCuda")
-add_library(${GALAXY_LIB} src/lib0.cpp src/Galaxy.cpp)
-target_link_libraries(${GALAXY_LIB}
-        stdc++fs
-        m
-        /home/mp74207/anaconda3/lib/libboost_python.so
-        ${Python_LIBRARIES}
-        NLopt::nlopt
-        )
+# Export these variables to the build environment
+#set(Boost_INCLUDE_DIRS ${Boost_INCLUDE_DIRS} CACHE INTERNAL "")
+set(NLopt_INCLUDE_DIRS ${NLopt_INCLUDE_DIRS} CACHE INTERNAL "")
+#set(Python_INCLUDE_DIRS ${Python_INCLUDE_DIRS} CACHE INTERNAL "")
 
-find_library(GALAXY_LIB libGalaxyLibNonCUDA.so PATHS ${CMAKE_SOURCE_DIR}/lib)
-
-add_executable(${PROGRAM_NAME}  src/TestGalaxy.cpp)
-target_link_libraries(${PROGRAM_NAME} PRIVATE
-        ${GALAXY_LIB}
-        /home/mp74207/anaconda3/lib/libpython3.9.so
-        /home/mp74207/anaconda3/lib/libboost_python.so
-        ${PYTHON_LIBRARIES}
-        ${NUMPY_LIBRARIES}
-        stdc++fs
-        m
-        NLopt::nlopt
-        )
+message("TOP home = $ENV{HOME}")
 
 
-add_test(
-        NAME test1
-        COMMAND ${EXECUTABLE_OUTPUT_PATH}/TestGalaxy
-)
-set_property(
-        TEST test1
-        PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${LIBRARY_OUTPUT_PATH}
-)

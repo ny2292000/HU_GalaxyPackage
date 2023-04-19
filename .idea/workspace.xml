@@ -21,34 +21,8 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="769725aa-a726-4b8d-9ad3-5599a4a8275f" name="Changes" comment="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package">
-      <change afterPath="$PROJECT_DIR$/GalaxyProgram/CMakeLists.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/GalaxyProgram/CMakeListssaved.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/LibGalaxy/CMakeLists.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/LibGalaxy/include/Galaxy.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/LibGalaxy/include/lib0.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/PriorVersions/CMakeLists.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/PriorVersions/include/Galaxy.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/PriorVersions/include/lib0.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/PriorVersions/src/Galaxy.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/PriorVersions/src/TestGalaxy.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/PriorVersions/src/lib0.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Testing/Temporary/CTestCostData.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Testing/Temporary/LastTest.log" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/python/CMakeLists.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/python/include/Galaxy.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/python/src/GalaxyPyPackage.cpp" afterDir="false" />
+    <list default="true" id="769725aa-a726-4b8d-9ad3-5599a4a8275f" name="Changes" comment="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package&#10;Separated process using subdirectories">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/Galaxy.h" beforeDir="false" afterPath="$PROJECT_DIR$/GalaxyProgram/include/Galaxy.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/GalaxyFormationCUDA.h" beforeDir="false" afterPath="$PROJECT_DIR$/PriorVersions/GalaxyFormationCUDA.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/lib0.h" beforeDir="false" afterPath="$PROJECT_DIR$/GalaxyProgram/include/lib0.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/libCPU.cu" beforeDir="false" afterPath="$PROJECT_DIR$/PriorVersions/libCPU.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/libCUDA.cu" beforeDir="false" afterPath="$PROJECT_DIR$/PriorVersions/libCUDA.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/liblibGalaxyLibNonCuda.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/LibGalaxy/src/Galaxy.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TestGalaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/GalaxyProgram/src/GalaxyApp.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib0.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/LibGalaxy/src/lib0.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -142,7 +116,7 @@
       <workItem from="1681763808205" duration="1199000" />
       <workItem from="1681870512683" duration="3934000" />
       <workItem from="1681875247745" duration="404000" />
-      <workItem from="1681900330133" duration="8923000" />
+      <workItem from="1681900330133" duration="9800000" />
     </task>
     <task id="LOCAL-00001" summary="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package">
       <created>1681744646530</created>
@@ -151,7 +125,14 @@
       <option name="project" value="LOCAL" />
       <updated>1681744646530</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package&#10;Separated process using subdirectories">
+      <created>1681909819709</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1681909819709</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -166,7 +147,8 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package" />
-    <option name="LAST_COMMIT_MESSAGE" value="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package" />
+    <MESSAGE value="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package&#10;Separated process using subdirectories" />
+    <option name="LAST_COMMIT_MESSAGE" value="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package&#10;Separated process using subdirectories" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

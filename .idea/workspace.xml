@@ -12,17 +12,30 @@
   <component name="CMakeRunConfigurationManager">
     <generated>
       <config projectName="MainProNonCUDA" targetName="GalaxyLibNonCuda" />
+      <config projectName="MainProNonCUDA" targetName="GalaxyProgram" />
     </generated>
   </component>
   <component name="CMakeSettings">
     <configurations>
-      <configuration PROFILE_NAME="Debug" ENABLED="false" CONFIG_NAME="Debug" />
-      <configuration PROFILE_NAME="Release" ENABLED="true" CONFIG_NAME="Release" GENERATION_OPTIONS="-DCMAKE_TOOLCHAIN_FILE=/home/mp74207/.clion-vcpkg/vcpkg/scripts/buildsystems/vcpkg.cmake" />
+      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
+      <configuration PROFILE_NAME="Release" ENABLED="false" CONFIG_NAME="Release" GENERATION_OPTIONS="-DCMAKE_TOOLCHAIN_FILE=/home/mp74207/.clion-vcpkg/vcpkg/scripts/buildsystems/vcpkg.cmake" />
     </configurations>
   </component>
   <component name="ChangeListManager">
     <list default="true" id="769725aa-a726-4b8d-9ad3-5599a4a8275f" name="Changes" comment="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package&#10;Separated process using subdirectories">
+      <change afterPath="$PROJECT_DIR$/cmake/FindGALAXY_LIB.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/GalaxyFormationSingleFile.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/GalaxyFormationSingleFile.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/CMakeListsLib.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/CMakeListsProg.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/CMakeListsProgNonCuda.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GalaxyProgram/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/GalaxyProgram/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GalaxyProgram/CMakeListssaved.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibGalaxy/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/LibGalaxy/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/libGalaxyLibNonCuda.so" beforeDir="false" afterPath="$PROJECT_DIR$/lib/libGalaxyLibNonCuda.so" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,7 +45,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Release" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -42,6 +55,9 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectApplicationVersion">
     <option name="ide" value="CLion" />
@@ -56,51 +72,69 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/mp74207/CLionProjects/GalaxyFormationSingleFile/TestGalaxy&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;CMakeSettings&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "last_opened_file_path": "/home/mp74207/CLionProjects/GalaxyFormationCUDALib",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "CMakeSettings",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/LibGalaxy" />
       <recent name="$PROJECT_DIR$/TestGalaxy" />
       <recent name="$PROJECT_DIR$/src" />
       <recent name="$PROJECT_DIR$/lib" />
       <recent name="$PROJECT_DIR$/python/include" />
-      <recent name="$PROJECT_DIR$/python" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/cmake" />
       <recent name="$PROJECT_DIR$/PriorVersions" />
       <recent name="$PROJECT_DIR$/TestGalaxy" />
       <recent name="$PROJECT_DIR$/python/src" />
       <recent name="$PROJECT_DIR$/ChatGPT_Paper" />
-      <recent name="$PROJECT_DIR$/include" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="CMake Debug.MainProNonCUDA">
     <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
         <option name="CLION.EXTERNAL.BUILD" enabled="true" />
       </method>
     </configuration>
-    <configuration name="GalaxyLibNonCuda" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="MainProNonCUDA" TARGET_NAME="GalaxyLibNonCuda" CONFIG_NAME="Release">
+    <configuration name="MainProNonCUDA" type="CMakeListConfigurationType" factoryName="CMakeListConfigurationFactory" temporary="true">
+      <method v="2" />
+    </configuration>
+    <configuration name="GalaxyLibNonCuda" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="MainProNonCUDA" TARGET_NAME="GalaxyLibNonCuda" CONFIG_NAME="Debug">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration name="GalaxyProgram" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="MainProNonCUDA" TARGET_NAME="GalaxyProgram" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="MainProNonCUDA" RUN_TARGET_NAME="GalaxyProgram">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="CMake Application.GalaxyProgram" />
+      <item itemvalue="CMake Application.GalaxyLibNonCuda" />
+      <item itemvalue="CMake Debug.MainProNonCUDA" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="CMake Debug.MainProNonCUDA" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -117,6 +151,11 @@
       <workItem from="1681870512683" duration="3934000" />
       <workItem from="1681875247745" duration="404000" />
       <workItem from="1681900330133" duration="9800000" />
+      <workItem from="1681995960325" duration="1554000" />
+      <workItem from="1682000424731" duration="707000" />
+      <workItem from="1682001703768" duration="2275000" />
+      <workItem from="1682006248126" duration="5193000" />
+      <workItem from="1682035237331" duration="3010000" />
     </task>
     <task id="LOCAL-00001" summary="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package">
       <created>1681744646530</created>
@@ -163,7 +202,16 @@
           <line>71</line>
           <option name="timeStamp" value="7" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="CMakeLineBreakpoint">
+          <url>file://$PROJECT_DIR$/LibGalaxy/CMakeLists.txt</url>
+          <line>11</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

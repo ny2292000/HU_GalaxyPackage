@@ -16,12 +16,12 @@ include_directories(
 )
 
 set(SOURCES src/GalaxyApp.cpp)
-
+link_directories(${CMAKE_SOURCE_DIR}/lib)
 add_executable(GalaxyProgram ${SOURCES})
 
 # Set the library as a dependency for the executable
 target_link_libraries(GalaxyProgram PRIVATE
-        ${CMAKE_LIBRARY_PATH}/GalaxyLibNonCuda.so
+        GalaxyLibNonCuda
         stdc++fs
         m
         NLopt::nlopt

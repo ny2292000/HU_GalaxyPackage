@@ -11,12 +11,11 @@ include_dirs = [
 ]
 
 # Set the libraries to link against
-libraries = ['stdc++fs', 'm', 'nlopt', 'HU_Galaxy/lib/HU_Galaxy_PyBind11', 'lib/libGalaxyLibNonCuda']
+libraries = ['stdc++fs', 'm', 'nlopt', 'lib/HU_Galaxy_PyBind11', 'lib/GalaxyLibNonCuda']
 
 # Set the library directories to link against
-library_dirs = [
-    'HU_Galaxy/lib'
-]
+library_dirs = ['HU_Galaxy/lib', './lib']
+
 
 # Define the extension module
 extension_module = Extension(
@@ -25,7 +24,8 @@ extension_module = Extension(
     libraries=libraries,
     library_dirs=library_dirs,
     include_dirs=include_dirs,
-    language='c++'
+    language='c++',
+    extra_link_args = ['lib/HU_Galaxy_PyBind11.so', 'lib/GalaxyLibNonCuda.so']
 )
 
 # Call setup() to build the module

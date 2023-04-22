@@ -56,7 +56,7 @@ target_link_libraries(${GALAXY_LIB}
 
 find_library(GALAXY_LIB libGalaxyLibNonCUDA.so PATHS ${CMAKE_SOURCE_DIR}/lib)
 
-add_executable(${PROGRAM_NAME}  src/TestGalaxy.cpp)
+add_executable(${PROGRAM_NAME} src/TestGalaxy.cpp)
 target_link_libraries(${PROGRAM_NAME} PRIVATE
         ${GALAXY_LIB}
         /home/mp74207/anaconda3/lib/libpython3.9.so

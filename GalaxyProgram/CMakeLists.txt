@@ -21,11 +21,13 @@ add_executable(GalaxyProgram ${SOURCES})
 
 # Set the library as a dependency for the executable
 target_link_libraries(GalaxyProgram PRIVATE
-        GalaxyLibNonCuda
+        GalaxyCPP_Helper
+        GalaxyCPP_Class
         stdc++fs
         m
         NLopt::nlopt
         )
 
 ## Add include directories and compile options as needed
-add_dependencies( GalaxyProgram GalaxyLibNonCuda)
+add_dependencies( GalaxyProgram GalaxyCPP_Class)
+add_dependencies( GalaxyProgram GalaxyCPP_Helper)

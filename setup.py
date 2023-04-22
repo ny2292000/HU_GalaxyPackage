@@ -11,10 +11,14 @@ include_dirs = [
 ]
 
 # Set the libraries to link against
-libraries = ['stdc++fs', 'm', 'nlopt', 'lib/HU_Galaxy_PyBind11', 'lib/GalaxyLibNonCuda']
+libraries = ['stdc++fs', 'm', 'nlopt',
+             'lib/HU_Galaxy_PyBind11',
+             'lib/GalaxyCPP_Class',
+             'lib/GalaxyCPP_Helper'
+             ]
 
 # Set the library directories to link against
-library_dirs = ['HU_Galaxy/lib', './lib']
+library_dirs = ["/home/mp74207/CLionProjects/GalaxyFormationSingleFile/lib"]
 
 
 # Define the extension module
@@ -25,7 +29,7 @@ extension_module = Extension(
     library_dirs=library_dirs,
     include_dirs=include_dirs,
     language='c++',
-    extra_link_args = ['lib/HU_Galaxy_PyBind11.so', 'lib/GalaxyLibNonCuda.so']
+    extra_link_args=['lib/GalaxyCPP_Class.so', 'lib/GalaxyCPP_Helper.so', 'lib/HU_Galaxy_PyBind11.so']
 )
 
 # Call setup() to build the module
@@ -36,7 +40,7 @@ setup(
     author='Marco Pereira',
     author_email='ny2292000@gmail.com',
     ext_modules=[extension_module],
-    py_modules=['Galaxy'],
+    py_modules=['HU_Galaxy_PyBind11'],
     packages=['HU_Galaxy'],
     install_requires=['numpy', 'pybind11'],
 )

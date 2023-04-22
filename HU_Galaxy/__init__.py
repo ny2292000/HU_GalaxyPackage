@@ -1,1 +1,2 @@
-from .Galaxy import Galaxy as HU_GalaxyModel
+from . import HU_Galaxy_PyBind11
+

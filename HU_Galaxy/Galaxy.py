@@ -1,10 +1,11 @@
 import numpy as np
-from .HU_Galaxy_PyBind11 import HU_GalaxyModel as HU_GalaxyModel_CPP
+from HU_Galaxy_PyBind11 import Galaxy
+
 
 class Galaxy:
     def __init__(self, GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0,
                  R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift=0.0):
-        self._galaxy = HU_GalaxyModel_CPP(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0,
+        self._galaxy = Galaxy(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0,
                                           R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift)
     # Rest of the code
 

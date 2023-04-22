@@ -16,59 +16,12 @@
 #include <future>
 #include "../include/lib0.h"
 #include <nlopt.hpp>
+#include "../../LibGalaxyClass/include/Galaxy.h"
 
 const double pi= 3.141592653589793238;
 
 
 
-
-// Define the function to be minimized
-static double error_function(const std::vector<double> &x, Galaxy &myGalaxy) {
-    // Calculate the rotation velocity using the current values of x
-    double rho_0 = x[0];
-    double alpha_0 = x[1];
-    double rho_1 = x[2];
-    double alpha_1 = x[3];
-    double h0 = x[4];
-    // Calculate the total mass of the galaxy
-    double Mtotal_si = massCalc(alpha_0, rho_0, h0);  // Mtotal in Solar Masses
-    double error_mass = pow((myGalaxy.GalaxyMass - Mtotal_si) / myGalaxy.GalaxyMass, 2);
-    bool debug = false;
-    std::vector<double> rho = density(rho_0, alpha_0, rho_1, alpha_1, myGalaxy.r);
-    std::vector<double> vsim = calculate_rotational_velocity(myGalaxy.redshift, myGalaxy.dv0,
-                                                             myGalaxy.x_rotation_points,
-                                                             myGalaxy.r,
-                                                             myGalaxy.z,
-                                                             myGalaxy.costheta,
-                                                             myGalaxy.sintheta,
-                                                             rho,
-                                                             debug);
-    double error = 0.0;
-    for (int i = 0; i < myGalaxy.n_rotation_points; i++) { error += pow((myGalaxy.v_rotation_points[i] - vsim[i]), 2); }
-    std::cout << "Total Error = " << (error + error_mass) << "\n";
-    return error + error_mass;
-}
-
-// Define the objective function wrapper
-auto objective_wrapper = [](const std::vector<double>& x, std::vector<double>& grad, void* data){
-    Galaxy* myGalaxy = static_cast<Galaxy*>(data);
-    return error_function(x, *myGalaxy);
-};
-
-// Define the Nelder-Mead optimizer
-std::vector<double>
-nelder_mead(const std::vector<double> &x0, Galaxy &myGalaxy, int max_iter , double xtol_rel) {
-    nlopt::opt opt(nlopt::LN_NELDERMEAD, x0.size());
-    opt.set_min_objective(objective_wrapper, &myGalaxy);
-    opt.set_xtol_rel(xtol_rel);
-    std::vector<double> x = x0;
-    double minf;
-    nlopt::result result = opt.optimize(x, minf);
-    if (result < 0) {
-        std::cerr << "nlopt failed: " << strerror(result) << std::endl;
-    }
-    return x;
-}
 
 
 

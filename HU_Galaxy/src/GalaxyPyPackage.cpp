@@ -1,5 +1,5 @@
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-#include "../../LibGalaxy/include/Galaxy.h"
+#include "../../LibGalaxyClass/include/Galaxy.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>

@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-from HU_Galaxy.Galaxy import HU_GalaxyModel
+from HU_Galaxy.Galaxy import Galaxy
 
 
 # Observed M33 Data

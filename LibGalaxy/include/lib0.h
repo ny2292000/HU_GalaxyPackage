@@ -17,7 +17,7 @@
 #include <iostream>
 #include <future>
 #include <nlopt.hpp>
-#include "Galaxy.h"
+
 
 // Returns a vector of zeros with the given size
 std::vector<double> zeros_1(int size) ;
@@ -72,7 +72,5 @@ std::vector<double> calculate_rotational_velocity(double redshift, const std::ve
 
 std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, double alpha_1, int n) ;
 
-
-std::vector<double> nelder_mead(const std::vector<double> &x0, Galaxy &myGalaxy, int max_iter = 1000, double xtol_rel = 1e-6);
 
 #endif //LIB0_HPP

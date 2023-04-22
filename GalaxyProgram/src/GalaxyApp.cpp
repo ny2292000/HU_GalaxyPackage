@@ -9,7 +9,7 @@
 #include <vector>
 #include <array>
 #include "../../LibGalaxy/include/lib0.h"
-
+#include "../../LibGalaxyClass//include/Galaxy.h"
 
 
 int main() {

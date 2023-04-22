@@ -1,4 +1,4 @@
-find_library(GALAXY_LIB NAMES libGalaxyLibNonCuda PATHS ${CMAKE_SOURCE_DIR}/lib)
+find_library(GALAXY_LIB NAMES GalaxyLibNonCuda PATHS ${CMAKE_SOURCE_DIR}/lib)
 message( " where to look for GalaxyLib " ${CMAKE_SOURCE_DIR}/lib))
 if(GALAXY_LIB)
     set(GALAXY_LIB_FOUND TRUE)

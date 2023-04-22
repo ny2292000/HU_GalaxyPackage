@@ -18,8 +18,6 @@
 #include "numpy/ndarraytypes.h"
 
 
-#include "/usr/include/boost/python.hpp"
-
 
 // The function get_all_g_cuda takes in the gravitational constant G, the volume element dv0, the sampling
 // vectors r_sampling and z_sampling, and the integration variables r, z, and costheta. It also takes in

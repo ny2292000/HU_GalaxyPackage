@@ -6,24 +6,9 @@
 // Description : Hypergeometrical Universe Galaxy Formation in C++, Ansi-style
 //============================================================================
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-
-#include "Python.h"
 #include <vector>
-#include <memory>  // for std::unique_ptr
-#include <cmath>
-#include <stdio.h>
-#include <stdexcept>
-#include <cstring>
-#include "numpy/arrayobject.h"
-#include "numpy/ndarraytypes.h"
 #include <array>
-#include "/usr/include/boost/python.hpp"
-#include <iostream>
-#include <future>
-#include <nlopt.hpp>
-#include <string>
-#include "../include/lib0.h"
-#include "../include/Galaxy.h"
+#include "../../LibGalaxy/include/lib0.h"
 
 
 

@@ -8,17 +8,12 @@
 // Description : Hypergeometrical Universe Galaxy Formation in C++, Ansi-style
 //============================================================================
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-#include <python3.10/Python.h>
 #include <vector>
-#include <memory>  // for std::unique_ptr
 #include <cmath>
 #include <stdio.h>
 #include <stdexcept>
 #include <cstring>
-#include <python3.10/numpy/arrayobject.h>
-#include <python3.10/numpy/ndarraytypes.h>
 #include <array>
-#include "/usr/include/boost/python.hpp"
 #include <iostream>
 #include <future>
 #include <nlopt.hpp>
@@ -38,8 +33,6 @@ double massCalcX(double alpha, double rho, double h, double x) ;
 
 double massCalc(double alpha, double rho, double h) ;
 
-std::vector<double> vec_from_array(PyArrayObject *array) ;
-PyArrayObject *array_from_vec(std::vector<double> vec) ;
 
 std::vector<double> costhetaFunc(const std::vector<double> &theta);
 

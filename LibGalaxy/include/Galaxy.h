@@ -48,10 +48,8 @@ public:             // Access specifier
     ~Galaxy();
 
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
-    get_f_z(const std::vector<double> &x, bool debug);
+    get_f_z(const std::vector<double> &x, bool debug=false);
 
-    // Define the function to be minimized
-    double error_function(const std::vector<double> &x);
 
     void read_galaxy_rotation_curve(std::vector<std::array<double, 2>> vin);
 

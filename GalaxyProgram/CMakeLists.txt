@@ -2,17 +2,16 @@ cmake_minimum_required(VERSION 3.10)
 project(GalaxyProgram)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 set(CMAKE_BINARY_DIR  ${CMAKE_SOURCE_DIR}/bin)
+set(CMAKE_LIBRARY_PATH ${CMAKE_SOURCE_DIR}/lib)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_COMPILER /usr/lib/gcc)
 set(CMAKE_CXX_COMPILER /usr/bin/g++)
-
+find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
 # Set include directories
 include_directories(
         include
-        /usr/include/python3.10/
-        /usr/lib/python3/dist-packages/numpy/core/include/
         ${NLopt_INCLUDE_DIRS}
 )
 
@@ -22,11 +21,9 @@ add_executable(GalaxyProgram ${SOURCES})
 
 # Set the library as a dependency for the executable
 target_link_libraries(GalaxyProgram PRIVATE
-        GalaxyLibNonCuda
+        ${CMAKE_LIBRARY_PATH}/GalaxyLibNonCuda.so
         stdc++fs
         m
-        /usr/lib/x86_64-linux-gnu/libboost_python310.so
-        /usr/lib/x86_64-linux-gnu/libpython3.10.so
         NLopt::nlopt
         )
 

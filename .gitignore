@@ -3,3 +3,6 @@
 *.o
 /bin/
 /venv/
+/build/
+
+/ChatGPT_Paper/

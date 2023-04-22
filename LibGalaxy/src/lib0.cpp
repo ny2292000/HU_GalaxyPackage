@@ -7,24 +7,16 @@
 //============================================================================
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 
-
-#include <Python.h>
 #include <vector>
-#include <memory>  // for std::unique_ptr
 #include <cmath>
 #include <stdio.h>
-#include <stdexcept>
 #include <cstring>
-#include <python3.10/numpy/arrayobject.h>
-#include <numpy/ndarraytypes.h>
 #include <array>
-#include "/usr/include/boost/python.hpp"
 #include <iostream>
 #include <future>
 #include "../include/lib0.h"
 #include <nlopt.hpp>
-//#define MAX_GRID_DATA_SIZE 800
-#include "../include/Galaxy.h"
+
 const double pi= 3.141592653589793238;
 
 
@@ -128,34 +120,7 @@ double massCalc(double alpha, double rho, double h) {
 }
 
 
-std::vector<double> vec_from_array(PyArrayObject *array) {
-    // Check that input is a 1-dimensional array of doubles
-    if (PyArray_NDIM(array) != 1 || PyArray_TYPE(array) != NPY_DOUBLE) {
-        throw std::invalid_argument("Input must be a 1D NumPy array of doubles");
-    }
 
-    // Get the size of the array and a pointer to its data
-    int size = PyArray_SIZE(array);
-    double *data_ptr = static_cast<double *>(PyArray_DATA(array));
-
-    // Create a vector from the array data
-    std::vector<double> vec(data_ptr, data_ptr + size);
-
-    return vec;
-}
-
-
-PyArrayObject *array_from_vec(std::vector<double> vec) {
-    // Create a 1D NumPy array of the same size as the input vector
-    npy_intp size = vec.size();
-    PyObject * array = PyArray_SimpleNew(1, &size, NPY_DOUBLE);
-
-    // Copy the input vector data to the array data
-    double *data_ptr = static_cast<double *>(PyArray_DATA(reinterpret_cast<PyArrayObject *>(array)));
-    memcpy(data_ptr, vec.data(), size * sizeof(double));
-
-    return reinterpret_cast<PyArrayObject *>(array);
-}
 
 std::vector<double> costhetaFunc(const std::vector<double> &theta) {
     unsigned int points = theta.size();

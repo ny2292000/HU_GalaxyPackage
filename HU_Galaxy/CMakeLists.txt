@@ -28,7 +28,7 @@ target_link_libraries(HU_Galaxy_PyBind11 PRIVATE ${PYTHON_LIBRARIES})
 target_link_libraries(HU_Galaxy_PyBind11 PRIVATE pybind11::lto pybind11::embed pybind11::module pybind11::headers)
 
 # Set output module name and location
-set_target_properties(HU_Galaxy_PyBind11  PROPERTIES PREFIX "" OUTPUT_NAME "HU_Galaxy_PyBind11" LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+set_target_properties(HU_Galaxy_PyBind11  PROPERTIES OUTPUT_NAME "HU_Galaxy_PyBind11" LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
 
 
 

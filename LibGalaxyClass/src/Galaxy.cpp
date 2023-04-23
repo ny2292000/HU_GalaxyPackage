@@ -108,12 +108,13 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>  G
     double h0 = x[4];
     // Calculate the total mass of the galaxy
     std::vector<double> r_sampling = this->x_rotation_points;
-    std::vector<double> z_sampling = this->z;
-//        if(!debug){
-//            std::vector<double> z_sampling = {this->h0/2.0};
-//        }else{
-//            std::vector<double> z_sampling = this->z;
-//        }
+    std::vector<double> z_sampling;
+//    std::vector<double> z_sampling = this->z;
+    if(debug){
+        z_sampling = {this->h0/2.0};
+    }else{
+        z_sampling = {this->z};
+    }
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z = get_all_g(redshift, dv0, r_sampling, z_sampling, r, z,
                                                                                                   costheta, sintheta, rho, debug);
     return f_z;

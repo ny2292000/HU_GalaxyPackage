@@ -14,7 +14,7 @@ include_directories(
 set(SOURCE_FILES src/Galaxy.cpp)
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 add_library(GalaxyCPP_Class SHARED ${SOURCE_FILES})
-set_target_properties(GalaxyCPP_Class PROPERTIES PREFIX ""  OUTPUT_NAME "GalaxyCPP_Class")
+set_target_properties(GalaxyCPP_Class PROPERTIES OUTPUT_NAME "GalaxyCPP_Class")
 
 target_link_libraries(GalaxyCPP_Class PRIVATE
         GalaxyCPP_Helper

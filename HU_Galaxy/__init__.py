@@ -1,2 +1,2 @@
-from . import HU_Galaxy_PyBind11
+from .HU_Galaxy_PyBind11 import *
 

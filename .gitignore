@@ -7,3 +7,5 @@
 
 /ChatGPT_Paper/
 /CMakeListsFolder/
+*/__pycache__/*
+/.idea/

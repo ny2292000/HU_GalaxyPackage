@@ -13,7 +13,7 @@ include_directories(
 # Create lib0 library
 set(SOURCE_FILES src/lib0.cpp)
 add_library(GalaxyCPP_Helper SHARED ${SOURCE_FILES})
-set_target_properties(GalaxyCPP_Helper PROPERTIES PREFIX ""  OUTPUT_NAME "GalaxyCPP_Helper")
+set_target_properties(GalaxyCPP_Helper PROPERTIES  OUTPUT_NAME "GalaxyCPP_Helper")
 
 target_link_libraries(GalaxyCPP_Helper PRIVATE
         stdc++fs

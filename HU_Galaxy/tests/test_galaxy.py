@@ -62,5 +62,7 @@ theta = np.linspace(0, 2 * pi, ntheta)
 M33 = Galaxy(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0,
            R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift)
 
-x0 = np.array(rho_0, alpha_0, rho_1, alpha_1, h0 )
-M33.get_f_z(x0)
+x0 = np.array([rho_0, alpha_0, rho_1, alpha_1, h0])
+
+a,b = M33.get_f_z(x0, debug=True)
+print(a)

@@ -6,30 +6,55 @@ pybind11_include_dir = os.popen('python3 -m pybind11 --includes').read().strip()
 
 # Set the include directories for compilation
 include_dirs = [
-    'include',
+    'LibGalaxy/include',
+    "LibGalaxy_Class/include",
+    "include",
     pybind11_include_dir,
 ]
 
-# Set the libraries to link against
-libraries = ['stdc++fs', 'm', 'nlopt',
-             'lib/HU_Galaxy_PyBind11',
-             'lib/GalaxyCPP_Class',
-             'lib/GalaxyCPP_Helper'
-             ]
-
 # Set the library directories to link against
-library_dirs = ["/home/mp74207/CLionProjects/GalaxyFormationSingleFile/lib"]
+library_dirs = [
+    "/home/mp74207/CLionProjects/GalaxyFormationSingleFile/lib",
+    "/usr/local/lib",
+]
+
+
+# Set the libraries to link against
+libraries = [
+    "HU_Galaxy_PyBind11",
+    "GalaxyCPP_Class",
+    "GalaxyCPP_Helper",
+    "stdc++fs",
+    "m",
+    "nlopt",
+]
+
+
+
 
 
 # Define the extension module
 extension_module = Extension(
-    'HU_Galaxy.HU_Galaxy_PyBind11',
+    'HU_Galaxy_PyBind11',
     sources=['HU_Galaxy/src/GalaxyPyPackage.cpp'],
     libraries=libraries,
     library_dirs=library_dirs,
     include_dirs=include_dirs,
     language='c++',
-    extra_link_args=['lib/GalaxyCPP_Class.so', 'lib/GalaxyCPP_Helper.so', 'lib/HU_Galaxy_PyBind11.so']
+    extra_link_args = [
+        "-Wl,-O1",
+        "-Wl,-Bsymbolic-functions",
+        "-lm",
+        "-Wall",
+        "-lstdc++fs",
+        "-lm",
+        "-lnlopt",
+        "-lHU_Galaxy_PyBind11",
+        "-lGalaxyCPP_Class",
+        "-lGalaxyCPP_Helper",
+        f"-Wl,-rpath,{os.path.abspath('lib')}",
+    ]
+
 )
 
 # Call setup() to build the module

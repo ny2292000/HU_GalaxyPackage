@@ -12,23 +12,17 @@ pybind11_include_dir = os.popen('python3 -m pybind11 --includes').read().strip()
 
 # Set the include directories for compilation
 include_dirs = [
-    'LibGalaxy/include',
-    "LibGalaxy_Class/include",
-    "include",
+    "HU_Galaxy/include",
     pybind11_include_dir,
 ]
 
 # Set the library directories to link against
 library_dirs = [
-    "/home/mp74207/CLionProjects/GalaxyFormationSingleFile/lib",
-    # "/usr/local/lib",
+        "HU_Galaxy/lib"
 ]
 
 # Set the libraries to link against
 libraries = [
-    "HU_Galaxy_GalaxyWrapper",
-    "galaxy_cpp_class",
-    "galaxy_cpp_helper",
     "stdc++fs",
     "m",
     "nlopt",
@@ -45,9 +39,6 @@ if os.environ.get('DEBUG'):
         "-lstdc++fs",
         "-lm",
         "-lnlopt",
-        "-HU_Galaxy_GalaxyWrapper",
-        "-lgalaxy_cpp_class",
-        "-lgalaxy_cpp_helper",
         f"-Wl,-rpath,{os.path.abspath('lib')}",
         '-g'
     ]
@@ -61,22 +52,19 @@ else:
         "-lstdc++fs",
         "-lm",
         "-lnlopt",
-        "-lHU_Galaxy_GalaxyWrapper",
-        "-lgalaxy_cpp_class",
-        "-lgalaxy_cpp_helper",
         f"-Wl,-rpath,{os.path.abspath('lib')}"
     ]
 
 extension_module = Extension(
-    'GalaxyWrapper',
-    sources=['HU_Galaxy/src/HU_Galaxy_PyBind11.cpp'],
+    'HU_Galaxy.galaxy_wrapper',
+    sources=['HU_Galaxy/Galaxy.cpp', 'HU_Galaxy/GalaxyWrapper.cpp'],
     libraries=libraries,
     library_dirs=library_dirs,
     include_dirs=include_dirs,
     language='c++',
     extra_compile_args=extra_compile_args,
     extra_link_args=extra_link_args,
-    define_macros=[('PYBIND11_MODULE', 'MyModuleName')]
+    define_macros=[('PYBIND11_MODULE', 'galaxy_wrapper')]
 )
 
 # Call setup() to build the module
@@ -87,7 +75,6 @@ setup(
     author='Marco Pereira',
     author_email='ny2292000@gmail.com',
     ext_modules=[extension_module],
-    py_modules=['GalaxyWrapper'],
     packages=['HU_Galaxy'],
     install_requires=['numpy', 'pybind11'],
 )

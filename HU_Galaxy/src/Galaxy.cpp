@@ -1,81 +1,16 @@
-//============================================================================
-// Name        : GalaxyFormation.cpp
-// Author      : Marco Pereira
-// Version     : 1.0.0
-// Copyright   : Your copyright notice
-// Description : Hypergeometrical Universe Galaxy Formation in C++, Ansi-style
-//============================================================================
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+//
+// Created by mp74207 on 4/17/23.
+//
+const double pi = 3.141592653589793;
 
-#include <Python.h>
+#include "Galaxy.h"
 #include <vector>
-#include <memory>  // for std::unique_ptr
-#include <cmath>
-#include <stdio.h>
-#include <stdexcept>
-#include <cstring>
-#include <numpy/arrayobject.h>
-#include <numpy/ndarraytypes.h>
 #include <array>
-#include "/usr/include/boost/python.hpp"
+#include <utility>
+#include <cmath>
 #include <iostream>
-#include <future>
-#include "lib0.h"
 #include <nlopt.hpp>
-//#define MAX_GRID_DATA_SIZE 800
-#include "../../../../HU_Galaxy/include/Galaxy.h"
-const double pi= 3.141592653589793238;
 
-
-
-
-// Define the function to be minimized
-static double error_function(const std::vector<double> &x, Galaxy &myGalaxy) {
-    // Calculate the rotation velocity using the current values of x
-    double rho_0 = x[0];
-    double alpha_0 = x[1];
-    double rho_1 = x[2];
-    double alpha_1 = x[3];
-    double h0 = x[4];
-    // Calculate the total mass of the galaxy
-    double Mtotal_si = massCalc(alpha_0, rho_0, h0);  // Mtotal in Solar Masses
-    double error_mass = pow((myGalaxy.GalaxyMass - Mtotal_si) / myGalaxy.GalaxyMass, 2);
-    bool debug = false;
-    std::vector<double> rho = density(rho_0, alpha_0, rho_1, alpha_1, myGalaxy.r);
-    std::vector<double> vsim = calculate_rotational_velocity(myGalaxy.redshift, myGalaxy.dv0,
-                                                             myGalaxy.x_rotation_points,
-                                                             myGalaxy.r,
-                                                             myGalaxy.z,
-                                                             myGalaxy.costheta,
-                                                             myGalaxy.sintheta,
-                                                             rho,
-                                                             debug);
-    double error = 0.0;
-    for (int i = 0; i < myGalaxy.n_rotation_points; i++) { error += pow((myGalaxy.v_rotation_points[i] - vsim[i]), 2); }
-    std::cout << "Total Error = " << (error + error_mass) << "\n";
-    return error + error_mass;
-}
-
-// Define the objective function wrapper
-auto objective_wrapper = [](const std::vector<double>& x, std::vector<double>& grad, void* data){
-    Galaxy* myGalaxy = static_cast<Galaxy*>(data);
-    return error_function(x, *myGalaxy);
-};
-
-// Define the Nelder-Mead optimizer
-std::vector<double>
-nelder_mead(const std::vector<double> &x0, Galaxy &myGalaxy, int max_iter , double xtol_rel) {
-    nlopt::opt opt(nlopt::LN_NELDERMEAD, x0.size());
-    opt.set_min_objective(objective_wrapper, &myGalaxy);
-    opt.set_xtol_rel(xtol_rel);
-    std::vector<double> x = x0;
-    double minf;
-    nlopt::result result = opt.optimize(x, minf);
-    if (result < 0) {
-        std::cerr << "nlopt failed: " << strerror(result) << std::endl;
-    }
-    return x;
-}
 
 
 
@@ -112,8 +47,8 @@ void print_2D(const std::vector<std::vector<double>>& a) {
 
 double massCalcX(double alpha, double rho, double h, double x) {
     double factor = 0.0007126927557971729; // factor takes care of moving from rho as atom/cc to kg/lyr^3, with alpha = 1/lyr and h0 = in lyr div sun_mass
-    double M_si = -2 * pi * h * rho * x * exp(-alpha * x) / alpha - 2 * pi * h * rho * exp(-alpha * x) / pow(alpha, 2) +
-                  2 * pi * h * rho / pow(alpha, 2);
+    double M_si = -2 * pi * h * rho * x * exp(-alpha * x) / alpha - 2 * pi * h * rho * exp(-alpha * x) / std::pow(alpha, 2) +
+                  2 * pi * h * rho / std::pow(alpha, 2);
     M_si = M_si * factor;
     return M_si;
 }
@@ -121,40 +56,13 @@ double massCalcX(double alpha, double rho, double h, double x) {
 
 double massCalc(double alpha, double rho, double h) {
     double factor = 0.0007126927557971729; // factor takes care of moving from rho as atom/cc to kg/lyr^3, with alpha = 1/lyr and h0 = in lyr div sun_mass
-    double Mtotal_si = 2 * pi * h * rho / pow(alpha, 2);
+    double Mtotal_si = 2 * pi * h * rho / std::pow(alpha, 2);
     Mtotal_si = Mtotal_si * factor;
     return Mtotal_si;
 }
 
 
-std::vector<double> vec_from_array(PyArrayObject *array) {
-    // Check that input is a 1-dimensional array of doubles
-    if (PyArray_NDIM(array) != 1 || PyArray_TYPE(array) != NPY_DOUBLE) {
-        throw std::invalid_argument("Input must be a 1D NumPy array of doubles");
-    }
 
-    // Get the size of the array and a pointer to its data
-    int size = PyArray_SIZE(array);
-    double *data_ptr = static_cast<double *>(PyArray_DATA(array));
-
-    // Create a vector from the array data
-    std::vector<double> vec(data_ptr, data_ptr + size);
-
-    return vec;
-}
-
-
-PyArrayObject *array_from_vec(std::vector<double> vec) {
-    // Create a 1D NumPy array of the same size as the input vector
-    npy_intp size = vec.size();
-    PyObject * array = PyArray_SimpleNew(1, &size, NPY_DOUBLE);
-
-    // Copy the input vector data to the array data
-    double *data_ptr = static_cast<double *>(PyArray_DATA(reinterpret_cast<PyArrayObject *>(array)));
-    memcpy(data_ptr, vec.data(), size * sizeof(double));
-
-    return reinterpret_cast<PyArrayObject *>(array);
-}
 
 std::vector<double> costhetaFunc(const std::vector<double> &theta) {
     unsigned int points = theta.size();
@@ -169,7 +77,7 @@ std::vector<double> sinthetaFunc(const std::vector<double> &theta) {
     unsigned int points = theta.size();
     std::vector<double> res(points);
     for (unsigned int i = 0; i < points; i++) {
-        res[i] = sin(theta[i]);
+        res[i] = std::sin(theta[i]);
     }
     return res;
 }
@@ -212,9 +120,9 @@ std::pair<double, double> get_g_cpu(double r_sampling_ii, double z_sampling_jj, 
     for (unsigned int i = 0; i < nr; i++) {
         for (unsigned int j = 0; j < nz; j++) {
             for (unsigned int k = 0; k < ntheta; k++) {
-                double d_2 = (z[j] - z_sampling_jj) * (z[j] - z_sampling_jj) + 
-                        (r_sampling_ii - r[i] * sintheta[k]) * (r_sampling_ii - r[i] * sintheta[k])+
-                           r[i] * r[i] * costheta[k] * costheta[k];
+                double d_2 = (z[j] - z_sampling_jj) * (z[j] - z_sampling_jj) +
+                             (r_sampling_ii - r[i] * sintheta[k]) * (r_sampling_ii - r[i] * sintheta[k])+
+                             r[i] * r[i] * costheta[k] * costheta[k];
                 double d_1 = sqrt(d_2);
                 double d_3 = d_1 * d_1 * d_1;
                 double commonfactor  = G * rho[i] * r[i] * dv0[i]  / d_3;
@@ -289,8 +197,8 @@ get_all_g(double redshift, const std::vector<double> &dv0, const std::vector<dou
           const std::vector<double> &z_sampling,
           const std::vector<double> &r, const std::vector<double> &z, const std::vector<double> &costheta,
           const std::vector<double> &sintheta, const std::vector<double> &rho, bool debug) {
-        double G = 7.456866768350099e-46 * (1 + redshift);
-        return get_all_g_impl_cpu(G, dv0, r_sampling, z_sampling, r, z, costheta, sintheta, rho, debug);
+    double G = 7.456866768350099e-46 * (1 + redshift);
+    return get_all_g_impl_cpu(G, dv0, r_sampling, z_sampling, r, z, costheta, sintheta, rho, debug);
 }
 
 std::vector<double> calculate_rotational_velocity(double redshift, const std::vector<double> &dv0,
@@ -348,14 +256,135 @@ std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, doubl
     // Define the grid of n points using a geometric sequence
     std::vector<double> r(n1 + n2);
     for (int i = 0; i < n1; i++) {
-        r[i] = r_min1 * pow(r_max_1 / r_min1, i / (double) (n1 - 1));
+        r[i] = r_min1 * std::pow(r_max_1 / r_min1, i / (double) (n1 - 1));
     }
     for (int i = 0; i < n2; i++) {
-        r[i + n1] = r_min2 * pow(r_max_2 / r_min2, i / (double) (n2 - 1));
+        r[i + n1] = r_min2 * std::pow(r_max_2 / r_min2, i / (double) (n2 - 1));
     }
     return r;
 }
 
+// #############################################################################
+// #############################################################################
+// #############################################################################
+// #############################################################################
+// #############################################################################
+// #############################################################################
+
+Galaxy::Galaxy(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
+               double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift)
+        : R_max(R_max), nr(nr), nz(nz), nr_sampling(nr_sampling), nz_sampling(nz_sampling),
+          alpha_0(alpha_0), rho_0(rho_0), alpha_1(alpha_1), rho_1(rho_1), h0(h0), redshift(redshift),
+          GalaxyMass(GalaxyMass), n_rotation_points(0) {
+
+    r = creategrid(rho_0, alpha_0, rho_1, alpha_1, nr);
+    z = linspace(-h0 / 2.0, h0 / 2.0, nz);
+    rho = density(rho_0, alpha_0, rho_1, alpha_1, r);
+    theta = linspace(0, 2 * pi, ntheta);
+    costheta = costhetaFunc(theta);
+    sintheta = sinthetaFunc(theta);
+    z_sampling = linspace(-h0 / 2.0, h0 / 2.0, nz);
+    r_sampling = linspace(1, R_max, nr_sampling);
+    dz = h0 / nz;
+    double dtheta = 2 * pi / ntheta;
+    dv0.resize(1);
+    dv0[0] = 0.0;
+    for (int i = 1; i < nr; i++) {
+        dv0.push_back((r[i] - r[i - 1]) * dz * dtheta);
+    }
+
+    // Initialize empty vectors for f_z, x_rotation_points, and v_rotation_points
+    f_z = std::vector<std::vector<double>>(nr, std::vector<double>(nz, 0));
+    x_rotation_points = std::vector<double>();
+    v_rotation_points = std::vector<double>();
+}
 
 
+Galaxy::~Galaxy() {};
 
+std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
+Galaxy::get_f_z(const std::vector<double> &x, bool debug) {
+    // Calculate the rotation velocity using the current values of x
+    double rho_0 = x[0];
+    double alpha_0 = x[1];
+    double rho_1 = x[2];
+    double alpha_1 = x[3];
+    double h0 = x[4];
+    // Calculate the total mass of the galaxy
+    std::vector<double> r_sampling = this->x_rotation_points;
+    std::vector<double> z_sampling;
+//    std::vector<double> z_sampling = this->z;
+    if (debug) {
+        z_sampling = {this->h0 / 2.0};
+    } else {
+        z_sampling = {this->z};
+    }
+    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z = get_all_g(redshift, dv0,
+                                                                                                  r_sampling,
+                                                                                                  z_sampling, r, z,
+                                                                                                  costheta,
+                                                                                                  sintheta, rho,
+                                                                                                  debug);
+    return f_z;
+}
+
+void Galaxy::read_galaxy_rotation_curve(std::vector<std::array<double, 2>> vin) {
+    n_rotation_points = vin.size();
+    this->x_rotation_points.clear();
+    this->v_rotation_points.clear();
+    for (const auto &row: vin) {
+        this->x_rotation_points.push_back(row[0]); // Extract the first column (index 0)
+        this->v_rotation_points.push_back(row[1]); // Extract the first column (index 0)
+    }
+
+
+}
+
+
+// Define the function to be minimized
+static double error_function(const std::vector<double> &x, Galaxy &myGalaxy) {
+    // Calculate the rotation velocity using the current values of x
+    double rho_0 = x[0];
+    double alpha_0 = x[1];
+    double rho_1 = x[2];
+    double alpha_1 = x[3];
+    double h0 = x[4];
+    // Calculate the total mass of the galaxy
+    double Mtotal_si = massCalc(alpha_0, rho_0, h0);  // Mtotal in Solar Masses
+    double error_mass = std::pow((myGalaxy.GalaxyMass - Mtotal_si) / myGalaxy.GalaxyMass, 2);
+    bool debug = false;
+    std::vector<double> rho = density(rho_0, alpha_0, rho_1, alpha_1, myGalaxy.r);
+    std::vector<double> vsim = calculate_rotational_velocity(myGalaxy.redshift, myGalaxy.dv0,
+                                                             myGalaxy.x_rotation_points,
+                                                             myGalaxy.r,
+                                                             myGalaxy.z,
+                                                             myGalaxy.costheta,
+                                                             myGalaxy.sintheta,
+                                                             rho,
+                                                             debug);
+    double error = 0.0;
+    for (int i = 0; i < myGalaxy.n_rotation_points; i++) { error += std::pow((myGalaxy.v_rotation_points[i] - vsim[i]), 2); }
+    std::cout << "Total Error = " << (error + error_mass) << "\n";
+    return error + error_mass;
+}
+
+// Define the objective function wrapper
+auto objective_wrapper = [](const std::vector<double> &x, std::vector<double> &grad, void *data) {
+    Galaxy *myGalaxy = static_cast<Galaxy *>(data);
+    return error_function(x, *myGalaxy);
+};
+
+// Define the Nelder-Mead optimizer
+std::vector<double>
+nelder_mead(const std::vector<double> &x0, Galaxy &myGalaxy, int max_iter, double xtol_rel) {
+    nlopt::opt opt(nlopt::LN_NELDERMEAD, x0.size());
+    opt.set_min_objective(objective_wrapper, &myGalaxy);
+    opt.set_xtol_rel(xtol_rel);
+    std::vector<double> x = x0;
+    double minf;
+    nlopt::result result = opt.optimize(x, minf);
+    if (result < 0) {
+        std::cerr << "nlopt failed: " << strerror(result) << std::endl;
+    }
+    return x;
+}

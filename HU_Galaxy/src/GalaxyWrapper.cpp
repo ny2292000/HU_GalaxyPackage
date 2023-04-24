@@ -4,19 +4,13 @@
 
 #include <Python.h>
 #include <nlopt.hpp>
-#include <memory>
-#include <thread>
-#include <iostream>
 #include <vector>
-#include <cmath>
-#include <future>
 #include <utility>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 
-#include "../../LibGalaxy/include/lib0.h"
-#include "../../LibGalaxyClass/include/Galaxy.h"
+#include "Galaxy.h"
 
 namespace py = pybind11;
 
@@ -53,7 +47,7 @@ private:
     Galaxy galaxy;
 };
 
-PYBIND11_MODULE(HU_Galaxy_GalaxyWrapper, m) {
+PYBIND11_MODULE(galaxy_wrapper, m) {
     py::class_<GalaxyWrapper>(m, "GalaxyWrapper")
             .def(py::init<double, double, double, double, double, double, double, int, int, int, int, int, double>(),
                  py::arg("GalaxyMass"), py::arg("rho_0"), py::arg("alpha_0"), py::arg("rho_1"), py::arg("alpha_1"), py::arg("h0"),

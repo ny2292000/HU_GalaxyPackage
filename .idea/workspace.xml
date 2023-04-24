@@ -24,63 +24,8 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="769725aa-a726-4b8d-9ad3-5599a4a8275f" name="Changes" comment="Working both Class Library and Helper Functions Library lib0.cpp&#10;python package created&#10;Cleaned up python_libraries and libboost_python libraries from&#10;cpp libraries&#10;Separate Helper and Class libraries&#10;Changing Setup.py to be done in debug mode&#10;Now working on eliminating circular references">
-      <change afterPath="$PROJECT_DIR$/HU_Galaxy/cmake/FindGALAXY_LIB.cmake" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HU_Galaxy/cmake/FindNumPy.cmake" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HU_Galaxy/include/HU_Galaxy_PyBind11.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HU_Galaxy/setup.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HU_Galaxy/src/HU_Galaxy_PyBind11.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/HU_Galaxy_GalaxyWrapper.cpython-310-x86_64-linux-gnu.so" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/libgalaxy_cpp_class.so" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/libgalaxy_cpp_helper.so" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testwrapper.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="769725aa-a726-4b8d-9ad3-5599a4a8275f" name="Changes" comment="Working both Class Library and Helper Functions Library lib0.cpp&#10;python package created&#10;Cleaned up python_libraries and libboost_python libraries from&#10;cpp libraries&#10;Separate Helper and Class libraries&#10;Changing Setup.py to be done in debug mode&#10;major shake up. Next step creating the branch to aggregate everything and simplify problem&#10;Now working on eliminating circular references">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/CMakeListsCUDA.txt" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/CMakeListsCUDA.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/CMakeListsMainProgSharedLibraryNonCUDA.txt" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/CMakeListsMainProgSharedLibraryNonCUDA.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/CMakeLists_NonCUDA_Library.txt" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/CMakeLists_NonCUDA_Library.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/PriorVersions/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/PriorVersions/GalaxyFormationCUDA.h" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/GalaxyFormationCUDA.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/PriorVersions/include/Galaxy.h" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/include/Galaxy.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/PriorVersions/include/lib0.h" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/include/lib0.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/PriorVersions/lib0.cu" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/lib0.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/PriorVersions/libCPU.cu" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/libCPU.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/PriorVersions/libCUDA.cu" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/libCUDA.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/PriorVersions/mainSaveMe.cu" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/mainSaveMe.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/PriorVersions/mainToy.cu" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/mainToy.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/PriorVersions/main_1.cu" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/main_1.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/PriorVersions/main_2.cu" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/main_2.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/PriorVersions/mainold.cu" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/mainold.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/PriorVersions/src/Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/src/Galaxy.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/PriorVersions/src/TestGalaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/src/TestGalaxy.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/PriorVersions/src/lib0.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/src/lib0.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/Working/BestSingleProg.txt" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/Working/BestSingleProg.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/Working/CMakeListsMainProgSharedLibraryNonCUDA.txt" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/Working/CMakeListsMainProgSharedLibraryNonCUDA.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/Working/CMakeLists_CUDA_LIB.txt" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/Working/CMakeLists_CUDA_LIB.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeListsFolder/Working/CMakeLists_NonCUDA_Library.txt" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/Working/CMakeLists_NonCUDA_Library.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ChatGPT_Paper/ChatGPT_1" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/ChatGPT_Paper/ChatGPT_1" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ChatGPT_Paper/PaperOutline" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/ChatGPT_Paper/PaperOutline" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GalaxyProgram/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/GalaxyProgram/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GalaxyProgram/src/GalaxyApp.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/GalaxyProgram/src/GalaxyApp.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/Galaxy.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy_PyBind11.cpython-310-x86_64-linux-gnu.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/src/GalaxyPyPackage.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/tests/test_galaxy.py" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/tests/test_galaxy.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LibGalaxy/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/LibGalaxy/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LibGalaxy/include/lib0.h" beforeDir="false" afterPath="$PROJECT_DIR$/LibGalaxy/include/lib0.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LibGalaxy/src/lib0.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/LibGalaxy/src/lib0.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LibGalaxyClass/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/LibGalaxyClass/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LibGalaxyClass/include/Galaxy.h" beforeDir="false" afterPath="$PROJECT_DIR$/LibGalaxyClass/include/Galaxy.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LibGalaxyClass/src/Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/LibGalaxyClass/src/Galaxy.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/HU_Galaxy-0.1-py3.10-linux-x86_64.egg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/libGalaxyCPP_Class.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/libGalaxyCPP_Helper.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/libHU_Galaxy_PyBind11.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -318,7 +263,7 @@
       <workItem from="1682183841625" duration="367000" />
       <workItem from="1682192269435" duration="24602000" />
       <workItem from="1682246875222" duration="45807000" />
-      <workItem from="1682334383461" duration="338000" />
+      <workItem from="1682334383461" duration="1023000" />
     </task>
     <task id="LOCAL-00001" summary="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package">
       <created>1681744646530</created>
@@ -369,7 +314,14 @@
       <option name="project" value="LOCAL" />
       <updated>1682212387406</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Working both Class Library and Helper Functions Library lib0.cpp&#10;python package created&#10;Cleaned up python_libraries and libboost_python libraries from&#10;cpp libraries&#10;Separate Helper and Class libraries&#10;Changing Setup.py to be done in debug mode&#10;major shake up. Next step creating the branch to aggregate everything and simplify problem&#10;Now working on eliminating circular references">
+      <created>1682335033931</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1682335033931</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -390,7 +342,8 @@
     <MESSAGE value="Working both Class Library and Helper Functions Library lib0.cpp&#10;python package created&#10;Cleaned up python_libraries and libboost_python libraries from&#10;cpp libraries&#10;Now working on eliminating circular references" />
     <MESSAGE value="Working both Class Library and Helper Functions Library lib0.cpp&#10;python package created&#10;Cleaned up python_libraries and libboost_python libraries from&#10;cpp libraries&#10;Separate Helper and Class libraries&#10;Now working on eliminating circular references" />
     <MESSAGE value="Working both Class Library and Helper Functions Library lib0.cpp&#10;python package created&#10;Cleaned up python_libraries and libboost_python libraries from&#10;cpp libraries&#10;Separate Helper and Class libraries&#10;Changing Setup.py to be done in debug mode&#10;Now working on eliminating circular references" />
-    <option name="LAST_COMMIT_MESSAGE" value="Working both Class Library and Helper Functions Library lib0.cpp&#10;python package created&#10;Cleaned up python_libraries and libboost_python libraries from&#10;cpp libraries&#10;Separate Helper and Class libraries&#10;Changing Setup.py to be done in debug mode&#10;Now working on eliminating circular references" />
+    <MESSAGE value="Working both Class Library and Helper Functions Library lib0.cpp&#10;python package created&#10;Cleaned up python_libraries and libboost_python libraries from&#10;cpp libraries&#10;Separate Helper and Class libraries&#10;Changing Setup.py to be done in debug mode&#10;major shake up. Next step creating the branch to aggregate everything and simplify problem&#10;Now working on eliminating circular references" />
+    <option name="LAST_COMMIT_MESSAGE" value="Working both Class Library and Helper Functions Library lib0.cpp&#10;python package created&#10;Cleaned up python_libraries and libboost_python libraries from&#10;cpp libraries&#10;Separate Helper and Class libraries&#10;Changing Setup.py to be done in debug mode&#10;major shake up. Next step creating the branch to aggregate everything and simplify problem&#10;Now working on eliminating circular references" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

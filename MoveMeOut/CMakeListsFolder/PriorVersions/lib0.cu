@@ -50,17 +50,17 @@
 //
 //    if (i < nr_sampling && j < nz_sampling) {
 //        // Compute the distance between the sampling point and the point in r and z for this thread
-//        double d = pow(z_sampling[j] - z[iz], 2.0) + pow(r_sampling[i] - r[ir] * costheta[0], 2.0)
-//                   + pow(r[ir] * sintheta[0], 2.0);
+//        double d = (z_sampling[j] - z[iz], 2.0) + (r_sampling[i] - r[ir] * costheta[0], 2.0)
+//                   + (r[ir] * sintheta[0], 2.0);
 //
 //        // Compute the contribution to the result variable for this thread from this sampling point
 //        double res = 0.0;
 //        if (radial) {
 //            res += G * rho[ir * nz + iz] * r[ir] * dv0[ir * nz + iz] *
-//                   (r_sampling[0] - r[ir] * costheta[0]) / pow(d, 1.5);
+//                   (r_sampling[0] - r[ir] * costheta[0]) / (d, 1.5);
 //        } else {
 //            res += G * rho[ir * nz + iz] * r[ir] * dv0[ir * nz + iz] *
-//                   (z_sampling[0] - z[iz]) / pow(d, 1.5);
+//                   (z_sampling[0] - z[iz]) / (d, 1.5);
 //        }
 //
 //        // Store the result variable for this thread in the output array

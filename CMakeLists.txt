@@ -18,7 +18,7 @@ find_package(pybind11 REQUIRED)
 
 
 # Add subdirectories
-add_subdirectory(LibGalaxyClass)
 add_subdirectory(LibGalaxy)
+add_subdirectory(LibGalaxyClass)
 add_subdirectory(GalaxyProgram)
 add_subdirectory(HU_Galaxy)

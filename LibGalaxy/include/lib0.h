@@ -8,15 +8,12 @@
 // Description : Hypergeometrical Universe Galaxy Formation in C++, Ansi-style
 //============================================================================
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#include <iostream>
 #include <vector>
 #include <cmath>
-#include <stdio.h>
-#include <stdexcept>
-#include <cstring>
-#include <array>
-#include <iostream>
 #include <future>
-#include <nlopt.hpp>
+#include <utility>
+
 
 
 // Returns a vector of zeros with the given size

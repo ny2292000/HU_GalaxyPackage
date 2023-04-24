@@ -15,13 +15,13 @@
 //        }
 //        for (unsigned int j = 0; j < nz; j++) {
 //            for (unsigned int k = 0; k < ntheta; k++) {
-//                double d = pow(z[j] - z_sampling_jj, 2.0) + pow(r_sampling_ii - r[i] * sintheta[k], 2.0) +
+//                double d = (z[j] - z_sampling_jj, 2.0) + (r_sampling_ii - r[i] * sintheta[k], 2.0) +
 //                           r[i] * r[i] * costheta[k] * costheta[k];
 //                if (radial) {
-//                    thisres = G * rho[i] * r[i] * dv0[i] * (r_sampling_ii - r[i] * sintheta[k]) / pow(d, 1.5);
+//                    thisres = G * rho[i] * r[i] * dv0[i] * (r_sampling_ii - r[i] * sintheta[k]) / (d, 1.5);
 //                    res += thisres;
 //                } else {
-//                    thisres = G * rho[i] * r[i] * dv0[i] * (z[j] - z_sampling_jj) / pow(d, 1.5);
+//                    thisres = G * rho[i] * r[i] * dv0[i] * (z[j] - z_sampling_jj) / (d, 1.5);
 //                    res += thisres;
 //                }
 //                if (debug) {

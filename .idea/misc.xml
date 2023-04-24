@@ -3,7 +3,7 @@
   <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
   <component name="CidrRootsConfiguration">
     <excludeRoots>
-      <file path="$PROJECT_DIR$/ChatGPT_Paper" />
+      <file path="$PROJECT_DIR$/MoveMeOut/ChatGPT_Paper" />
       <file path="$PROJECT_DIR$/venv" />
     </excludeRoots>
   </component>

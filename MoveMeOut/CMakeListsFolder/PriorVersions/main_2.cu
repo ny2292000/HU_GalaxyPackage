@@ -340,7 +340,7 @@ std::vector<float> costhetaFunc(const std::vector<float> &theta)
     std::vector<float> res(points);
     for (unsigned int i=0; i<points; i++)
     {
-        res[i] = cos(theta[i]);
+        res[i] = std::cos(theta[i]);
     }
     return res;
 }

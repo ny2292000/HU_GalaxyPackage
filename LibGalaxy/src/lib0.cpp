@@ -5,24 +5,16 @@
 // Copyright   : Your copyright notice
 // Description : Hypergeometrical Universe Galaxy Formation in C++, Ansi-style
 //============================================================================
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-
+#define _USE_MATH_DEFINES
+#include <iostream>
 #include <vector>
 #include <cmath>
-#include <stdio.h>
-#include <cstring>
-#include <array>
-#include <iostream>
 #include <future>
+#include <utility>
 #include "../include/lib0.h"
-#include <nlopt.hpp>
-#include "../../LibGalaxyClass/include/Galaxy.h"
+
 
 const double pi= 3.141592653589793238;
-
-
-
-
 
 
 // Returns a vector of zeros with the given size
@@ -58,8 +50,8 @@ void print_2D(const std::vector<std::vector<double>>& a) {
 
 double massCalcX(double alpha, double rho, double h, double x) {
     double factor = 0.0007126927557971729; // factor takes care of moving from rho as atom/cc to kg/lyr^3, with alpha = 1/lyr and h0 = in lyr div sun_mass
-    double M_si = -2 * pi * h * rho * x * exp(-alpha * x) / alpha - 2 * pi * h * rho * exp(-alpha * x) / pow(alpha, 2) +
-                  2 * pi * h * rho / pow(alpha, 2);
+    double M_si = -2 * pi * h * rho * x * exp(-alpha * x) / alpha - 2 * pi * h * rho * exp(-alpha * x) / std::pow(alpha, 2) +
+                  2 * pi * h * rho / std::pow(alpha, 2);
     M_si = M_si * factor;
     return M_si;
 }
@@ -67,7 +59,7 @@ double massCalcX(double alpha, double rho, double h, double x) {
 
 double massCalc(double alpha, double rho, double h) {
     double factor = 0.0007126927557971729; // factor takes care of moving from rho as atom/cc to kg/lyr^3, with alpha = 1/lyr and h0 = in lyr div sun_mass
-    double Mtotal_si = 2 * pi * h * rho / pow(alpha, 2);
+    double Mtotal_si = 2 * pi * h * rho / std::pow(alpha, 2);
     Mtotal_si = Mtotal_si * factor;
     return Mtotal_si;
 }
@@ -79,7 +71,7 @@ std::vector<double> costhetaFunc(const std::vector<double> &theta) {
     unsigned int points = theta.size();
     std::vector<double> res(points);
     for (unsigned int i = 0; i < points; i++) {
-        res[i] = cos(theta[i]);
+        res[i] = std::cos(theta[i]);
     }
     return res;
 }
@@ -88,7 +80,7 @@ std::vector<double> sinthetaFunc(const std::vector<double> &theta) {
     unsigned int points = theta.size();
     std::vector<double> res(points);
     for (unsigned int i = 0; i < points; i++) {
-        res[i] = sin(theta[i]);
+        res[i] = std::sin(theta[i]);
     }
     return res;
 }
@@ -267,10 +259,10 @@ std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, doubl
     // Define the grid of n points using a geometric sequence
     std::vector<double> r(n1 + n2);
     for (int i = 0; i < n1; i++) {
-        r[i] = r_min1 * pow(r_max_1 / r_min1, i / (double) (n1 - 1));
+        r[i] = r_min1 * std::pow(r_max_1 / r_min1, i / (double) (n1 - 1));
     }
     for (int i = 0; i < n2; i++) {
-        r[i + n1] = r_min2 * pow(r_max_2 / r_min2, i / (double) (n2 - 1));
+        r[i + n1] = r_min2 * std::pow(r_max_2 / r_min2, i / (double) (n2 - 1));
     }
     return r;
 }

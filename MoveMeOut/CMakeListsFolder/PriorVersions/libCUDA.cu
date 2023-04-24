@@ -164,7 +164,7 @@ __global__ void get_all_g_kernel(int nr, int nz, int ntheta, int nr_sampling, in
                     double d_1 = sqrt(d_2);
                     double d_3 = d_1 * d_1 * d_1;
 
-                    //                    d = pow(z[j] - z_sampling_jj, 2.0) + pow(r_sampling_ii - r[i] * sintheta[k], 2.0) +
+                    //                    d = (z[j] - z_sampling_jj, 2.0) + (r_sampling_ii - r[i] * sintheta[k], 2.0) +
 //                        r[i] * r[i] * costheta[k] * costheta[k];
                     if (radial) {
                         thisres= G * rho_ir * r_ir * dv0_ir *(r_sampling_i - r_ir * sintheta_k)/d_3;

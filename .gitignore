@@ -6,6 +6,6 @@
 /build/
 
 /ChatGPT_Paper/
-/CMakeListsFolder/
+/MoveMeOut/CMakeListsFolder/
 */__pycache__/*
 /.idea/

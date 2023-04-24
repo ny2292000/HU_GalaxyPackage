@@ -122,7 +122,7 @@ std::vector<double> costhetaFunc(const std::vector<double> &theta) {
     unsigned int points = theta.size();
     std::vector<double> res(points);
     for (unsigned int i = 0; i < points; i++) {
-        res[i] = cos(theta[i]);
+        res[i] = std::cos(theta[i]);
     }
     return res;
 }

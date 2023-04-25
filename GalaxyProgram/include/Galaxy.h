@@ -76,6 +76,13 @@ public:
     get_f_z(const std::vector<double> &x, bool debug);
     void read_galaxy_rotation_curve(std::vector<std::array<double, 2>> vin);
 
+    std::vector<std::vector<double>> print_rotation_curve();
+
+    std::vector<std::vector<double>> print_simulated_curve();
+
+    std::vector<double> print_density_parameters();
+
+
     int nr;
     int nz;
     int nr_sampling;

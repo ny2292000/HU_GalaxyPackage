@@ -12,7 +12,6 @@
 #include <utility>
 
 
-
 // Returns a vector of zeros with the given size
 std::vector<double> zeros_1(int size) ;
 
@@ -75,6 +74,10 @@ public:
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
     get_f_z(const std::vector<double> &x, bool debug);
     void read_galaxy_rotation_curve(std::vector<std::array<double, 2>> vin);
+    std::vector<double> simulate_rotation_curve();
+    std::vector<std::vector<double>> print_rotation_curve();
+    std::vector<std::vector<double>>print_simulated_curve();
+    std::vector<double> print_density_parameters();
 
     int nr;
     int nz;
@@ -104,13 +107,10 @@ public:
     std::vector<double> x_rotation_points;
     int n_rotation_points;
     std::vector<double> v_rotation_points;
+    std::vector<double> v_simulated_points;
 };
 
-// Define the function to be minimized
-static double error_function(const std::vector<double> &x, Galaxy &myGalaxy);
+std::vector<double> nelder_mead(const std::vector<double>& x0, Galaxy& myGalaxy, int max_iter, double xtol_rel);
 
 
-// Define the Nelder-Mead optimizer
-std::vector<double>
-nelder_mead(const std::vector<double> &x0, Galaxy &myGalaxy, int max_iter = 1000, double xtol_rel = 1e-6);
 #endif // GALAXY_H

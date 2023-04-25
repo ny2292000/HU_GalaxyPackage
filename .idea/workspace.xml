@@ -21,25 +21,17 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="769725aa-a726-4b8d-9ad3-5599a4a8275f" name="Changes" comment="Join Class Library, Helper Functions Library and class wrapper in a single module.Working cpp library plus GalaxyProgram.&#10;Deleted GalaxyWrapper.h.">
-      <change afterPath="$PROJECT_DIR$/HU_Galaxy.egg-info/PKG-INFO" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HU_Galaxy.egg-info/SOURCES.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HU_Galaxy.egg-info/dependency_links.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HU_Galaxy.egg-info/requires.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HU_Galaxy.egg-info/top_level.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HU_Galaxy/galaxy_wrapper.cpython-310-x86_64-linux-gnu.so" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/HU_Galaxy-0.1-py3.10-linux-x86_64.egg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/galaxy_wrapper.cpython-310-x86_64-linux-gnu.so" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testwrapper.py" afterDir="false" />
+    <list default="true" id="769725aa-a726-4b8d-9ad3-5599a4a8275f" name="Changes" comment="Package working locally. Next I will get the one in the env to work">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GalaxyProgram/src/GalaxyApp.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/GalaxyProgram/src/GalaxyApp.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GalaxyProgram/include/Galaxy.h" beforeDir="false" afterPath="$PROJECT_DIR$/GalaxyProgram/include/Galaxy.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HU_Galaxy/GalaxyWrapper.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/GalaxyWrapper.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/src/Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/src/GalaxyWrapper.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/GalaxyWrapper.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/testwrapper.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HU_Galaxy/galaxy_wrapper.cpython-310-x86_64-linux-gnu.so" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/HU_Galaxy/include/Galaxy.h" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/include/Galaxy.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/galaxy_wrapper.cpython-310-x86_64-linux-gnu.so" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testwrapper.py" beforeDir="false" afterPath="$PROJECT_DIR$/testwrapper.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -118,6 +110,11 @@
     </key>
   </component>
   <component name="RunManager" selected="Python.testwrapper">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="MainProNonCUDA" type="CMakeListConfigurationType" factoryName="CMakeListConfigurationFactory" temporary="true">
       <method v="2" />
     </configuration>
@@ -283,7 +280,8 @@
       <workItem from="1682347474625" duration="1314000" />
       <workItem from="1682348896312" duration="1264000" />
       <workItem from="1682357034807" duration="9066000" />
-      <workItem from="1682386001043" duration="662000" />
+      <workItem from="1682386001043" duration="7145000" />
+      <workItem from="1682417237496" duration="3473000" />
     </task>
     <task id="LOCAL-00001" summary="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package">
       <created>1681744646530</created>
@@ -355,7 +353,14 @@
       <option name="project" value="LOCAL" />
       <updated>1682358779021</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Package working locally. Next I will get the one in the env to work">
+      <created>1682388362092</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1682388362092</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -366,6 +371,17 @@
     <isAutomaticCheckingOnLaunch value="false" />
     <isAutomaticFoundErrors value="true" />
     <isAutomaticFoundErrors value="true" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
@@ -379,7 +395,8 @@
     <MESSAGE value="Working both Class Library and Helper Functions Library lib0.cpp&#10;python package created&#10;Cleaned up python_libraries and libboost_python libraries from&#10;cpp libraries&#10;Separate Helper and Class libraries&#10;Changing Setup.py to be done in debug mode&#10;major shake up. Next step creating the branch to aggregate everything and simplify problem&#10;Now working on eliminating circular references" />
     <MESSAGE value="Join Class Library, Helper Functions Library and class wrapper in a single module." />
     <MESSAGE value="Join Class Library, Helper Functions Library and class wrapper in a single module.Working cpp library plus GalaxyProgram.&#10;Deleted GalaxyWrapper.h." />
-    <option name="LAST_COMMIT_MESSAGE" value="Join Class Library, Helper Functions Library and class wrapper in a single module.Working cpp library plus GalaxyProgram.&#10;Deleted GalaxyWrapper.h." />
+    <MESSAGE value="Package working locally. Next I will get the one in the env to work" />
+    <option name="LAST_COMMIT_MESSAGE" value="Package working locally. Next I will get the one in the env to work" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -403,11 +420,6 @@
           <url>file://$PROJECT_DIR$/GalaxyProgram/src/GalaxyApp.cpp</url>
           <line>57</line>
           <option name="timeStamp" value="54" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/HU_Galaxy/GalaxyWrapper.cpp</url>
-          <line>52</line>
-          <option name="timeStamp" value="57" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="CMakeLineBreakpoint">
           <url>file://$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/CMakeLists.txt</url>
@@ -441,12 +453,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/HU_Galaxy/__init__.py</url>
-          <line>6</line>
+          <line>1</line>
           <option name="timeStamp" value="56" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/testwrapper.py</url>
-          <line>58</line>
+          <line>57</line>
           <option name="timeStamp" value="61" />
         </line-breakpoint>
       </breakpoints>

@@ -14,6 +14,7 @@
 
 namespace py = pybind11;
 
+
 class GalaxyWrapper {
 public:
     GalaxyWrapper(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
@@ -40,9 +41,62 @@ public:
         py::array_t<double> f_z_z({rows, cols}, f_z_z_flat.data());
 
         return std::make_pair(f_z_r, f_z_z);
+    };
+
+
+    std::vector<std::vector<double>> print_rotation_curve() {
+        std::vector<std::vector<double>> rotation_curve;
+        for (int i = 0; i < galaxy.n_rotation_points; i++) {
+            std::vector<double> point{galaxy.x_rotation_points[i], galaxy.v_rotation_points[i]};
+            rotation_curve.push_back(point);
+        }
+        return rotation_curve;
+    };
+
+    py::list print_simulated_curve() {
+        py::list simulated_curve;
+        for (int i = 0; i < galaxy.n_rotation_points; i++) {
+            py::list point;
+            point.append(galaxy.x_rotation_points[i]);
+            point.append(galaxy.v_simulated_points[i]);
+            simulated_curve.append(point);
+        }
+        return simulated_curve;
+    };
+
+    py::list print_density_parameters() {
+        py::list density_params;
+        density_params.append(galaxy.rho_0);
+        density_params.append(galaxy.alpha_0);
+        density_params.append(galaxy.rho_1);
+        density_params.append(galaxy.alpha_1);
+        density_params.append(galaxy.h0);
+        return density_params;
+    };
+
+
+
+    py::array_t<double> simulate_rotation_curve() {
+        // Calculate density at all radii
+        std::vector<double> x0{galaxy.rho_0, galaxy.alpha_0, galaxy.rho_1, galaxy.alpha_1, galaxy.h0};
+        int max_iter = 1000;
+        double xtol_rel = 1e-6;
+        std::vector<double> xout = nelder_mead(x0, galaxy, max_iter, xtol_rel);
+        galaxy.rho_0 = xout[0];
+        galaxy.alpha_0 = xout[1];
+        galaxy.rho_1 = xout[2];
+        galaxy.alpha_1 = xout[3];
+        galaxy.h0 = xout[4];
+        galaxy.rho = density(galaxy.rho_0, galaxy.alpha_0, galaxy.rho_1, galaxy.alpha_1, galaxy.r);
+        // Calculate rotational velocity at all radii
+        galaxy.v_simulated_points = calculate_rotational_velocity(galaxy.redshift, galaxy.dv0, galaxy.x_rotation_points,
+                                                                  galaxy.r, galaxy.z, galaxy.costheta, galaxy.sintheta,
+                                                                  galaxy.rho, false);
+        double *data = galaxy.v_simulated_points.data(); // Get a pointer to the underlying data
+        std::size_t size = galaxy.v_simulated_points.size(); // Get the size of the vector
+        py::array_t<double> result(size, data);
+        return result;
     }
-
-
 private:
     Galaxy galaxy;
 };
@@ -52,5 +106,10 @@ PYBIND11_MODULE(galaxy_wrapper, m) {
             .def(py::init<double, double, double, double, double, double, double, int, int, int, int, int, double>(),
                  py::arg("GalaxyMass"), py::arg("rho_0"), py::arg("alpha_0"), py::arg("rho_1"), py::arg("alpha_1"), py::arg("h0"),
                  py::arg("R_max"), py::arg("nr"), py::arg("nz"), py::arg("nr_sampling"), py::arg("nz_sampling"), py::arg("ntheta"), py::arg("redshift") = 0.0)
-            .def("get_f_z", &GalaxyWrapper::get_f_z, py::arg("x"), py::arg("debug") = false);
+            .def("get_f_z", &GalaxyWrapper::get_f_z, py::arg("x"), py::arg("debug") = false)
+            .def("print_rotation_curve", &GalaxyWrapper::print_rotation_curve)
+            .def("print_simulated_curve", &GalaxyWrapper::print_simulated_curve)
+            .def("simulate_rotation_curve", &GalaxyWrapper::simulate_rotation_curve)
+            .def("print_density_parameters", &GalaxyWrapper::print_density_parameters);
 }
+

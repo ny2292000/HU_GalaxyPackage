@@ -7,5 +7,5 @@
 
 /ChatGPT_Paper/
 /MoveMeOut/CMakeListsFolder/
-*/__pycache__/*
 /.idea/
+__pycache__/

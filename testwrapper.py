@@ -48,8 +48,7 @@ M33 = hu.GalaxyWrapper(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr
 
 x0 = [1.709545e+01, 4.773922e-04, 1.512449e-01, 2.400304e-05, 1.488530e+05]
 
-xout = nelder_mead(x0, M33) # Replace with the correct function call when available
-print(xout)
+xout = M33.simulate_rotation_curve();
 
 debug = False
 

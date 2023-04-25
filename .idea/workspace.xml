@@ -11,7 +11,6 @@
   </component>
   <component name="CMakeRunConfigurationManager">
     <generated>
-      <config projectName="MainProNonCUDA" targetName="GalaxyProgram" />
       <config projectName="MainProNonCUDA" targetName="HU_Galaxy_GalaxyWrapper" />
     </generated>
   </component>
@@ -22,34 +21,25 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="769725aa-a726-4b8d-9ad3-5599a4a8275f" name="Changes" comment="Join Class Library, Helper Functions Library and class wrapper in a single module.">
-      <change afterPath="$PROJECT_DIR$/HU_Galaxy/include/Galaxy.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HU_Galaxy/src/Galaxy.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HU_Galaxy/testwrapper.py" afterDir="false" />
+    <list default="true" id="769725aa-a726-4b8d-9ad3-5599a4a8275f" name="Changes" comment="Join Class Library, Helper Functions Library and class wrapper in a single module.Working cpp library plus GalaxyProgram.&#10;Deleted GalaxyWrapper.h.">
+      <change afterPath="$PROJECT_DIR$/HU_Galaxy.egg-info/PKG-INFO" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HU_Galaxy.egg-info/SOURCES.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HU_Galaxy.egg-info/dependency_links.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HU_Galaxy.egg-info/requires.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HU_Galaxy.egg-info/top_level.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HU_Galaxy/galaxy_wrapper.cpython-310-x86_64-linux-gnu.so" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dist/HU_Galaxy-0.1-py3.10-linux-x86_64.egg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/galaxy_wrapper.cpython-310-x86_64-linux-gnu.so" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/testwrapper.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ChatIdeas" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/GalaxyProgram/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/GalaxyProgram/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GalaxyProgram/src/GalaxyApp.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/GalaxyProgram/src/GalaxyApp.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/include/HU_Galaxy_PyBind11.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/setup.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/src/HU_Galaxy_PyBind11.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/src/GalaxyWrapper.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LibGalaxy/CMakeLists.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/LibGalaxy/include/lib0.h" beforeDir="false" afterPath="$PROJECT_DIR$/GalaxyProgram/include/Galaxy.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LibGalaxy/src/lib0.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/GalaxyProgram/src/Galaxy.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LibGalaxyClass/CMakeLists.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/LibGalaxyClass/include/Galaxy.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/LibGalaxyClass/src/Galaxy.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/src/Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/src/Galaxy.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/src/TestGalaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/src/TestGalaxy.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/src/lib0.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/src/lib0.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/HU_Galaxy_GalaxyWrapper.cpython-310-x86_64-linux-gnu.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/libgalaxy_cpp_class.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/libgalaxy_cpp_helper.so" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/HU_Galaxy/src/Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HU_Galaxy/src/GalaxyWrapper.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/GalaxyWrapper.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HU_Galaxy/testwrapper.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testwrapper.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -89,28 +79,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "last_opened_file_path": "/home/mp74207/CLionProjects/GalaxyFormationSingleFile/HU_Galaxy/lib",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "settings.space",
-    "two.files.diff.last.used.file": "/home/mp74207/Downloads/GalaxyRotationSingleFile-main/CMakeLists.txt",
-    "two.files.diff.last.used.folder": "/home/mp74207/Downloads/GalaxyRotationSingleFile-main",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/mp74207/CLionProjects/GalaxyFormationSingleFile/HU_Galaxy/lib&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;settings.space&quot;,
+    &quot;two.files.diff.last.used.file&quot;: &quot;/home/mp74207/Downloads/GalaxyRotationSingleFile-main/CMakeLists.txt&quot;,
+    &quot;two.files.diff.last.used.folder&quot;: &quot;/home/mp74207/Downloads/GalaxyRotationSingleFile-main&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/HU_Galaxy/lib" />
@@ -120,26 +110,16 @@
       <recent name="$PROJECT_DIR$/lib" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/GalaxyProgram/lib" />
+      <recent name="$PROJECT_DIR$/HU_Galaxy" />
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/lib" />
+      <recent name="$PROJECT_DIR$/GalaxyProgram/lib" />
       <recent name="$PROJECT_DIR$/HU_Galaxy/src" />
-      <recent name="$PROJECT_DIR$/GalaxyProgram/include" />
-      <recent name="$PROJECT_DIR$/GalaxyProgram" />
     </key>
   </component>
-  <component name="RunManager" selected="CMake Application.GalaxyProgram">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="Python.testwrapper">
     <configuration name="MainProNonCUDA" type="CMakeListConfigurationType" factoryName="CMakeListConfigurationFactory" temporary="true">
       <method v="2" />
-    </configuration>
-    <configuration name="GalaxyProgram" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="MainProNonCUDA" TARGET_NAME="GalaxyProgram" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="MainProNonCUDA" RUN_TARGET_NAME="GalaxyProgram">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
     </configuration>
     <configuration name="HU_Galaxy_GalaxyWrapper" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="MainProNonCUDA" TARGET_NAME="HU_Galaxy_GalaxyWrapper" CONFIG_NAME="Debug">
       <method v="2">
@@ -223,7 +203,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/HU_Galaxy/testwrapper.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/testwrapper.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -251,7 +231,6 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="CMake Application.GalaxyProgram" />
       <item itemvalue="CMake Application.HU_Galaxy_GalaxyWrapper" />
       <item itemvalue="CMake Debug.MainProNonCUDA" />
       <item itemvalue="Python.python setup.py install" />
@@ -303,7 +282,8 @@
       <workItem from="1682334383461" duration="11574000" />
       <workItem from="1682347474625" duration="1314000" />
       <workItem from="1682348896312" duration="1264000" />
-      <workItem from="1682357034807" duration="1463000" />
+      <workItem from="1682357034807" duration="9066000" />
+      <workItem from="1682386001043" duration="662000" />
     </task>
     <task id="LOCAL-00001" summary="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package">
       <created>1681744646530</created>
@@ -368,7 +348,14 @@
       <option name="project" value="LOCAL" />
       <updated>1682335518898</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Join Class Library, Helper Functions Library and class wrapper in a single module.Working cpp library plus GalaxyProgram.&#10;Deleted GalaxyWrapper.h.">
+      <created>1682358779021</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1682358779021</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -391,7 +378,8 @@
     <MESSAGE value="Working both Class Library and Helper Functions Library lib0.cpp&#10;python package created&#10;Cleaned up python_libraries and libboost_python libraries from&#10;cpp libraries&#10;Separate Helper and Class libraries&#10;Changing Setup.py to be done in debug mode&#10;Now working on eliminating circular references" />
     <MESSAGE value="Working both Class Library and Helper Functions Library lib0.cpp&#10;python package created&#10;Cleaned up python_libraries and libboost_python libraries from&#10;cpp libraries&#10;Separate Helper and Class libraries&#10;Changing Setup.py to be done in debug mode&#10;major shake up. Next step creating the branch to aggregate everything and simplify problem&#10;Now working on eliminating circular references" />
     <MESSAGE value="Join Class Library, Helper Functions Library and class wrapper in a single module." />
-    <option name="LAST_COMMIT_MESSAGE" value="Join Class Library, Helper Functions Library and class wrapper in a single module." />
+    <MESSAGE value="Join Class Library, Helper Functions Library and class wrapper in a single module.Working cpp library plus GalaxyProgram.&#10;Deleted GalaxyWrapper.h." />
+    <option name="LAST_COMMIT_MESSAGE" value="Join Class Library, Helper Functions Library and class wrapper in a single module.Working cpp library plus GalaxyProgram.&#10;Deleted GalaxyWrapper.h." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -415,6 +403,11 @@
           <url>file://$PROJECT_DIR$/GalaxyProgram/src/GalaxyApp.cpp</url>
           <line>57</line>
           <option name="timeStamp" value="54" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/HU_Galaxy/GalaxyWrapper.cpp</url>
+          <line>52</line>
+          <option name="timeStamp" value="57" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="CMakeLineBreakpoint">
           <url>file://$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/CMakeLists.txt</url>
@@ -447,19 +440,23 @@
           <option name="timeStamp" value="39" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/HU_Galaxy/testwrapper.py</url>
-          <line>4</line>
-          <option name="timeStamp" value="40" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/HU_Galaxy/__init__.py</url>
-          <option name="timeStamp" value="47" />
+          <line>6</line>
+          <option name="timeStamp" value="56" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/HU_Galaxy/testwrapper.py</url>
-          <option name="timeStamp" value="48" />
+          <url>file://$PROJECT_DIR$/testwrapper.py</url>
+          <line>58</line>
+          <option name="timeStamp" value="61" />
         </line-breakpoint>
       </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
     </breakpoint-manager>
     <watches-manager>
       <configuration name="tests">

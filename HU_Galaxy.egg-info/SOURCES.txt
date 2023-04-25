@@ -1,0 +1,9 @@
+setup.py
+HU_Galaxy/Galaxy.cpp
+HU_Galaxy/GalaxyWrapper.cpp
+HU_Galaxy/__init__.py
+HU_Galaxy.egg-info/PKG-INFO
+HU_Galaxy.egg-info/SOURCES.txt
+HU_Galaxy.egg-info/dependency_links.txt
+HU_Galaxy.egg-info/requires.txt
+HU_Galaxy.egg-info/top_level.txt

@@ -1,4 +1,5 @@
-from .galaxy_wrapper import GalaxyWrapper
+from . import galaxy_wrapper
+
 
 
 if __name__ == "__main__":

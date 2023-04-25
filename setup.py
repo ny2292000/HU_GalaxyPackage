@@ -56,7 +56,7 @@ else:
     ]
 
 extension_module = Extension(
-    'HU_Galaxy.galaxy_wrapper',
+    'galaxy_wrapper',
     sources=['HU_Galaxy/Galaxy.cpp', 'HU_Galaxy/GalaxyWrapper.cpp'],
     libraries=libraries,
     library_dirs=library_dirs,

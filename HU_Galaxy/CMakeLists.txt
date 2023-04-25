@@ -30,10 +30,10 @@ include_directories(
 
 
 # Add source files
-#pybind11_add_module
-add_library(${PROJECT_NAME} SHARED
-       src/GalaxyWrapper.cpp
-       src/Galaxy.cpp
+pybind11_add_module(${PROJECT_NAME}
+#add_library(${PROJECT_NAME} SHARED
+       GalaxyWrapper.cpp
+       Galaxy.cpp
        include/Galaxy.h
         )
 #add_library(${PROJECT_NAME} SHARED src/HU_Galaxy_PyBind11.cpp include/HU_Galaxy_PyBind11.h)

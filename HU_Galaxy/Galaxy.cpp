@@ -3,14 +3,15 @@
 //
 const double pi = 3.141592653589793;
 
-#include "Galaxy.h"
+#include <Python.h>
+#include <nlopt.hpp>
 #include <vector>
 #include <array>
 #include <utility>
 #include <cmath>
 #include <iostream>
-#include <nlopt.hpp>
 
+#include "Galaxy.h"
 
 
 // Define the function to be minimized
@@ -22,7 +23,7 @@ static double error_function(const std::vector<double> &x, Galaxy &myGalaxy) {
     double alpha_1 = x[3];
     double h0 = x[4];
     // Calculate the total mass of the galaxy
-    double Mtotal_si = massCalc(alpha_0, rho_0, h0);  // Mtotal in Solar Masses
+    double Mtotal_si = calculate_mass(alpha_0, rho_0, h0);  // Mtotal in Solar Masses
     double error_mass = std::pow((myGalaxy.GalaxyMass - Mtotal_si) / myGalaxy.GalaxyMass, 2);
     bool debug = false;
     std::vector<double> rho = density(rho_0, alpha_0, rho_1, alpha_1, myGalaxy.r);
@@ -45,21 +46,6 @@ auto objective_wrapper = [](const std::vector<double> &x, std::vector<double> &g
     Galaxy *myGalaxy = static_cast<Galaxy *>(data);
     return error_function(x, *myGalaxy);
 };
-
-// Define the Nelder-Mead optimizer
-std::vector<double>
-nelder_mead(const std::vector<double> &x0, Galaxy &myGalaxy, int max_iter, double xtol_rel) {
-    nlopt::opt opt(nlopt::LN_NELDERMEAD, x0.size());
-    opt.set_min_objective(objective_wrapper, &myGalaxy);
-    opt.set_xtol_rel(xtol_rel);
-    std::vector<double> x = x0;
-    double minf;
-    nlopt::result result = opt.optimize(x, minf);
-    if (result < 0) {
-        std::cerr << "nlopt failed: " << strerror(result) << std::endl;
-    }
-    return x;
-}
 
 // Returns a vector of zeros with the given size
 std::vector<double> zeros_1(int size) {
@@ -101,7 +87,7 @@ double massCalcX(double alpha, double rho, double h, double x) {
 }
 
 
-double massCalc(double alpha, double rho, double h) {
+double calculate_mass(double alpha, double rho, double h) {
     double factor = 0.0007126927557971729; // factor takes care of moving from rho as atom/cc to kg/lyr^3, with alpha = 1/lyr and h0 = in lyr div sun_mass
     double Mtotal_si = 2 * pi * h * rho / std::pow(alpha, 2);
     Mtotal_si = Mtotal_si * factor;
@@ -293,8 +279,8 @@ std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, doubl
     int n_range = 4;
     double r_max_1 = n_range / alpha_0;
     double r_max_2 = n_range / alpha_1;
-    double M1 = massCalc(alpha_0, rho_0, 1.0);
-    double M2 = massCalc(alpha_1, rho_1, 1.0);
+    double M1 = calculate_mass(alpha_0, rho_0, 1.0);
+    double M2 = calculate_mass(alpha_1, rho_1, 1.0);
     int n1 = M1 / (M1 + M2) * n;
     int n2 = M2 / (M1 + M2) * n;
     double r_min1 = 1.0;
@@ -375,9 +361,6 @@ Galaxy::get_f_z(const std::vector<double> &x, bool debug) {
     return f_z;
 }
 
-
-
-
 void Galaxy::read_galaxy_rotation_curve(std::vector<std::array<double, 2>> vin) {
     n_rotation_points = vin.size();
     this->x_rotation_points.clear();
@@ -386,23 +369,54 @@ void Galaxy::read_galaxy_rotation_curve(std::vector<std::array<double, 2>> vin) 
         this->x_rotation_points.push_back(row[0]); // Extract the first column (index 0)
         this->v_rotation_points.push_back(row[1]); // Extract the first column (index 0)
     }
+
+
 }
 
+// Define the Nelder-Mead optimizer
+std::vector<double>
+Galaxy::nelder_mead(const std::vector<double> &x0, Galaxy &myGalaxy, int max_iter, double xtol_rel) {
+    nlopt::opt opt(nlopt::LN_NELDERMEAD, x0.size());
+    opt.set_min_objective(objective_wrapper, &myGalaxy);
+    opt.set_xtol_rel(xtol_rel);
+    std::vector<double> x = x0;
+    double minf;
+    nlopt::result result = opt.optimize(x, minf);
+    if (result < 0) {
+        std::cerr << "nlopt failed: " << strerror(result) << std::endl;
+    }
+    return x;
+}
+
+std::vector<double> Galaxy::optimize_density_parameters(){
+    std::vector<double> xin({rho_0, alpha_0, rho_1, alpha_1, h0});
+    int iter =1000;
+    double tol = 1E-6;
+    std::vector<double> xout = nelder_mead(xin, *this, iter, tol);
+    rho_0 = xout[0];
+    alpha_0 = xout[1];
+    rho_1 = xout[2];
+    alpha_1 = xout[3];
+    h0 = xout[4];
+    return xout;
+}
 
 std::vector<double> Galaxy::simulate_rotation_curve() {
     // Calculate density at all radii
-    std::vector<double> x0 {rho_0, alpha_0, rho_1, alpha_1, h0};
+    std::vector<double> x0{rho_0, alpha_0, rho_1, alpha_1, h0};
     int max_iter = 1000;
     double xtol_rel = 1e-6;
-    std::vector<double> xout = nelder_mead(x0, *this, max_iter , xtol_rel);
-    rho_0=xout[0];
+    std::vector<double> xout = nelder_mead(x0, *this, max_iter, xtol_rel);
+    rho_0 = xout[0];
     alpha_0 = xout[1];
     rho_1 = xout[2];
     alpha_1 = xout[3];
     h0 = xout[4];
     rho = density(rho_0, alpha_0, rho_1, alpha_1, r);
     // Calculate rotational velocity at all radii
-    v_simulated_points = calculate_rotational_velocity(redshift, dv0, x_rotation_points, r, z, costheta, sintheta, rho, false);
+    v_simulated_points = calculate_rotational_velocity(redshift, dv0, x_rotation_points,
+                                                       r, z, costheta, sintheta,
+                                                       rho, false);
     return v_simulated_points;
 }
 

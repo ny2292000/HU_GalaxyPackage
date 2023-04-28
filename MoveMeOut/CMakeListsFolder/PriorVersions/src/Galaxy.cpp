@@ -3,7 +3,7 @@
 //
 const double pi = 3.141592653589793;
 #include "lib0.h"
-#include "../../../../HU_Galaxy/include/Galaxy.h"
+#include "../../../../HU_Galaxy/Galaxy.h"
 
     int nr;
     int nz;

@@ -23,7 +23,7 @@
 #include "lib0.h"
 #include <nlopt.hpp>
 //#define MAX_GRID_DATA_SIZE 800
-#include "../../../../HU_Galaxy/include/Galaxy.h"
+#include "../../../../HU_Galaxy/Galaxy.h"
 const double pi= 3.141592653589793238;
 
 

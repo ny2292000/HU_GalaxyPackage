@@ -74,20 +74,28 @@ public:
         return density_params;
     };
 
+    py::array_t<double> optimize_density_parameters() {
+        std::vector<double> xout = galaxy.optimize_density_parameters();
 
+        double *data = xout.data(); // Get a pointer to the underlying data
+        std::size_t size = xout.size(); // Get the size of the vector
+        py::array_t<double> result(size, data);
+
+        return result;
+    }
 
     py::array_t<double> simulate_rotation_curve() {
         // Calculate density at all radii
-        std::vector<double> x0{galaxy.rho_0, galaxy.alpha_0, galaxy.rho_1, galaxy.alpha_1, galaxy.h0};
-        int max_iter = 1000;
-        double xtol_rel = 1e-6;
-        std::vector<double> xout = nelder_mead(x0, galaxy, max_iter, xtol_rel);
-        galaxy.rho_0 = xout[0];
-        galaxy.alpha_0 = xout[1];
-        galaxy.rho_1 = xout[2];
-        galaxy.alpha_1 = xout[3];
-        galaxy.h0 = xout[4];
+        py::array_t<double> xout = optimize_density_parameters();
+        std::vector<double> xout_vec(xout.data(), xout.data() + xout.size());
+
+        galaxy.rho_0 = xout_vec[0];
+        galaxy.alpha_0 = xout_vec[1];
+        galaxy.rho_1 = xout_vec[2];
+        galaxy.alpha_1 = xout_vec[3];
+        galaxy.h0 = xout_vec[4];
         galaxy.rho = density(galaxy.rho_0, galaxy.alpha_0, galaxy.rho_1, galaxy.alpha_1, galaxy.r);
+
         // Calculate rotational velocity at all radii
         galaxy.v_simulated_points = calculate_rotational_velocity(galaxy.redshift, galaxy.dv0, galaxy.x_rotation_points,
                                                                   galaxy.r, galaxy.z, galaxy.costheta, galaxy.sintheta,
@@ -97,19 +105,45 @@ public:
         py::array_t<double> result(size, data);
         return result;
     }
+
+    const Galaxy& get_galaxy() const {
+        return galaxy;
+    }
+
+
+
 private:
     Galaxy galaxy;
 };
 
-PYBIND11_MODULE(galaxy_wrapper, m) {
+PYBIND11_MODULE(HU_Galaxy, m) {
     py::class_<GalaxyWrapper>(m, "GalaxyWrapper")
             .def(py::init<double, double, double, double, double, double, double, int, int, int, int, int, double>(),
                  py::arg("GalaxyMass"), py::arg("rho_0"), py::arg("alpha_0"), py::arg("rho_1"), py::arg("alpha_1"), py::arg("h0"),
                  py::arg("R_max"), py::arg("nr"), py::arg("nz"), py::arg("nr_sampling"), py::arg("nz_sampling"), py::arg("ntheta"), py::arg("redshift") = 0.0)
+            .def("get_galaxy", &GalaxyWrapper::get_galaxy)
+            .def_property("nr", [](Galaxy& g) { return g.nr; }, [](Galaxy& g, int nr) { g.nr = nr; })
+            .def_property("nz", [](Galaxy& g) { return g.nz; }, [](Galaxy& g, int nz) { g.nz = nz; })
+            .def_property("nr_sampling", [](Galaxy& g) { return g.nr_sampling; }, [](Galaxy& g, int nr_sampling) { g.nr_sampling = nr_sampling; })
+            .def_property("nz_sampling", [](Galaxy& g) { return g.nz_sampling; }, [](Galaxy& g, int nz_sampling) { g.nz_sampling = nz_sampling; })
+//          .def_property("R_max", [](Galaxy& g) { return g.R_max; }, [](Galaxy& g, double R_max) { g.R_max = R_max; })
+            .def_property_readonly("rho_0", [](const Galaxy& gw) -> double { return gw.rho_0; })
+
+
+            .def_property_readonly("alpha_0", [](const GalaxyWrapper& gw) -> double { return gw.get_galaxy().alpha_0; })
+
+
+            .def_property_readonly("alpha_1", [](const Galaxy& gw)  -> double{ return gw.alpha_1; })
+            .def_property_readonly("rho_1", [](const Galaxy& gw) -> double { return gw.rho_1; })
+            .def_property_readonly("h0", [](const Galaxy& gw)  -> double{ return gw.h0; })
+            .def_property_readonly("R_max", [](const Galaxy& gw) -> double { return gw.R_max; })
+
             .def("get_f_z", &GalaxyWrapper::get_f_z, py::arg("x"), py::arg("debug") = false)
             .def("print_rotation_curve", &GalaxyWrapper::print_rotation_curve)
             .def("print_simulated_curve", &GalaxyWrapper::print_simulated_curve)
             .def("simulate_rotation_curve", &GalaxyWrapper::simulate_rotation_curve)
+            .def("optimize_density_parameters", &GalaxyWrapper::optimize_density_parameters, "Optimize the density parameters")
             .def("print_density_parameters", &GalaxyWrapper::print_density_parameters);
+    m.def("calculate_mass", &calculate_mass, py::arg("rho"), py::arg("alpha"), py::arg("h0"), "A function to calculate the mass of the galaxy");
 }
 

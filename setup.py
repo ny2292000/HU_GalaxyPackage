@@ -1,34 +1,23 @@
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 import os
+import subprocess
 
-class CustomBuildExtCommand(build_ext):
+# Define the custom build command
+class CMakeBuild(build_ext):
     def run(self):
-        os.environ["MODULE_NAME"] = "GalaxyWrapper"
+        # Run CMake to configure the C++ project
+        cmake_args = ['cmake', '.']
+        subprocess.check_call(cmake_args, cwd='HU_Galaxy')
+
+        # Run the build command
+        build_args = ['cmake', '--build', '.']
+        subprocess.check_call(build_args, cwd='HU_Galaxy')
+
+        # Call the parent build command to finish building the Python extension
         build_ext.run(self)
 
-# Find the path to the pybind11 headers
-pybind11_include_dir = os.popen('python3 -m pybind11 --includes').read().strip()[2:]
 
-# Set the include directories for compilation
-include_dirs = [
-    "HU_Galaxy/include",
-    pybind11_include_dir,
-]
-
-# Set the library directories to link against
-library_dirs = [
-        "HU_Galaxy/lib"
-]
-
-# Set the libraries to link against
-libraries = [
-    "stdc++fs",
-    "m",
-    "nlopt",
-]
-
-# Define the extension module
 if os.environ.get('DEBUG'):
     extra_compile_args = ['-g', '-O0']
     extra_link_args = [
@@ -55,16 +44,16 @@ else:
         f"-Wl,-rpath,{os.path.abspath('lib')}"
     ]
 
-extension_module = Extension(
-    'galaxy_wrapper',
-    sources=['HU_Galaxy/Galaxy.cpp', 'HU_Galaxy/GalaxyWrapper.cpp'],
-    libraries=libraries,
-    library_dirs=library_dirs,
-    include_dirs=include_dirs,
+
+package_src = {"HU_Galaxy": ["*.cpp", "*.h"]}
+
+module = Extension(
+    'HU_Galaxy',
+    sources=['HU_Galaxy/Galaxy.cpp', 'HU_Galaxy/HU_Galaxy.cpp'],
     language='c++',
     extra_compile_args=extra_compile_args,
     extra_link_args=extra_link_args,
-    define_macros=[('PYBIND11_MODULE', 'galaxy_wrapper')]
+    define_macros=[('PYBIND11_MODULE', 'HU-Galaxy')],
 )
 
 # Call setup() to build the module
@@ -74,7 +63,12 @@ setup(
     description='A Python wrapper for the Hypergeometrical Universe Theory Galaxy Formation C++ library',
     author='Marco Pereira',
     author_email='ny2292000@gmail.com',
-    ext_modules=[extension_module],
+    package_dir={'': '.'},
+    package_data=package_src,
     packages=['HU_Galaxy'],
     install_requires=['numpy', 'pybind11'],
+    ext_modules=[module],
+    cmdclass={'build_ext': CMakeBuild},
 )
+
+

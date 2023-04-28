@@ -12,7 +12,6 @@
 #include <utility>
 
 
-
 // Returns a vector of zeros with the given size
 std::vector<double> zeros_1(int size) ;
 
@@ -25,7 +24,7 @@ void print_2D(const std::vector<std::vector<double>>& a);
 
 double massCalcX(double alpha, double rho, double h, double x) ;
 
-double massCalc(double alpha, double rho, double h) ;
+double calculate_mass(double alpha, double rho, double h) ;
 
 
 std::vector<double> costhetaFunc(const std::vector<double> &theta);
@@ -66,6 +65,8 @@ std::vector<double> calculate_rotational_velocity(double redshift, const std::ve
 
 std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, double alpha_1, int n) ;
 
+
+
 class Galaxy {
 public:
     Galaxy(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
@@ -75,14 +76,14 @@ public:
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
     get_f_z(const std::vector<double> &x, bool debug);
     void read_galaxy_rotation_curve(std::vector<std::array<double, 2>> vin);
-
+    std::vector<double> simulate_rotation_curve();
     std::vector<std::vector<double>> print_rotation_curve();
-
-    std::vector<std::vector<double>> print_simulated_curve();
-
+    std::vector<std::vector<double>>print_simulated_curve();
     std::vector<double> print_density_parameters();
-
-
+    std::vector<double> optimize_density_parameters();
+    std::vector<double> nelder_mead(const std::vector<double> &, Galaxy &, int, double);
+    double get_R_max() const { return R_max; };
+    void set_R_max(double value) { R_max = value; };
     int nr;
     int nz;
     int nr_sampling;
@@ -111,13 +112,11 @@ public:
     std::vector<double> x_rotation_points;
     int n_rotation_points;
     std::vector<double> v_rotation_points;
+    std::vector<double> v_simulated_points;
 };
 
-// Define the function to be minimized
-static double error_function(const std::vector<double> &x, Galaxy &myGalaxy);
 
 
-// Define the Nelder-Mead optimizer
-std::vector<double>
-nelder_mead(const std::vector<double> &x0, Galaxy &myGalaxy, int max_iter = 1000, double xtol_rel = 1e-6);
+
+
 #endif // GALAXY_H

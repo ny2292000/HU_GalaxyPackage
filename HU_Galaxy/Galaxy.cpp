@@ -37,7 +37,7 @@ static double error_function(const std::vector<double> &x, Galaxy &myGalaxy) {
                                                              debug);
     double error = 0.0;
     for (int i = 0; i < myGalaxy.n_rotation_points; i++) { error += std::pow((myGalaxy.v_rotation_points[i] - vsim[i]), 2); }
-    std::cout << "Total Error = " << (error + error_mass) << "\n";
+//    std::cout << "Total Error = " << (error + error_mass) << "\n";
     return error + error_mass;
 }
 

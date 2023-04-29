@@ -21,35 +21,11 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="769725aa-a726-4b8d-9ad3-5599a4a8275f" name="Changes" comment="Package working locally. Next I will get the one in the env to work">
-      <change afterPath="$PROJECT_DIR$/CleanPythonSetup.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/GalaxyFormationSingleFile.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/GalaxyFormationSingleFile.iml" afterDir="false" />
+    <list default="true" id="769725aa-a726-4b8d-9ad3-5599a4a8275f" name="Changes" comment="Package working in environment with both data and function members exposed through pybind11">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GalaxyProgram/CMakeLists.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/GalaxyProgram/include/Galaxy.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/GalaxyProgram/src/Galaxy.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/GalaxyProgram/src/GalaxyApp.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy.egg-info/PKG-INFO" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy.egg-info/SOURCES.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy.egg-info/dependency_links.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy.egg-info/requires.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy.egg-info/top_level.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CleanPythonSetup.sh" beforeDir="false" afterPath="$PROJECT_DIR$/CleanPythonSetup.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/GalaxyWrapper.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/cmake/FindGALAXY_LIB.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/cmake/FindNumPy.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/include/Galaxy.h" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/Galaxy.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/tests/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/tests/test_galaxy.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/src/Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/src/Galaxy.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/src/TestGalaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/src/TestGalaxy.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/src/lib0.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/src/lib0.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/HU_Galaxy-0.1-py3.10-linux-x86_64.egg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testwrapper.py" beforeDir="false" afterPath="$PROJECT_DIR$/testwrapper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -321,7 +297,7 @@
       <workItem from="1682629367667" duration="1012000" />
       <workItem from="1682641617728" duration="3558000" />
       <workItem from="1682646805025" duration="374000" />
-      <workItem from="1682676355794" duration="12532000" />
+      <workItem from="1682676355794" duration="18824000" />
     </task>
     <task id="LOCAL-00001" summary="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package">
       <created>1681744646530</created>
@@ -400,7 +376,14 @@
       <option name="project" value="LOCAL" />
       <updated>1682388362092</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Package working in environment with both data and function members exposed through pybind11">
+      <created>1682693238282</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1682693238282</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -436,7 +419,8 @@
     <MESSAGE value="Join Class Library, Helper Functions Library and class wrapper in a single module." />
     <MESSAGE value="Join Class Library, Helper Functions Library and class wrapper in a single module.Working cpp library plus GalaxyProgram.&#10;Deleted GalaxyWrapper.h." />
     <MESSAGE value="Package working locally. Next I will get the one in the env to work" />
-    <option name="LAST_COMMIT_MESSAGE" value="Package working locally. Next I will get the one in the env to work" />
+    <MESSAGE value="Package working in environment with both data and function members exposed through pybind11" />
+    <option name="LAST_COMMIT_MESSAGE" value="Package working in environment with both data and function members exposed through pybind11" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -460,6 +444,11 @@
           <url>file://$PROJECT_DIR$/GalaxyProgram/src/GalaxyApp.cpp</url>
           <line>57</line>
           <option name="timeStamp" value="54" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.cpp</url>
+          <line>80</line>
+          <option name="timeStamp" value="75" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="CMakeLineBreakpoint">
           <url>file://$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/CMakeLists.txt</url>

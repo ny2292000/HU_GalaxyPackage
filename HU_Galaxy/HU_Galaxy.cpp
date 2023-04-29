@@ -43,6 +43,20 @@ public:
         return std::make_pair(f_z_r, f_z_z);
     };
 
+    void read_galaxy_rotation_curve(py::array_t<double, py::array::c_style | py::array::forcecast> vin) {
+        auto buf = vin.request();
+        if (buf.ndim != 2 || buf.shape[1] != 2)
+            throw std::runtime_error("Input should be a 2D array with 2 columns");
+
+        std::vector<std::array<double, 2>> vec(buf.shape[0]);
+        auto ptr = static_cast<double *>(buf.ptr);
+        for (ssize_t i = 0; i < buf.shape[0]; ++i) {
+            vec[i][0] = ptr[i * buf.shape[1]];
+            vec[i][1] = ptr[i * buf.shape[1] + 1];
+        }
+
+        galaxy.read_galaxy_rotation_curve(vec);
+    }
 
     std::vector<std::vector<double>> print_rotation_curve() {
         std::vector<std::vector<double>> rotation_curve;
@@ -80,29 +94,20 @@ public:
         double *data = xout.data(); // Get a pointer to the underlying data
         std::size_t size = xout.size(); // Get the size of the vector
         py::array_t<double> result(size, data);
-
         return result;
     }
 
     py::array_t<double> simulate_rotation_curve() {
+        // Get the galaxy object
+
         // Calculate density at all radii
-        py::array_t<double> xout = optimize_density_parameters();
-        std::vector<double> xout_vec(xout.data(), xout.data() + xout.size());
+        std::vector<double> xout = galaxy.simulate_rotation_curve();
 
-        galaxy.rho_0 = xout_vec[0];
-        galaxy.alpha_0 = xout_vec[1];
-        galaxy.rho_1 = xout_vec[2];
-        galaxy.alpha_1 = xout_vec[3];
-        galaxy.h0 = xout_vec[4];
-        galaxy.rho = density(galaxy.rho_0, galaxy.alpha_0, galaxy.rho_1, galaxy.alpha_1, galaxy.r);
-
-        // Calculate rotational velocity at all radii
-        galaxy.v_simulated_points = calculate_rotational_velocity(galaxy.redshift, galaxy.dv0, galaxy.x_rotation_points,
-                                                                  galaxy.r, galaxy.z, galaxy.costheta, galaxy.sintheta,
-                                                                  galaxy.rho, false);
-        double *data = galaxy.v_simulated_points.data(); // Get a pointer to the underlying data
-        std::size_t size = galaxy.v_simulated_points.size(); // Get the size of the vector
+        // Convert the result to a NumPy array
+        double *data = xout.data(); // Get a pointer to the underlying data
+        std::size_t size = xout.size(); // Get the size of the vector
         py::array_t<double> result(size, data);
+
         return result;
     }
 
@@ -138,6 +143,7 @@ PYBIND11_MODULE(HU_Galaxy, m) {
             .def_property_readonly("h0", [](const Galaxy& gw)  -> double{ return gw.h0; })
             .def_property_readonly("R_max", [](const Galaxy& gw) -> double { return gw.R_max; })
 
+            .def("read_galaxy_rotation_curve", &GalaxyWrapper::read_galaxy_rotation_curve)
             .def("get_f_z", &GalaxyWrapper::get_f_z, py::arg("x"), py::arg("debug") = false)
             .def("print_rotation_curve", &GalaxyWrapper::print_rotation_curve)
             .def("print_simulated_curve", &GalaxyWrapper::print_simulated_curve)

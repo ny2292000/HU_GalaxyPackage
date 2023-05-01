@@ -88,15 +88,6 @@ public:
         return density_params;
     };
 
-    py::array_t<double> optimize_density_parameters() {
-        std::vector<double> xout = galaxy.optimize_density_parameters();
-
-        double *data = xout.data(); // Get a pointer to the underlying data
-        std::size_t size = xout.size(); // Get the size of the vector
-        py::array_t<double> result(size, data);
-        return result;
-    }
-
     py::array_t<double> simulate_rotation_curve() {
         // Get the galaxy object
 
@@ -148,7 +139,6 @@ PYBIND11_MODULE(HU_Galaxy, m) {
             .def("print_rotation_curve", &GalaxyWrapper::print_rotation_curve)
             .def("print_simulated_curve", &GalaxyWrapper::print_simulated_curve)
             .def("simulate_rotation_curve", &GalaxyWrapper::simulate_rotation_curve)
-            .def("optimize_density_parameters", &GalaxyWrapper::optimize_density_parameters, "Optimize the density parameters")
             .def("print_density_parameters", &GalaxyWrapper::print_density_parameters);
     m.def("calculate_mass", &calculate_mass, py::arg("rho"), py::arg("alpha"), py::arg("h0"), "A function to calculate the mass of the galaxy");
 }

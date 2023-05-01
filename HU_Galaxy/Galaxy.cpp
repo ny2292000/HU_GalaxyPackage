@@ -10,9 +10,29 @@ const double pi = 3.141592653589793;
 #include <utility>
 #include <cmath>
 #include <iostream>
-
+#include <future>
 #include "Galaxy.h"
 
+
+std::vector<std::vector<double>> density(double rho_0, double alpha_0, double rho_1, double alpha_1,
+                                         const std::vector<double>& r, const std::vector<double>& z) {
+    unsigned int nr = r.size();
+    unsigned int nz = z.size();
+    std::vector<std::vector<double>> density_(nr, std::vector<double>(nz));
+
+    // to kg/lyr^3
+    rho_0 *= 1.4171253E27;
+    rho_1 *= 1.4171253E27;
+
+    for (unsigned int i = 0; i < nr; i++) {
+        for (unsigned int j = 0; j < nz; j++) {
+            double r_ij = std::sqrt(std::pow(r[i], 2) + std::pow(z[j], 2));
+            density_[i][j] = rho_0 * std::exp(-alpha_0 * r_ij) + rho_1 * std::exp(-alpha_1 * r_ij);
+        }
+    }
+
+    return density_;
+}
 
 // Define the function to be minimized
 static double error_function(const std::vector<double> &x, Galaxy &myGalaxy) {
@@ -26,7 +46,8 @@ static double error_function(const std::vector<double> &x, Galaxy &myGalaxy) {
     double Mtotal_si = calculate_mass(alpha_0, rho_0, h0);  // Mtotal in Solar Masses
     double error_mass = std::pow((myGalaxy.GalaxyMass - Mtotal_si) / myGalaxy.GalaxyMass, 2);
     bool debug = false;
-    std::vector<double> rho = density(rho_0, alpha_0, rho_1, alpha_1, myGalaxy.r);
+    std::vector<std::vector<double>> rho = density(rho_0, alpha_0, rho_1, alpha_1, myGalaxy.r, myGalaxy.z);
+
     std::vector<double> vsim = calculate_rotational_velocity(myGalaxy.redshift, myGalaxy.dv0,
                                                              myGalaxy.x_rotation_points,
                                                              myGalaxy.r,
@@ -126,23 +147,14 @@ std::vector<double> linspace(double start, double end, size_t points) {
     return res;
 }
 
-std::vector<double> density(double rho_0, double alpha_0, double rho_1, double alpha_1, std::vector<double> r) {
-    unsigned int vecsize = r.size();
-    std::vector<double> density_(vecsize);
-    // to kg/lyr^3
-    rho_0 *= 1.4171253E27;  //(h_mass/uu.cm**3).to(uu.kg/uu.lyr**3) =<Quantity 1.41712531e+27 kg / lyr3>
-    rho_1 *= 1.4171253E27;
-    for (unsigned int i = 0; i < vecsize; i++) {
-        density_[i] = rho_0 * exp(-alpha_0 * r[i]) + rho_1 * exp(-alpha_1 * r[i]);
-    }
-    return density_;
-}
+
+
 
 // # CPU functions
 std::pair<double, double> get_g_cpu(double r_sampling_ii, double z_sampling_jj, double G,
                                     const std::vector<double> &dv0, const std::vector<double> &r,
                                     const std::vector<double> &z, const std::vector<double> &costheta,
-                                    const std::vector<double> &sintheta, const std::vector<double> &rho, bool debug) {
+                                    const std::vector<double> &sintheta, const std::vector<std::vector<double>> &rho, bool debug) {
     unsigned int nr = r.size();
     unsigned int nz = z.size();
     unsigned int ntheta = costheta.size();
@@ -158,7 +170,7 @@ std::pair<double, double> get_g_cpu(double r_sampling_ii, double z_sampling_jj, 
                              r[i] * r[i] * costheta[k] * costheta[k];
                 double d_1 = sqrt(d_2);
                 double d_3 = d_1 * d_1 * d_1;
-                double commonfactor  = G * rho[i] * r[i] * dv0[i]  / d_3;
+                double commonfactor  = G * rho[i][j] * r[i] * dv0[i]  / d_3;
                 if ( r[i] < r_sampling_ii) {
                     thisradial_value = commonfactor * (r_sampling_ii - r[i] * sintheta[k]);
                     radial_value += thisradial_value;
@@ -176,7 +188,7 @@ std::pair<double, double> get_g_cpu(double r_sampling_ii, double z_sampling_jj, 
                         printf("The value of costheta is %fd\n", costheta[k]);
                         printf("The value of sintheta is %fd\n", sintheta[k]);
                         printf("The value of dv0 is %fd\n", dv0[i]);
-                        printf("The value of rho is %e\n", rho[i]);
+                        printf("The value of rho is %e\n", rho[i][0]);
                         printf("The value of rsampling is %fd\n", r_sampling_ii);
                         printf("The value of zsampling is %fd\n", z_sampling_jj);
                         printf("The value of G is %e\n", G);
@@ -189,12 +201,12 @@ std::pair<double, double> get_g_cpu(double r_sampling_ii, double z_sampling_jj, 
 }
 
 
-
 std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
-get_all_g_impl_cpu(double G, const std::vector<double> &dv0, const std::vector<double> &r_sampling,
-                   const std::vector<double> &z_sampling,
-                   const std::vector<double> &r, const std::vector<double> &z, const std::vector<double> &costheta,
-                   const std::vector<double> &sintheta, const std::vector<double> &rho, bool debug) {
+get_all_g(double redshift, const std::vector<double> &dv0, const std::vector<double> &r_sampling,
+          const std::vector<double> &z_sampling,
+          const std::vector<double> &r, const std::vector<double> &z, const std::vector<double> &costheta,
+          const std::vector<double> &sintheta, const std::vector<std::vector<double>> &rho, bool debug) {
+    double G = 7.456866768350099e-46 * (1 + redshift);
     std::vector<std::future<std::pair<double, double>>> futures;
     int nr = r_sampling.size();
     int nz = z_sampling.size();
@@ -222,16 +234,6 @@ get_all_g_impl_cpu(double G, const std::vector<double> &dv0, const std::vector<d
     // Combine the two f_z vectors into a pair of two-dimensional vector and return it
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z_combined{f_z_radial, f_z_vertical};
     return f_z_combined;
-
-}
-
-std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
-get_all_g(double redshift, const std::vector<double> &dv0, const std::vector<double> &r_sampling,
-          const std::vector<double> &z_sampling,
-          const std::vector<double> &r, const std::vector<double> &z, const std::vector<double> &costheta,
-          const std::vector<double> &sintheta, const std::vector<double> &rho, bool debug) {
-    double G = 7.456866768350099e-46 * (1 + redshift);
-    return get_all_g_impl_cpu(G, dv0, r_sampling, z_sampling, r, z, costheta, sintheta, rho, debug);
 }
 
 std::vector<double> calculate_rotational_velocity(double redshift, const std::vector<double> &dv0,
@@ -240,7 +242,7 @@ std::vector<double> calculate_rotational_velocity(double redshift, const std::ve
                                                   const std::vector<double> &z,
                                                   const std::vector<double> &costheta,
                                                   const std::vector<double> &sintheta,
-                                                  const std::vector<double> &rho, bool debug) {
+                                                  const std::vector<std::vector<double>> &rho, bool debug) {
     int nr_sampling = r_sampling.size();
     double km_lyr = 9460730472580.8; //uu.lyr.to(uu.km)
     // Allocate result vector
@@ -312,7 +314,7 @@ Galaxy::Galaxy(double GalaxyMass, double rho_0, double alpha_0, double rho_1, do
 
     r = creategrid(rho_0, alpha_0, rho_1, alpha_1, nr);
     z = linspace(-h0 / 2.0, h0 / 2.0, nz);
-    rho = density(rho_0, alpha_0, rho_1, alpha_1, r);
+    rho = density(rho_0, alpha_0, rho_1, alpha_1, r, z);
     theta = linspace(0, 2 * pi, ntheta);
     costheta = costhetaFunc(theta);
     sintheta = sinthetaFunc(theta);
@@ -334,6 +336,16 @@ Galaxy::Galaxy(double GalaxyMass, double rho_0, double alpha_0, double rho_1, do
 
 
 Galaxy::~Galaxy() {};
+
+std::vector<std::vector<double>> Galaxy::recalculate_density(const std::vector<std::vector<double>>& currentMasses) const {
+    std::vector<std::vector<double>> updatedDensity(nr, std::vector<double>(nz, 0.0));
+    for (int i = 0; i < nr; i++) {
+        for (int j = 0; j < nz; j++) {
+            updatedDensity[i][j] = currentMasses[i][j] / dv0[i];
+        }
+    }
+    return updatedDensity;
+};
 
 std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
 Galaxy::get_f_z(const std::vector<double> &x, bool debug) {
@@ -388,19 +400,6 @@ Galaxy::nelder_mead(const std::vector<double> &x0, Galaxy &myGalaxy, int max_ite
     return x;
 }
 
-std::vector<double> Galaxy::optimize_density_parameters(){
-    std::vector<double> xin({rho_0, alpha_0, rho_1, alpha_1, h0});
-    int iter =1000;
-    double tol = 1E-6;
-    std::vector<double> xout = nelder_mead(xin, *this, iter, tol);
-    rho_0 = xout[0];
-    alpha_0 = xout[1];
-    rho_1 = xout[2];
-    alpha_1 = xout[3];
-    h0 = xout[4];
-    return xout;
-}
-
 std::vector<double> Galaxy::simulate_rotation_curve() {
     // Calculate density at all radii
     std::vector<double> x0{rho_0, alpha_0, rho_1, alpha_1, h0};
@@ -412,7 +411,7 @@ std::vector<double> Galaxy::simulate_rotation_curve() {
     rho_1 = xout[2];
     alpha_1 = xout[3];
     h0 = xout[4];
-    rho = density(rho_0, alpha_0, rho_1, alpha_1, r);
+    rho = density(rho_0, alpha_0, rho_1, alpha_1, r, z);
     // Calculate rotational velocity at all radii
     v_simulated_points = calculate_rotational_velocity(redshift, dv0, x_rotation_points,
                                                        r, z, costheta, sintheta,

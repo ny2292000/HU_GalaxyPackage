@@ -21,9 +21,8 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="769725aa-a726-4b8d-9ad3-5599a4a8275f" name="Changes" comment="Package working in environment with both data and function members exposed through pybind11">
+    <list default="true" id="769725aa-a726-4b8d-9ad3-5599a4a8275f" name="Changes" comment="Package working in environment with both data and function members exposed through pybind11.Getting better">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CleanPythonSetup.sh" beforeDir="false" afterPath="$PROJECT_DIR$/CleanPythonSetup.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.cpp" afterDir="false" />
     </list>
@@ -105,11 +104,6 @@
   </component>
   <component name="RunManager" selected="Python.testwrapper">
     <configuration name="HU_Galaxy_GalaxyWrapper" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="MainProNonCUDA" TARGET_NAME="HU_Galaxy_GalaxyWrapper" CONFIG_NAME="Debug">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -297,7 +291,9 @@
       <workItem from="1682629367667" duration="1012000" />
       <workItem from="1682641617728" duration="3558000" />
       <workItem from="1682646805025" duration="374000" />
-      <workItem from="1682676355794" duration="18824000" />
+      <workItem from="1682676355794" duration="20262000" />
+      <workItem from="1682765703742" duration="2056000" />
+      <workItem from="1682797832939" duration="32000" />
     </task>
     <task id="LOCAL-00001" summary="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package">
       <created>1681744646530</created>
@@ -383,7 +379,14 @@
       <option name="project" value="LOCAL" />
       <updated>1682693238282</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Package working in environment with both data and function members exposed through pybind11.Getting better">
+      <created>1682731878737</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1682731878737</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -420,7 +423,8 @@
     <MESSAGE value="Join Class Library, Helper Functions Library and class wrapper in a single module.Working cpp library plus GalaxyProgram.&#10;Deleted GalaxyWrapper.h." />
     <MESSAGE value="Package working locally. Next I will get the one in the env to work" />
     <MESSAGE value="Package working in environment with both data and function members exposed through pybind11" />
-    <option name="LAST_COMMIT_MESSAGE" value="Package working in environment with both data and function members exposed through pybind11" />
+    <MESSAGE value="Package working in environment with both data and function members exposed through pybind11.Getting better" />
+    <option name="LAST_COMMIT_MESSAGE" value="Package working in environment with both data and function members exposed through pybind11.Getting better" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

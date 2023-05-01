@@ -33,25 +33,19 @@ std::vector<double> sinthetaFunc(const std::vector<double> &theta) ;
 
 std::vector<double> linspace(double start, double end, size_t points) ;
 
-std::vector<double> density(double rho_0, double alpha_0, double rho_1, double alpha_1, std::vector<double> r) ;
+//std::vector<std::vector<double>> density(double rho_0, double alpha_0, double rho_1, double alpha_1, std::vector<double> r, std::vector<double> z) ;
 
 // # CPU functions
 std::pair<double, double> get_g_cpu(double r_sampling_ii, double z_sampling_jj, double G,
                                     const std::vector<double> &dv0, const std::vector<double> &r,
                                     const std::vector<double> &z, const std::vector<double> &costheta,
-                                    const std::vector<double> &sintheta, const std::vector<double> &rho, bool debug) ;
-
-std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
-get_all_g_impl_cpu(double G, const std::vector<double> &dv0, const std::vector<double> &r_sampling,
-                   const std::vector<double> &z_sampling,
-                   const std::vector<double> &r, const std::vector<double> &z, const std::vector<double> &costheta,
-                   const std::vector<double> &sintheta, const std::vector<double> &rho, bool debug);
+                                    const std::vector<double> &sintheta, const std::vector<std::vector<double>> &rho, bool debug) ;
 
 std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
 get_all_g(double redshift, const std::vector<double> &dv0, const std::vector<double> &r_sampling,
           const std::vector<double> &z_sampling,
           const std::vector<double> &r, const std::vector<double> &z, const std::vector<double> &costheta,
-          const std::vector<double> &sintheta, const std::vector<double> &rho, bool debug) ;
+          const std::vector<double> &sintheta, const std::vector<std::vector<double>> &rho, bool debug) ;
 
 
 std::vector<double> calculate_rotational_velocity(double redshift, const std::vector<double> &dv0,
@@ -60,7 +54,7 @@ std::vector<double> calculate_rotational_velocity(double redshift, const std::ve
                                                   const std::vector<double> &z,
                                                   const std::vector<double> &costheta,
                                                   const std::vector<double> &sintheta,
-                                                  const std::vector<double> &rho, bool debug) ;
+                                                  const std::vector<std::vector<double>> &rho, bool debug) ;
 
 
 std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, double alpha_1, int n) ;
@@ -80,8 +74,9 @@ public:
     std::vector<std::vector<double>> print_rotation_curve();
     std::vector<std::vector<double>>print_simulated_curve();
     std::vector<double> print_density_parameters();
-    std::vector<double> optimize_density_parameters();
     std::vector<double> nelder_mead(const std::vector<double> &, Galaxy &, int, double);
+    std::vector<std::vector<double>> recalculate_density(const std::vector<std::vector<double>>& currentMasses) const;
+    void DrudePropagator(double time_step, double eta, double temperature);
     double get_R_max() const { return R_max; };
     void set_R_max(double value) { R_max = value; };
     int nr;
@@ -103,7 +98,7 @@ public:
     std::vector<double> z;
     std::vector<double> r_sampling;
     std::vector<double> z_sampling;
-    std::vector<double> rho;
+    std::vector<std::vector<double>> rho;
     std::vector<double> theta;
     std::vector<double> costheta;
     std::vector<double> sintheta;

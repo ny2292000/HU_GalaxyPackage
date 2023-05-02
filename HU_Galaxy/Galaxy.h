@@ -85,7 +85,6 @@ public:
     int nr_sampling;
     int nz_sampling;
     double R_max;
-    double Mtotal_si;
     double alpha_0;
     double rho_0;
     double alpha_1;

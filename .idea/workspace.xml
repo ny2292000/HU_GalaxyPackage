@@ -21,12 +21,11 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="769725aa-a726-4b8d-9ad3-5599a4a8275f" name="Changes" comment="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Half-way to Drude Propagator">
+    <list default="true" id="769725aa-a726-4b8d-9ad3-5599a4a8275f" name="Changes" comment="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Half-way to Drude Propagator&#10;Getting the correct Accelerations. Sampling corretly r and getting the right masses">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy/Galaxy.h" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/Galaxy.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testwrapper.py" beforeDir="false" afterPath="$PROJECT_DIR$/testwrapper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,12 +105,12 @@
     </key>
   </component>
   <component name="RunManager" selected="Python.testwrapper">
-    <configuration name="HU_Galaxy_GalaxyWrapper" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="MainProNonCUDA" TARGET_NAME="HU_Galaxy_GalaxyWrapper" CONFIG_NAME="Release">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+    <configuration name="HU_Galaxy_GalaxyWrapper" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="MainProNonCUDA" TARGET_NAME="HU_Galaxy_GalaxyWrapper" CONFIG_NAME="Release">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -304,6 +303,8 @@
       <workItem from="1682797832939" duration="32000" />
       <workItem from="1682902436337" duration="789000" />
       <workItem from="1682959023445" duration="6548000" />
+      <workItem from="1682985573872" duration="250000" />
+      <workItem from="1682989413953" duration="2607000" />
     </task>
     <task id="LOCAL-00001" summary="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package">
       <created>1681744646530</created>
@@ -403,7 +404,14 @@
       <option name="project" value="LOCAL" />
       <updated>1682902515896</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Half-way to Drude Propagator&#10;Getting the correct Accelerations. Sampling corretly r and getting the right masses">
+      <created>1682985791993</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1682985791993</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -442,7 +450,8 @@
     <MESSAGE value="Package working in environment with both data and function members exposed through pybind11" />
     <MESSAGE value="Package working in environment with both data and function members exposed through pybind11.Getting better" />
     <MESSAGE value="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Half-way to Drude Propagator" />
-    <option name="LAST_COMMIT_MESSAGE" value="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Half-way to Drude Propagator" />
+    <MESSAGE value="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Half-way to Drude Propagator&#10;Getting the correct Accelerations. Sampling corretly r and getting the right masses" />
+    <option name="LAST_COMMIT_MESSAGE" value="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Half-way to Drude Propagator&#10;Getting the correct Accelerations. Sampling corretly r and getting the right masses" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

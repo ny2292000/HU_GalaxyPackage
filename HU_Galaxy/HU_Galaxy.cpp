@@ -118,22 +118,20 @@ PYBIND11_MODULE(HU_Galaxy, m) {
                  py::arg("GalaxyMass"), py::arg("rho_0"), py::arg("alpha_0"), py::arg("rho_1"), py::arg("alpha_1"), py::arg("h0"),
                  py::arg("R_max"), py::arg("nr"), py::arg("nz"), py::arg("nr_sampling"), py::arg("nz_sampling"), py::arg("ntheta"), py::arg("redshift") = 0.0)
             .def("get_galaxy", &GalaxyWrapper::get_galaxy)
-            .def_property("nr", [](Galaxy& g) { return g.nr; }, [](Galaxy& g, int nr) { g.nr = nr; })
-            .def_property("nz", [](Galaxy& g) { return g.nz; }, [](Galaxy& g, int nz) { g.nz = nz; })
-            .def_property("nr_sampling", [](Galaxy& g) { return g.nr_sampling; }, [](Galaxy& g, int nr_sampling) { g.nr_sampling = nr_sampling; })
-            .def_property("nz_sampling", [](Galaxy& g) { return g.nz_sampling; }, [](Galaxy& g, int nz_sampling) { g.nz_sampling = nz_sampling; })
-//          .def_property("R_max", [](Galaxy& g) { return g.R_max; }, [](Galaxy& g, double R_max) { g.R_max = R_max; })
-            .def_property_readonly("rho_0", [](const Galaxy& gw) -> double { return gw.rho_0; })
-
-
+            .def_property_readonly("redshift", [](const GalaxyWrapper& gw) -> double { return gw.get_galaxy().redshift; })
+            .def_property_readonly("R_max", [](const GalaxyWrapper& gw) -> double { return gw.get_galaxy().R_max; })
+            .def_property_readonly("nz_sampling", [](const GalaxyWrapper& gw) -> double { return gw.get_galaxy().nz_sampling; })
+            .def_property_readonly("nr_sampling", [](const GalaxyWrapper& gw) -> double { return gw.get_galaxy().nr_sampling; })
+            .def_property_readonly("nz", [](const GalaxyWrapper& gw) -> double { return gw.get_galaxy().nz; })
+            .def_property_readonly("nr", [](const GalaxyWrapper& gw) -> double { return gw.get_galaxy().nr; })
+            .def_property_readonly("nr_sampling", [](const GalaxyWrapper& gw) -> double { return gw.get_galaxy().nr_sampling; })
+            .def_property_readonly("nz_sampling", [](const GalaxyWrapper& gw) -> double { return gw.get_galaxy().nz_sampling; })
             .def_property_readonly("alpha_0", [](const GalaxyWrapper& gw) -> double { return gw.get_galaxy().alpha_0; })
-
-
-            .def_property_readonly("alpha_1", [](const Galaxy& gw)  -> double{ return gw.alpha_1; })
-            .def_property_readonly("rho_1", [](const Galaxy& gw) -> double { return gw.rho_1; })
-            .def_property_readonly("h0", [](const Galaxy& gw)  -> double{ return gw.h0; })
-            .def_property_readonly("R_max", [](const Galaxy& gw) -> double { return gw.R_max; })
-
+            .def_property_readonly("alpha_1", [](const GalaxyWrapper& gw) -> double { return gw.get_galaxy().alpha_1; })
+            .def_property_readonly("rho_0", [](const GalaxyWrapper& gw) -> double { return gw.get_galaxy().rho_0; })
+            .def_property_readonly("rho_1", [](const GalaxyWrapper& gw) -> double { return gw.get_galaxy().rho_1; })
+            .def_property_readonly("h0", [](const GalaxyWrapper& gw) -> double { return gw.get_galaxy().h0; })
+            .def_property_readonly("R_max", [](const GalaxyWrapper& gw) -> double { return gw.get_galaxy().R_max; })
             .def("read_galaxy_rotation_curve", &GalaxyWrapper::read_galaxy_rotation_curve)
             .def("get_f_z", &GalaxyWrapper::get_f_z, py::arg("x"), py::arg("debug") = false)
             .def("print_rotation_curve", &GalaxyWrapper::print_rotation_curve)

@@ -1,6 +1,7 @@
 #ifndef GALAXY_H
 #define GALAXY_H
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#define _USE_MATH_DEFINES
 #include <iostream>
 
 #include <vector>
@@ -22,10 +23,10 @@ void print(const std::vector<double> a) ;
 
 void print_2D(const std::vector<std::vector<double>>& a);
 
-double massCalcX(double alpha, double rho, double h, double x) ;
+double calculate_mass(double rho,double alpha, double h) ;
 
-double calculate_mass(double alpha, double rho, double h) ;
-
+std::vector<std::vector<double>> calculate_tau(double effective_cross_section,
+                       const std::vector<std::vector<double>>& local_density, double temperature);
 
 std::vector<double> costhetaFunc(const std::vector<double> &theta);
 

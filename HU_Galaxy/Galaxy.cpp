@@ -1,17 +1,51 @@
 //
 // Created by mp74207 on 4/17/23.
 //
-const double pi = 3.141592653589793;
-
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <Python.h>
 #include <nlopt.hpp>
 #include <vector>
 #include <array>
 #include <utility>
-#include <cmath>
 #include <iostream>
 #include <future>
+
 #include "Galaxy.h"
+
+std::vector<std::vector<double>> calculate_tau(double effective_cross_section, const std::vector<std::vector<double>>& local_density, double temperature) {
+    // Constants
+    const double boltzmann_constant = 1.380649e-23; // J/K
+    const double hydrogen_mass = 1.6737236e-27;     // kg
+
+    // Calculate the average velocity of gas particles based on temperature
+    double average_velocity = std::sqrt((3 * boltzmann_constant * temperature) / hydrogen_mass);
+
+    // Calculate the number density of gas particles
+    std::vector<std::vector<double>> number_density(local_density.size(), std::vector<double>(local_density[0].size(), 0.0));
+    for (size_t i = 0; i < local_density.size(); i++) {
+        for (size_t j = 0; j < local_density[0].size(); j++) {
+            number_density[i][j] = local_density[i][j] / hydrogen_mass;
+        }
+    }
+
+    // Calculate the time between collisions
+    std::vector<std::vector<double>> tau(local_density.size(), std::vector<double>(local_density[0].size(), 0.0));
+    for (size_t i = 0; i < local_density.size(); i++) {
+        for (size_t j = 0; j < local_density[0].size(); j++) {
+            tau[i][j] = 1.0 / (number_density[i][j] * effective_cross_section * average_velocity);
+        }
+    }
+
+    return tau;
+}
+
+
+double calculate_mass(double rho, double alpha, double h) {
+    double factor = 0.0007126927557971729; // factor takes care of moving from rho as atom/cc to kg/lyr^3, with alpha = 1/lyr and h0 = in lyr div sun_mass
+    double Mtotal_si = 2 * M_PI * h * rho /(alpha*alpha); //where h is in lyr and alpha is in 1/lyr
+    return Mtotal_si*factor;
+}
 
 
 std::vector<std::vector<double>> density(double rho_0, double alpha_0, double rho_1, double alpha_1,
@@ -26,8 +60,7 @@ std::vector<std::vector<double>> density(double rho_0, double alpha_0, double rh
 
     for (unsigned int i = 0; i < nr; i++) {
         for (unsigned int j = 0; j < nz; j++) {
-            double r_ij = std::sqrt(std::pow(r[i], 2) + std::pow(z[j], 2));
-            density_[i][j] = rho_0 * std::exp(-alpha_0 * r_ij) + rho_1 * std::exp(-alpha_1 * r_ij);
+            density_[i][j] = rho_0 * std::exp(-alpha_0 * r[i]) + rho_1 * std::exp(-alpha_1 * r[i]);
         }
     }
 
@@ -42,9 +75,15 @@ static double error_function(const std::vector<double> &x, Galaxy &myGalaxy) {
     double rho_1 = x[2];
     double alpha_1 = x[3];
     double h0 = x[4];
+
+    // Ensure that all parameters are positive
+    if (rho_0 <= 0.0 || alpha_0 <= 0.0 || rho_1 <= 0.0 || alpha_1 <= 0.0 || h0 <= 0.0) {
+        return std::numeric_limits<double>::infinity();
+    }
     // Calculate the total mass of the galaxy
-    double Mtotal_si = calculate_mass(alpha_0, rho_0, h0);  // Mtotal in Solar Masses
-    double error_mass = std::pow((myGalaxy.GalaxyMass - Mtotal_si) / myGalaxy.GalaxyMass, 2);
+    double Mtotal_si = calculate_mass(rho_0, alpha_0, h0);
+    double error_mass = (myGalaxy.GalaxyMass - Mtotal_si) / myGalaxy.GalaxyMass;
+    error_mass *= error_mass;
     bool debug = false;
     std::vector<std::vector<double>> rho = density(rho_0, alpha_0, rho_1, alpha_1, myGalaxy.r, myGalaxy.z);
 
@@ -57,8 +96,11 @@ static double error_function(const std::vector<double> &x, Galaxy &myGalaxy) {
                                                              rho,
                                                              debug);
     double error = 0.0;
-    for (int i = 0; i < myGalaxy.n_rotation_points; i++) { error += std::pow((myGalaxy.v_rotation_points[i] - vsim[i]), 2); }
-//    std::cout << "Total Error = " << (error + error_mass) << "\n";
+    for (int i = 0; i < myGalaxy.n_rotation_points; i++) {
+        double a = myGalaxy.v_rotation_points[i] - vsim[i];
+        error += a*a;
+    }
+    std::cout << "Total Error = " << (error + error_mass*10.0) << "\n";
     return error + error_mass;
 }
 
@@ -95,27 +137,6 @@ void print_2D(const std::vector<std::vector<double>>& a) {
         std::cout << '\n';
     }
 }
-
-
-
-
-double massCalcX(double alpha, double rho, double h, double x) {
-    double factor = 0.0007126927557971729; // factor takes care of moving from rho as atom/cc to kg/lyr^3, with alpha = 1/lyr and h0 = in lyr div sun_mass
-    double M_si = -2 * pi * h * rho * x * exp(-alpha * x) / alpha - 2 * pi * h * rho * exp(-alpha * x) / std::pow(alpha, 2) +
-                  2 * pi * h * rho / std::pow(alpha, 2);
-    M_si = M_si * factor;
-    return M_si;
-}
-
-
-double calculate_mass(double alpha, double rho, double h) {
-    double factor = 0.0007126927557971729; // factor takes care of moving from rho as atom/cc to kg/lyr^3, with alpha = 1/lyr and h0 = in lyr div sun_mass
-    double Mtotal_si = 2 * pi * h * rho / std::pow(alpha, 2);
-    Mtotal_si = Mtotal_si * factor;
-    return Mtotal_si;
-}
-
-
 
 
 std::vector<double> costhetaFunc(const std::vector<double> &theta) {
@@ -281,8 +302,8 @@ std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, doubl
     int n_range = 4;
     double r_max_1 = n_range / alpha_0;
     double r_max_2 = n_range / alpha_1;
-    double M1 = calculate_mass(alpha_0, rho_0, 1.0);
-    double M2 = calculate_mass(alpha_1, rho_1, 1.0);
+    double M1 = calculate_mass(rho_0, alpha_0, 1.0);
+    double M2 = calculate_mass(rho_1, alpha_1, 1.0);
     int n1 = M1 / (M1 + M2) * n;
     int n2 = M2 / (M1 + M2) * n;
     double r_min1 = 1.0;
@@ -315,15 +336,15 @@ Galaxy::Galaxy(double GalaxyMass, double rho_0, double alpha_0, double rho_1, do
     r = creategrid(rho_0, alpha_0, rho_1, alpha_1, nr);
     z = linspace(-h0 / 2.0, h0 / 2.0, nz);
     rho = density(rho_0, alpha_0, rho_1, alpha_1, r, z);
-    theta = linspace(0, 2 * pi, ntheta);
+    theta = linspace(0, 2 * M_PI, ntheta);
     costheta = costhetaFunc(theta);
     sintheta = sinthetaFunc(theta);
     z_sampling = linspace(-h0 / 2.0, h0 / 2.0, nz);
     r_sampling = linspace(1, R_max, nr_sampling);
     dz = h0 / nz;
-    double dtheta = 2 * pi / ntheta;
+    double dtheta = 2 * M_PI / ntheta;
     dv0.resize(1);
-    dv0[0] = 0.0;
+    dv0[0] = r[0] * dz * dtheta;
     for (int i = 1; i < nr; i++) {
         dv0.push_back((r[i] - r[i - 1]) * dz * dtheta);
     }
@@ -336,6 +357,71 @@ Galaxy::Galaxy(double GalaxyMass, double rho_0, double alpha_0, double rho_1, do
 
 
 Galaxy::~Galaxy() {};
+
+
+void Galaxy::DrudePropagator(double time_step, double eta, double temperature) {
+    // Calculate the effective cross-section
+    double H_cross_section = 3.53E-20;  //m^2
+    double effective_cross_section = eta * H_cross_section;
+
+    // Half of the vertical points
+    int half_nz = nz / 2;
+
+    // Calculate the mass in each volume element
+    std::vector<std::vector<double>> current_masses(nr, std::vector<double>(nz, 0.0));
+    for (size_t i = 0; i < nr; i++) {
+        for (size_t j = 0; j < nz; j++) {
+            current_masses[i][j] = rho[i][j] * dv0[i];
+        }
+    }
+
+    // Get the vertical acceleration array
+    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z =
+            get_all_g(redshift, dv0, r_sampling, z_sampling, r, z, costheta, sintheta, recalculate_density(current_masses), false);
+
+    auto z_acceleration = f_z.second;
+    std::vector<std::vector<double>> tau = calculate_tau(effective_cross_section, rho, temperature);
+
+    // Loop through radial points
+    for (size_t i = 0; i < nr; i++) {
+        double dr = (i == 0) ? r[i+1] - r[i] : (r[i] - r[i-1]) / 2.0;
+        double dtheta = theta[1] - theta[0];
+        double dz = z[1] - z[0];
+        double volume_cross_section = r[i] * dtheta * dr * dz;
+        // Loop through positive vertical points and zero
+        for (size_t j = 1; j <= half_nz; j++) {
+            double local_acceleration = z_acceleration[i][j];
+
+
+            // Calculate drift velocity and mass drift
+            double drift_velocity = tau[i][j] * local_acceleration;
+            double mass_drift = drift_velocity * time_step * volume_cross_section;
+
+            // Update mass in the current volume
+            current_masses[i][j] -= mass_drift;
+            current_masses[i][j-1] += mass_drift;
+        }
+
+        // Handle mass gain at z=0 (from both sides of the disk)
+        double local_acceleration_z0 = z_acceleration[i][0];
+        double tau_z0 = tau[i][0];
+        double drift_velocity_z0 = tau_z0 * local_acceleration_z0;
+        double mass_drift_z0 =  drift_velocity_z0 * time_step * volume_cross_section;
+        current_masses[i][0] += mass_drift_z0;
+    }
+
+    // Update mass for negative z values
+    for (size_t i = 0; i < nr; i++) {
+        for (size_t j = half_nz + 1; j < nz; j++) {
+            current_masses[i][j] = current_masses[i][nz - j];
+        }
+    }
+
+    // Recalculate density from updated mass
+    rho = recalculate_density(current_masses);
+}
+
+
 
 std::vector<std::vector<double>> Galaxy::recalculate_density(const std::vector<std::vector<double>>& currentMasses) const {
     std::vector<std::vector<double>> updatedDensity(nr, std::vector<double>(nz, 0.0));

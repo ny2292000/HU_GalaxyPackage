@@ -1,6 +1,6 @@
 import numpy as np
-from HU_Galaxy import HU_Galaxy as hu
-
+import matplotlib.pyplot as plt
+from HU_Galaxy import calculate_mass, GalaxyWrapper
 
 m33_rotational_curve = [
     [0.0, 0.0],
@@ -35,23 +35,20 @@ ntheta = 180
 nr_sampling = 103
 nz_sampling = 104
 R_max = 50000.0
-alpha_0 = 0.00042423668409927005
-rho_0 = 12.868348904393013
-alpha_1 = 2.0523892233327836e-05
-rho_1 = 0.13249804158174094
-h0 = 156161.88949004377
+x0 =  [15.113599042501253, 0.0004635570932973033, 0.15781139618525852, 2.4720346733035425e-05, 158754.18927767663]
+rho_0, alpha_0, rho_1, alpha_1, h0 = x0
 GalaxyMass = 5E10
 pi = 3.141592653589793238
 
-M33 = hu.GalaxyWrapper(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift)
+M33 = GalaxyWrapper(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift)
 
-# M33.read_galaxy_rotation_curve(m33_rotational_curve)
+M33.read_galaxy_rotation_curve(m33_rotational_curve)
+v_sim = M33.simulate_rotation_curve()
 
-x0 = [1.709545e+01, 4.773922e-04, 1.512449e-01, 2.400304e-05, 1.488530e+05]
 
-xout = M33.simulate_rotation_curve();
-
-myMass = hu.calculate_mass(rho_0, alpha_0, h0)
+myMass = calculate_mass(rho_0, alpha_0, h0)
+gasMass = calculate_mass(rho_1, alpha_1, h0)
+print( myMass, gasMass)
 debug = False
 
 # Replace with the correct function call when available

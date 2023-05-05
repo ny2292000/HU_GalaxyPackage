@@ -76,8 +76,9 @@ public:
     std::vector<std::vector<double>>print_simulated_curve();
     std::vector<double> print_density_parameters();
     std::vector<double> nelder_mead(const std::vector<double> &, Galaxy &, int, double);
-    std::vector<std::vector<double>> recalculate_density(const std::vector<std::vector<double>>& currentMasses) const;
-    void DrudePropagator(double time_step, double eta, double temperature);
+    void recalculate_density(const std::vector<std::vector<double>>& currentMasses);
+    std::vector<std::vector<double>>
+    DrudePropagator(double time_step, double eta, double temperature, int n_drude);
     double get_R_max() const { return R_max; };
     void set_R_max(double value) { R_max = value; };
     int nr;
@@ -91,6 +92,7 @@ public:
     double rho_1;
     double h0;
     double dz;
+    double dtheta;
     double redshift;
     double GalaxyMass;
     std::vector<double> r;
@@ -102,7 +104,6 @@ public:
     std::vector<double> theta;
     std::vector<double> costheta;
     std::vector<double> sintheta;
-    std::vector<std::vector<double>> f_z;
     std::vector<double> rotational_velocity_;
     std::vector<double> x_rotation_points;
     int n_rotation_points;

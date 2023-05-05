@@ -21,9 +21,9 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="769725aa-a726-4b8d-9ad3-5599a4a8275f" name="Changes" comment="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Half-way to Drude Propagator&#10;Getting the correct Accelerations. Sampling corretly r and getting the right masses. Extra exposure of data members">
+    <list default="true" id="769725aa-a726-4b8d-9ad3-5599a4a8275f" name="Changes" comment="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Working Drude Propagator. Creating r_drude to sample only luminous mass.">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/DrudePropagator.cpp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy/Galaxy.h" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/Galaxy.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.cpp" afterDir="false" />
@@ -305,7 +305,7 @@
       <workItem from="1683238033104" duration="3109000" />
       <workItem from="1683242825474" duration="610000" />
       <workItem from="1683245471697" duration="704000" />
-      <workItem from="1683281795417" duration="952000" />
+      <workItem from="1683281795417" duration="6864000" />
     </task>
     <task id="LOCAL-00001" summary="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package">
       <created>1681744646530</created>
@@ -419,7 +419,14 @@
       <option name="project" value="LOCAL" />
       <updated>1682992389552</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Working Drude Propagator. Creating r_drude to sample only luminous mass.">
+      <created>1683282822452</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1683282822453</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -460,7 +467,8 @@
     <MESSAGE value="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Half-way to Drude Propagator" />
     <MESSAGE value="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Half-way to Drude Propagator&#10;Getting the correct Accelerations. Sampling corretly r and getting the right masses" />
     <MESSAGE value="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Half-way to Drude Propagator&#10;Getting the correct Accelerations. Sampling corretly r and getting the right masses. Extra exposure of data members" />
-    <option name="LAST_COMMIT_MESSAGE" value="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Half-way to Drude Propagator&#10;Getting the correct Accelerations. Sampling corretly r and getting the right masses. Extra exposure of data members" />
+    <MESSAGE value="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Working Drude Propagator. Creating r_drude to sample only luminous mass." />
+    <option name="LAST_COMMIT_MESSAGE" value="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Working Drude Propagator. Creating r_drude to sample only luminous mass." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -487,7 +495,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.cpp</url>
-          <line>116</line>
+          <line>115</line>
           <option name="timeStamp" value="75" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="CMakeLineBreakpoint">

@@ -13,6 +13,16 @@
 
 #include "Galaxy.h"
 
+const double Radius_4D = 14.01;
+
+std::vector<double> create_subgrid(const std::vector<double>& original_grid, double scaling_factor) {
+    std::vector<double> subgrid;
+    for (auto r : original_grid) {
+            subgrid.push_back(r*scaling_factor);
+    }
+    return subgrid;
+}
+
 std::vector<std::vector<double>> calculate_tau(double effective_cross_section, const std::vector<std::vector<double>>& local_density, double temperature) {
     // Constants
     const double boltzmann_constant = 1.380649e-23; // J/K
@@ -290,17 +300,6 @@ std::vector<double> calculate_rotational_velocity(double redshift, const std::ve
 }
 
 
-std::vector<double> createDrude_r(double alpha_0, int nr) {
-    double r_max = 4.0 / alpha_0;
-    double r_min = 1.0;
-
-    // Define the grid of nr points using a geometric sequence
-    std::vector<double> r(nr);
-    for (int i = 0; i < nr; i++) {
-        r[i] = r_min * std::pow(r_max / r_min, i / (double) (nr - 1));
-    }
-    return r;
-}
 
 
 
@@ -375,14 +374,22 @@ Galaxy::Galaxy(double GalaxyMass, double rho_0, double alpha_0, double rho_1, do
 Galaxy::~Galaxy() {};
 
 
-std::vector<std::vector<double>>
-Galaxy::DrudePropagator(double time_step_years, double eta, double temperature, int n_drude) {
+std::vector<std::vector<double>>  Galaxy::DrudePropagator(double epoch, double time_step_years, double eta, double temperature) {
     // Calculate the effective cross-section
     double time_step_seconds = time_step_years * 365*3600*24;
     double lyr_to_m = 9.46073047258E+15;
     double H_cross_section = 3.53E-20;  //m^2
     double effective_cross_section = eta * H_cross_section;
-    std::vector<double> r_drude =  createDrude_r( alpha_0,  n_drude);
+    double scaling_factor = epoch/Radius_4D;
+    double redshift = 1.0/scaling_factor-1;
+    std::vector<double> r_drude = create_subgrid(r, scaling_factor);
+    std::vector<double> dv0_drude = create_subgrid(dv0, scaling_factor* scaling_factor);
+    std::vector<std::vector<double>> rho_drude(nr, std::vector<double>(nz, 0.0));;
+    for (size_t i = 0; i < nr; i++) {
+        for (size_t j = 0; j < nz; j++) {
+            rho_drude[i][j] = rho[i][j]/scaling_factor/scaling_factor;
+        }
+    }
     // Half of the vertical points
     int half_nz = nz / 2;
 
@@ -390,21 +397,21 @@ Galaxy::DrudePropagator(double time_step_years, double eta, double temperature, 
     std::vector<std::vector<double>> current_masses(nr, std::vector<double>(nz, 0.0));
     for (size_t i = 0; i < nr; i++) {
         for (size_t j = 0; j < nz; j++) {
-            current_masses[i][j] = rho[i][j] * dv0[i];
+            current_masses[i][j] = rho_drude[i][j] * dv0_drude[i];
         }
     }
 
     // Get the vertical acceleration array
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z =
-            get_all_g(redshift, dv0, r, z, r, z, costheta, sintheta, rho, false);
+            get_all_g(redshift, dv0_drude, r_drude, z, r_drude, z, costheta, sintheta, rho_drude, false);
 
     auto z_acceleration = f_z.second;
 
-    std::vector<std::vector<double>> tau = calculate_tau(effective_cross_section, rho, temperature);
+    std::vector<std::vector<double>> tau = calculate_tau(effective_cross_section, rho_drude, temperature);
 
     // Loop through radial points
     for (size_t i = 0; i < nr; i++) {
-        double volume_cross_section = dv0[i]/dz;
+        double volume_cross_section = dv0_drude[i]/dz;
         // Loop through positive vertical points and zero
         for (size_t j = 1; j <= half_nz; j++) {
             double local_acceleration = z_acceleration[i][j];
@@ -412,7 +419,7 @@ Galaxy::DrudePropagator(double time_step_years, double eta, double temperature, 
 
             // Calculate drift velocity and mass drift
             double drift_velocity = tau[i][j] * local_acceleration;
-            double mass_drift = drift_velocity /lyr_to_m * time_step_seconds * volume_cross_section * rho[i][j];
+            double mass_drift = drift_velocity /lyr_to_m * time_step_seconds * volume_cross_section * rho_drude[i][j];
 
             // Update mass in the current volume
             if(current_masses[i][j]<mass_drift){

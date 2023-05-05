@@ -48,9 +48,8 @@ public:
                   double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift = 0.0)
             : galaxy(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift) {}
 
-    py::array_t<double> DrudePropagator(double time_step_years, double eta, double temperature, int n_drude) {
-        auto result = galaxy.DrudePropagator(time_step_years, eta, temperature, n_drude);
-
+    py::array_t<double> DrudePropagator(double epoch, double time_step_years, double eta, double temperature) {
+        auto result = galaxy.DrudePropagator(epoch, time_step_years, eta, temperature);
         // Convert the 2D vector into a NumPy array using func
         return makeNumpy(result);
     }
@@ -161,7 +160,7 @@ PYBIND11_MODULE(HU_Galaxy, m) {
             .def(py::init<double, double, double, double, double, double, double, int, int, int, int, int, double>(),
                  py::arg("GalaxyMass"), py::arg("rho_0"), py::arg("alpha_0"), py::arg("rho_1"), py::arg("alpha_1"), py::arg("h0"),
                  py::arg("R_max"), py::arg("nr"), py::arg("nz"), py::arg("nr_sampling"), py::arg("nz_sampling"), py::arg("ntheta"), py::arg("redshift") = 0.0)
-            .def("DrudePropagator", &GalaxyWrapper::DrudePropagator, py::arg("time_step_years"), py::arg("eta"), py::arg("temperature"),py::arg("n_drude"),
+            .def("DrudePropagator", &GalaxyWrapper::DrudePropagator, py::arg("epoch"), py::arg("time_step_years"), py::arg("eta"), py::arg("temperature"),
                  "Propagate the mass distribution in a galaxy using the Drude model")
             .def("get_galaxy", &GalaxyWrapper::get_galaxy)
             .def_property_readonly("redshift", &GalaxyWrapper::get_redshift)

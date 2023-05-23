@@ -20,102 +20,14 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c4e57b9e-4beb-4d07-993f-fd7927223454" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HU_Galaxy/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/LICENSE.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MANIFEST.in" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build_wheels.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build_wheels_in_manylinux.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmake/FindNLopt.cmake" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmake/FindPackageHandleStandardArgs.cmake" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmake/FindPackageMessage.cmake" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmake/FindPython.cmake" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmake/FindPython/Support.cmake" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmake/FindPython2.cmake" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmake/FindPython2.rst" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmake/FindPython3.cmake" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmake/FindPython3.rst" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmake/FindPythonInterp.cmake" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmake/FindPythonInterp.rst" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmake/FindPythonLibs.cmake" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmake/FindPythonLibs.rst" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmake/Findpybind11.cmake" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmake/Support.cmake" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/CleanPythonSetup.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/CreateAuditedWheels.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/CreateAuditedWheels.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/CreateAuditedWheelsOld.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/CreateCentosContainer.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/CreateCondaEnvs.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/RunCmake.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/WHICH_INTERPRETER.PY.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/activate" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/cmakeLists/CMakeLists20230521.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/cmakeLists/CMakeListsCentosOS.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/cmakeLists/CMakeListsUbuntu.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/createContainer1000.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/createContainerZero.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/deactivate" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/find_dir.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/get_pip27.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/manylinux_translateit.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/pipInstallOptPython.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/pyproject3131232.toml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/runCmake.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/setup3.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/startDockerEnv.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deleteme/twineStuff.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deletestuff.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pypiTest.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/updatePKG_Config.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/uploadTestPypi.sh" afterDir="false" />
+    <list default="true" id="c4e57b9e-4beb-4d07-993f-fd7927223454" name="Changes" comment="Working buil_wheels.sh">
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/GalaxyFormationSingleFile.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CleanPythonSetup.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/Galaxy.h" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/Galaxy.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/CMakeListsCUDA.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/CMakeListsMainProgSharedLibraryNonCUDA.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/CMakeLists_NonCUDA_Library.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/CMakeLists.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/GalaxyFormationCUDA.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/include/Galaxy.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/include/lib0.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/lib0.cu" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/libCPU.cu" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/libCUDA.cu" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/mainSaveMe.cu" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/mainToy.cu" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/main_1.cu" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/main_2.cu" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/mainold.cu" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/src/Galaxy.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/src/TestGalaxy.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/src/lib0.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/Working/BestSingleProg.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/Working/CMakeListsMainProgSharedLibraryNonCUDA.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/Working/CMakeLists_CUDA_LIB.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/Working/CMakeLists_NonCUDA_Library.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/ChatGPT_Paper/ChatGPT_1" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MoveMeOut/ChatGPT_Paper/PaperOutline" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/changename.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/FindGALAXY_LIB.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/FindNumPy.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/FindNumPy.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/setEnv.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testwrapper.py" beforeDir="false" afterPath="$PROJECT_DIR$/testwrapper.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vcpkg.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/deletestuff.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pypiTest.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/updatePKG_Config.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploadTestPypi.sh" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -284,8 +196,16 @@
       <workItem from="1684690375695" duration="4516000" />
       <workItem from="1684720039741" duration="1652000" />
       <workItem from="1684749083489" duration="39508000" />
-      <workItem from="1684835726760" duration="4983000" />
+      <workItem from="1684835726760" duration="6331000" />
     </task>
+    <task id="LOCAL-00001" summary="Working buil_wheels.sh">
+      <created>1684843345101</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1684843345101</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -296,5 +216,9 @@
     <isAutomaticCheckingOnLaunch value="false" />
     <isAutomaticFoundErrors value="true" />
     <isAutomaticFoundErrors value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Working buil_wheels.sh" />
+    <option name="LAST_COMMIT_MESSAGE" value="Working buil_wheels.sh" />
   </component>
 </project>

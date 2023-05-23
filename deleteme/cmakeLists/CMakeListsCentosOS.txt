@@ -1,0 +1,68 @@
+
+
+set(CMAKE_MODULE_PATH "/opt/cmake-3.13.0-Linux-x86_64/share/cmake-3.13/Modules/")
+
+# Set C++ standard
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto=4")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto=4")
+
+# Set the paths to NumPy include directories and library directories
+set(Python_NumPy_INCLUDE_DIRS "/venv/lib64/python3.6/site-packages/numpy/core/include/")
+set(Python_NumPy_LIBRARY_DIRS "/venv/lib64/python3.6/site-packages/numpy/")
+# Set the path to the pybind11 installation directory
+set(CMAKE_PREFIX_PATH "/venv/bin/pybind11-config")
+#set(CMAKE_PREFIX_PATH "/venv/lib/python3.6/site-packages/pybind11")
+
+# Find pybind11
+find_package(pybind11 CONFIG REQUIRED)
+
+
+# Include directories
+include_directories(
+        ${Python_NumPy_INCLUDE_DIRS}
+        # Other include directories
+)
+
+include_directories(
+        ${Python_NumPy_INCLUDE_DIRS}
+        ${pybind11_INCLUDE_DIRS}
+        ${PYTHON_INCLUDE_DIRS}
+        ${NLopt_INCLUDE_DIRS}
+        /usr/include/
+        /usr/local/include
+)
+
+# Link directories
+link_directories(
+        ${Python_NumPy_LIBRARY_DIRS}
+)
+
+# Find Python and related packages
+find_package(Python REQUIRED COMPONENTS Interpreter Development)
+
+find_package(NLopt CONFIG REQUIRED)
+
+# Include directories
+include_directories(
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${Python_INCLUDE_DIRS}
+        ${Python_NumPy_INCLUDE_DIRS}
+        ${PYTHON_INCLUDE_DIRS}
+        ${nlopt_INCLUDE_DIRS}
+        ${pybind11_INCLUDE_DIRS}
+)
+
+# Add the source files and create the module
+pybind11_add_module(${PROJECT_NAME}
+        HU_Galaxy.cpp
+        Galaxy.cpp
+        )
+
+# Link the libraries
+target_link_libraries(${PROJECT_NAME} PRIVATE
+        ${Python_LIBRARIES}
+        ${Python_NumPy_LIBRARIES}
+        ${nlopt_LIBRARIES}
+        pybind11::module
+        )

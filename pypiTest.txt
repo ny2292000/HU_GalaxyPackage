@@ -1,0 +1,10 @@
+[distutils]
+index-servers =
+pypi
+testpypi
+
+[testpypi]
+repository: https://test.pypi.org/legacy/
+username: tokem_api
+password: pypi-AgENdGVzdC5weXBpLm9yZwIkNGExOTEyNjQtM2VlNC00NTI0LWJiMTEtMzZkZDJjYWJkNDkzAAIqWzMsImYwOGRhZTllLWY2MDYtNGI4NS05YzQyLTZlMzljYzFiNTZkOSJdAAAGIHJ_3YTvmiBzgzlLRMbeFcH8Tv3A_V2dIMW64WyqN1qb
+

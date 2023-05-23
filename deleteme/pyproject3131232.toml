@@ -1,0 +1,35 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "HU_Galaxy"
+description="Hypergeometrical Universe Theory model for Galaxy Formation within epoch-dependent G"
+authors = [{name = "Marco Pereira", email = "ny2292000@gmail.com"}]
+dynamic = ["version"]
+readme = "README.rst"
+requires-python = ">=3.8"
+license = {file = "LICENSE.txt"}
+keywords = ["hypergeometrical universe", "galaxy formation", "epoch-dependent G", "Theory of Everything"]
+maintainers = [
+    {name = "Marco Pereira", email = "ny2292000@gmail.com"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python",
+    "Programming Language :: C++",
+]
+
+dependencies = [
+    "numpy",
+    "pybind11",
+]
+
+[project.urls]
+Home = "https://github.com/ny2292000/HU_GalaxyPackage"
+homepage = "https://www.hypergeometricaluniverse.com/"
+documentation = "https://readthedocs.org"
+repository = "https://github.com/ny2292000/HU_GalaxyPackage.git"
+changelog = "https://github.com/ny2292000/HU_GalaxyPackage/blob/master/CHANGELOG.md"
+
+

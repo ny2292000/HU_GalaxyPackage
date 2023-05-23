@@ -1,12 +1,29 @@
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 import os
+import sys
 import subprocess
-import pybind11
+import numpy
+import sysconfig
 
+
+
+numpy_include_dir = numpy.get_include()
+numpy_version = numpy.__version__
+os.environ["NUMPY_INCLUDE_DIR"] = numpy_include_dir
+python_include_dir = sysconfig.get_path("include")
+python_lib_dir = sysconfig.get_path("stdlib")
+python_executable = sys.executable
+
+print("Stuff")
+print( "1", numpy_include_dir, "2", python_include_dir, "3", python_lib_dir,"4", python_executable, "5", numpy_version)
+
+os.environ["PYTHON_INCLUDE_DIR"] = python_include_dir
+os.environ["PYTHON_LIB_DIR"] = python_lib_dir
+os.environ["PYTHON_EXECUTABLE"] = python_executable
 
 # Read the contents of your README file
-with open("README.md", "r") as fh:
+with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 
@@ -14,8 +31,8 @@ with open("README.md", "r") as fh:
 class CMakeBuild(build_ext):
     def run(self):
         # Run CMake to configure the C++ project
-        # Add Python3_EXECUTABLE to the cmake_args list
         cmake_args = ['cmake', '.']
+
         subprocess.check_call(cmake_args, cwd='HU_Galaxy')
 
         # Run the build command
@@ -39,7 +56,7 @@ if os.environ.get('DEBUG'):
         "-lstdc++fs",
         "-lm",
         "-lnlopt",
-        "-Wl,-rpath," + os.path.abspath('lib'),
+        f"-Wl,-rpath,{os.path.abspath('lib')}",
         '-g'
     ]
 else:
@@ -52,7 +69,7 @@ else:
         "-lstdc++fs",
         "-lm",
         "-lnlopt",
-        "-Wl,-rpath," + os.path.abspath('lib')
+        f"-Wl,-rpath,{os.path.abspath('lib')}"
     ]
 
 
@@ -61,7 +78,7 @@ package_src = {"HU_Galaxy": ["*.cpp", "*.h"]}
 module = Extension(
     'HU_Galaxy',
     sources=['HU_Galaxy/Galaxy.cpp', 'HU_Galaxy/HU_Galaxy.cpp'],
-    include_dirs=['HU_Galaxy',  pybind11.get_include()],
+    include_dirs=['HU_Galaxy'],
     language='c++',
     extra_compile_args=extra_compile_args,
     extra_link_args=extra_link_args,

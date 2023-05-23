@@ -10,16 +10,34 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
+#include <iostream>
 
 #include "Galaxy.h"
 
 namespace py = pybind11;
 
-#include <pybind11/numpy.h>
-#include <vector>
-#include <iostream>
+py::array_t<double> density_wrapper(double rho_0, double alpha_0, double rho_1, double alpha_1,
+                                    const py::array_t<double>& r, const py::array_t<double>& z) {
+    auto r_buf = r.unchecked<1>(); // Extract the underlying buffer of r as a 1D array
+    auto z_buf = z.unchecked<1>(); // Extract the underlying buffer of z as a 1D array
+    unsigned int nr = r_buf.shape(0);
+    unsigned int nz = z_buf.shape(0);
+    py::array_t<double> density = py::array_t<double>({nr, nz}); // Create a 2D numpy array of the same size as density_
+    auto density_buf = density.mutable_unchecked<2>(); // Extract the underlying buffer of density as a 2D array
 
-namespace py = pybind11;
+    // to kg/lyr^3
+    rho_0 *= 1.4171253E27;
+    rho_1 *= 1.4171253E27;
+
+    for (unsigned int i = 0; i < nr; i++) {
+        for (unsigned int j = 0; j < nz; j++) {
+            density_buf(i, j) = rho_0 * std::exp(-alpha_0 * r_buf(i)) + rho_1 * std::exp(-alpha_1 * r_buf(i));
+        }
+    }
+
+    return density;
+}
+
 
 py::array_t<double> makeNumpy(const std::vector<std::vector<double>>& result) {
     // Get the dimensions of the data
@@ -91,15 +109,17 @@ public:
         galaxy.read_galaxy_rotation_curve(vec);
     }
 
-    std::vector<std::vector<double>> print_rotation_curve() {
-        std::vector<std::vector<double>> rotation_curve;
+
+    py::list print_rotation_curve() {
+        py::list rotation_curve;
         for (int i = 0; i < galaxy.n_rotation_points; i++) {
-            std::vector<double> point{galaxy.x_rotation_points[i], galaxy.v_rotation_points[i]};
-            rotation_curve.push_back(point);
+            py::list point;
+            point.append(galaxy.x_rotation_points[i]);
+            point.append(galaxy.v_rotation_points[i]);
+            rotation_curve.append(point);
         }
         return rotation_curve;
     };
-
 
 
     py::list print_simulated_curve() {
@@ -163,6 +183,26 @@ PYBIND11_MODULE(HU_Galaxy, m) {
             .def("DrudePropagator", &GalaxyWrapper::DrudePropagator, py::arg("epoch"), py::arg("time_step_years"), py::arg("eta"), py::arg("temperature"),
                  "Propagate the mass distribution in a galaxy using the Drude model")
             .def("get_galaxy", &GalaxyWrapper::get_galaxy)
+            .def_property_readonly("r", [](const Galaxy& galaxy) {
+                // Get a pointer to the data in the `r` vector
+                const double* data_ptr = galaxy.r.data();
+
+                // Create a NumPy array wrapper around the data in the `r` vector
+                py::array_t<double> arr({static_cast<ssize_t>(galaxy.r.size())}, data_ptr);
+
+                // Return the NumPy array wrapper
+                return arr;
+            })
+            .def_property_readonly("z", [](const Galaxy& galaxy) {
+                // Get a pointer to the data in the `r` vector
+                const double* data_ptr = galaxy.z.data();
+
+                // Create a NumPy array wrapper around the data in the `r` vector
+                py::array_t<double> arr({static_cast<ssize_t>(galaxy.z.size())}, data_ptr);
+
+                // Return the NumPy array wrapper
+                return arr;
+            })
             .def_property_readonly("redshift", &GalaxyWrapper::get_redshift)
             .def_property_readonly("R_max", &GalaxyWrapper::get_R_max)
             .def_property_readonly("nz_sampling", &GalaxyWrapper::get_nz_sampling)
@@ -181,6 +221,8 @@ PYBIND11_MODULE(HU_Galaxy, m) {
             .def("simulate_rotation_curve", &GalaxyWrapper::simulate_rotation_curve)
             .def("print_density_parameters", &GalaxyWrapper::print_density_parameters);
     m.def("calculate_mass", &calculate_mass, py::arg("rho"), py::arg("alpha"), py::arg("h0"), "A function to calculate the mass of the galaxy");
+    m.def("density_wrapper", &density_wrapper, py::arg("rho_0"), py::arg("alpha_0"), py::arg("rho_1"), py::arg("alpha_1"),
+          py::arg("r"), py::arg("z"), "Calculate density using the given parameters");
 }
 
 

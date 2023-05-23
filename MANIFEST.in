@@ -1,0 +1,3 @@
+include CMakeLists.txt
+include HU_Galaxy/CMakeLists.txt
+recursive-include HU_Galaxy *.cpp *.hpp CMakeLists.txt

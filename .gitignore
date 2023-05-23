@@ -5,8 +5,9 @@
 /bin/
 /venv/
 /build/
-
 /ChatGPT_Paper/
 /MoveMeOut/CMakeListsFolder/
 /.idea/
 __pycache__/
+/wheelhouse/
+/deleteme/

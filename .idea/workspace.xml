@@ -11,22 +11,111 @@
   </component>
   <component name="CMakeRunConfigurationManager">
     <generated>
-      <config projectName="MainProNonCUDA" targetName="HU_Galaxy_GalaxyWrapper" />
+      <config projectName="HU_GalaxyPackage" targetName="HU_Galaxy_GalaxyWrapper" />
     </generated>
   </component>
   <component name="CMakeSettings">
     <configurations>
-      <configuration PROFILE_NAME="Debug" ENABLED="false" CONFIG_NAME="Debug" />
-      <configuration PROFILE_NAME="Release" ENABLED="true" CONFIG_NAME="Release" GENERATION_OPTIONS="-DCMAKE_TOOLCHAIN_FILE=/home/mp74207/.clion-vcpkg/vcpkg/scripts/buildsystems/vcpkg.cmake" />
+      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="769725aa-a726-4b8d-9ad3-5599a4a8275f" name="Changes" comment="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Working Drude Propagator. Creating r_drude to sample only luminous mass.">
+    <list default="true" id="c4e57b9e-4beb-4d07-993f-fd7927223454" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HU_Galaxy/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/LICENSE.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/MANIFEST.in" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/build_wheels.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/build_wheels_in_manylinux.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake/FindNLopt.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake/FindPackageHandleStandardArgs.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake/FindPackageMessage.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake/FindPython.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake/FindPython/Support.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake/FindPython2.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake/FindPython2.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake/FindPython3.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake/FindPython3.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake/FindPythonInterp.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake/FindPythonInterp.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake/FindPythonLibs.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake/FindPythonLibs.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake/Findpybind11.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmake/Support.cmake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/CleanPythonSetup.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/CreateAuditedWheels.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/CreateAuditedWheels.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/CreateAuditedWheelsOld.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/CreateCentosContainer.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/CreateCondaEnvs.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/RunCmake.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/WHICH_INTERPRETER.PY.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/activate" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/cmakeLists/CMakeLists20230521.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/cmakeLists/CMakeListsCentosOS.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/cmakeLists/CMakeListsUbuntu.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/createContainer1000.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/createContainerZero.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/deactivate" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/find_dir.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/get_pip27.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/manylinux_translateit.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/pipInstallOptPython.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/pyproject3131232.toml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/runCmake.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/setup3.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/startDockerEnv.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deleteme/twineStuff.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deletestuff.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pypiTest.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/updatePKG_Config.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/uploadTestPypi.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/GalaxyFormationSingleFile.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CleanPythonSetup.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/HU_Galaxy/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy/Galaxy.h" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/Galaxy.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/CMakeListsCUDA.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/CMakeListsMainProgSharedLibraryNonCUDA.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/CMakeLists_NonCUDA_Library.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/CMakeLists.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/GalaxyFormationCUDA.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/include/Galaxy.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/include/lib0.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/lib0.cu" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/libCPU.cu" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/libCUDA.cu" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/mainSaveMe.cu" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/mainToy.cu" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/main_1.cu" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/main_2.cu" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/mainold.cu" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/src/Galaxy.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/src/TestGalaxy.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/src/lib0.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/Working/BestSingleProg.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/Working/CMakeListsMainProgSharedLibraryNonCUDA.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/Working/CMakeLists_CUDA_LIB.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/Working/CMakeLists_NonCUDA_Library.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/ChatGPT_Paper/ChatGPT_1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MoveMeOut/ChatGPT_Paper/PaperOutline" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/changename.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake/FindGALAXY_LIB.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake/FindNumPy.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/FindNumPy.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/setEnv.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testwrapper.py" beforeDir="false" afterPath="$PROJECT_DIR$/testwrapper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vcpkg.json" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,93 +126,78 @@
     <option name="formatViaClangd" value="false" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Python Script" />
-      </list>
-    </option>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MacroExpansionManager">
+    <option name="directoryName" value="sztdh0xq" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
+    <option name="selectedTabId" value="ProjectErrors" />
   </component>
   <component name="ProjectApplicationVersion">
     <option name="ide" value="CLion" />
     <option name="majorVersion" value="2023" />
-    <option name="minorVersion" value="1.1" />
+    <option name="minorVersion" value="1.2" />
   </component>
-  <component name="ProjectId" id="2OXGvFm3mJQ7G5fQZx1OlRFaUhE" />
-  <component name="ProjectLevelVcsManager">
-    <ConfirmationsSetting value="2" id="Add" />
-  </component>
+  <component name="ProjectId" id="2Q56WcynG5Ved7yd919UvGr2nVy" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/mp74207/CLionProjects/GalaxyProgram/include/Galaxy.h&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;CMakeSettings&quot;,
-    &quot;two.files.diff.last.used.file&quot;: &quot;/home/mp74207/CLionProjects/GalaxyProgram/include/Galaxy.h&quot;,
-    &quot;two.files.diff.last.used.folder&quot;: &quot;/home/mp74207/Downloads/GalaxyRotationSingleFile-main&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "last_opened_file_path": "/home/mp74207/CLionProjects/HU_GalaxyPackage",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/HU_Galaxy" />
-      <recent name="$PROJECT_DIR$/HU_Galaxy/lib" />
-      <recent name="$PROJECT_DIR$/GalaxyProgram/lib" />
-      <recent name="$PROJECT_DIR$/GalaxyProgram" />
+      <recent name="$PROJECT_DIR$/HU_Galaxy/cmakeLists" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/HU_Galaxy" />
-      <recent name="$PROJECT_DIR$/HU_Galaxy/" />
-      <recent name="$PROJECT_DIR$/HU_Galaxy/src" />
-      <recent name="$PROJECT_DIR$/HU_Galaxy/include" />
-      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/deleteme" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.testwrapper">
-    <configuration name="HU_Galaxy_GalaxyWrapper" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="MainProNonCUDA" TARGET_NAME="HU_Galaxy_GalaxyWrapper" CONFIG_NAME="Release">
+  <component name="RunManager" selected="Docker.Dockerfile: Compose Deployment">
+    <configuration name="HU_Galaxy_GalaxyWrapper" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="HU_GalaxyPackage" TARGET_NAME="HU_Galaxy_GalaxyWrapper" CONFIG_NAME="Debug">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="__init__" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="GalaxyFormationSingleFile" />
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="setup" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="HU_GalaxyPackage" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/HU_Galaxy" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/HU_Galaxy/__init__.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/setup.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -132,301 +206,86 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="python setup.py install" type="PythonConfigurationType" factoryName="Python">
-      <module name="GalaxyFormationSingleFile" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="$PROJECT_DIR$/venv/bin/python" />
-      <option name="SDK_NAME" value="Python 3.10 (GalaxyFormationSingleFile) (2)" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="setup.py" />
-      <option name="PARAMETERS" value="install" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
+    <configuration name="Docker Image (1)" type="docker-deploy" factoryName="docker-image" temporary="true" server-name="Docker">
+      <deployment type="docker-image">
+        <settings>
+          <option name="imageTag" value="my_docker_image:latest" />
+          <option name="containerName" value="my_container" />
+        </settings>
+      </deployment>
       <method v="2" />
     </configuration>
-    <configuration name="test_galaxy" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="GalaxyFormationSingleFile" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="$PROJECT_DIR$/venv/bin/python" />
-      <option name="SDK_NAME" value="Python 3.10 (GalaxyFormationSingleFile) (2)" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/HU_Galaxy/tests/test_galaxy.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
+    <configuration name="Docker Image" type="docker-deploy" factoryName="docker-image" temporary="true" server-name="Docker">
+      <deployment type="docker-image">
+        <settings>
+          <option name="imageTag" value="quay.io/pypa/manylinux2010_x86_64:latest" />
+          <option name="containerName" value="" />
+        </settings>
+      </deployment>
       <method v="2" />
     </configuration>
-    <configuration name="testwrapper" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="GalaxyFormationSingleFile" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="$USER_HOME$/anaconda3/envs/Cosmos/bin/python" />
-      <option name="SDK_NAME" value="Cosmos" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/testwrapper.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
+    <configuration name="Dockerfile: Compose Deployment" type="docker-deploy" factoryName="dockerfile" temporary="true" server-name="Docker">
+      <deployment type="dockerfile">
+        <settings>
+          <option name="sourceFilePath" value="Dockerfile" />
+        </settings>
+      </deployment>
       <method v="2" />
     </configuration>
-    <configuration name="searchForPython.sh" type="ShConfigurationType" temporary="true">
-      <option name="SCRIPT_TEXT" value="" />
-      <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
-      <option name="SCRIPT_PATH" value="$PROJECT_DIR$/CleanPythonSetup.sh" />
-      <option name="SCRIPT_OPTIONS" value="" />
-      <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
-      <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="INDEPENDENT_INTERPRETER_PATH" value="true" />
-      <option name="INTERPRETER_PATH" value="/bin/bash" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="EXECUTE_IN_TERMINAL" value="true" />
-      <option name="EXECUTE_SCRIPT_FILE" value="true" />
-      <envs />
+    <configuration default="true" type="docker-deploy" factoryName="docker-image" temporary="true">
+      <deployment type="docker-image">
+        <settings />
+      </deployment>
       <method v="2" />
     </configuration>
-    <configuration name="Python tests in /home/mp74207/CLionProjects/GalaxyFormationSingleFile/HU_Galaxy/tests/test_galaxy.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
-      <module name="GalaxyFormationSingleFile" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="DEBUG" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="$PROJECT_DIR$/venv/bin/python" />
-      <option name="SDK_NAME" value="Python 3.10 (GalaxyFormationSingleFile) (2)" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/HU_Galaxy/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/HU_Galaxy/tests/test_galaxy.py&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
+    <configuration default="true" type="docker-deploy" factoryName="dockerfile" temporary="true">
+      <deployment type="dockerfile">
+        <settings />
+      </deployment>
       <method v="2" />
     </configuration>
     <list>
       <item itemvalue="CMake Application.HU_Galaxy_GalaxyWrapper" />
-      <item itemvalue="Python.python setup.py install" />
-      <item itemvalue="Python.__init__" />
-      <item itemvalue="Python.testwrapper" />
-      <item itemvalue="Python.test_galaxy" />
-      <item itemvalue="Python tests.Python tests in /home/mp74207/CLionProjects/GalaxyFormationSingleFile/HU_Galaxy/tests/test_galaxy.py" />
-      <item itemvalue="Shell Script.searchForPython.sh" />
+      <item itemvalue="Docker.Docker Image" />
+      <item itemvalue="Docker.Docker Image (1)" />
+      <item itemvalue="Docker.Dockerfile: Compose Deployment" />
+      <item itemvalue="Python.setup" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Shell Script.searchForPython.sh" />
-        <item itemvalue="Python.testwrapper" />
-        <item itemvalue="Python.__init__" />
-        <item itemvalue="Python.test_galaxy" />
-        <item itemvalue="Python tests.Python tests in /home/mp74207/CLionProjects/GalaxyFormationSingleFile/HU_Galaxy/tests/test_galaxy.py" />
+        <item itemvalue="Docker.Dockerfile: Compose Deployment" />
+        <item itemvalue="Docker.Docker Image (1)" />
+        <item itemvalue="Python.setup" />
+        <item itemvalue="Docker.Docker Image" />
       </list>
     </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="769725aa-a726-4b8d-9ad3-5599a4a8275f" name="Changes" comment="" />
-      <created>1681699742217</created>
+      <changelist id="c4e57b9e-4beb-4d07-993f-fd7927223454" name="Changes" comment="" />
+      <created>1684631128183</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1681699742217</updated>
-      <workItem from="1681699743886" duration="5326000" />
-      <workItem from="1681724847962" duration="14461000" />
-      <workItem from="1681760212046" duration="901000" />
-      <workItem from="1681763808205" duration="1199000" />
-      <workItem from="1681870512683" duration="3934000" />
-      <workItem from="1681875247745" duration="404000" />
-      <workItem from="1681900330133" duration="9800000" />
-      <workItem from="1681995960325" duration="1554000" />
-      <workItem from="1682000424731" duration="707000" />
-      <workItem from="1682001703768" duration="2275000" />
-      <workItem from="1682006248126" duration="5193000" />
-      <workItem from="1682035237331" duration="6086000" />
-      <workItem from="1682041443063" duration="416000" />
-      <workItem from="1682074562951" duration="7902000" />
-      <workItem from="1682090404718" duration="22523000" />
-      <workItem from="1682136471949" duration="900000" />
-      <workItem from="1682159519807" duration="3692000" />
-      <workItem from="1682163241253" duration="10643000" />
-      <workItem from="1682174040597" duration="9471000" />
-      <workItem from="1682183841625" duration="367000" />
-      <workItem from="1682192269435" duration="24602000" />
-      <workItem from="1682246875222" duration="45807000" />
-      <workItem from="1682334383461" duration="11574000" />
-      <workItem from="1682347474625" duration="1314000" />
-      <workItem from="1682348896312" duration="1264000" />
-      <workItem from="1682357034807" duration="9066000" />
-      <workItem from="1682386001043" duration="7145000" />
-      <workItem from="1682417237496" duration="3473000" />
-      <workItem from="1682511630595" duration="46000" />
-      <workItem from="1682511909092" duration="30000" />
-      <workItem from="1682511981645" duration="278000" />
-      <workItem from="1682513098942" duration="23883000" />
-      <workItem from="1682586106072" duration="10352000" />
-      <workItem from="1682629367667" duration="1012000" />
-      <workItem from="1682641617728" duration="3558000" />
-      <workItem from="1682646805025" duration="374000" />
-      <workItem from="1682676355794" duration="20262000" />
-      <workItem from="1682765703742" duration="2056000" />
-      <workItem from="1682797832939" duration="32000" />
-      <workItem from="1682902436337" duration="789000" />
-      <workItem from="1682959023445" duration="6548000" />
-      <workItem from="1682985573872" duration="250000" />
-      <workItem from="1682989413953" duration="4259000" />
-      <workItem from="1683026260257" duration="949000" />
-      <workItem from="1683238033104" duration="3109000" />
-      <workItem from="1683242825474" duration="610000" />
-      <workItem from="1683245471697" duration="704000" />
-      <workItem from="1683281795417" duration="6864000" />
+      <updated>1684631128183</updated>
+      <workItem from="1684631131167" duration="1035000" />
+      <workItem from="1684632368137" duration="942000" />
+      <workItem from="1684633443467" duration="838000" />
+      <workItem from="1684659316844" duration="60000" />
+      <workItem from="1684659553913" duration="1144000" />
+      <workItem from="1684660928791" duration="101000" />
+      <workItem from="1684665795096" duration="687000" />
+      <workItem from="1684666525237" duration="241000" />
+      <workItem from="1684674603490" duration="2124000" />
+      <workItem from="1684676736683" duration="76000" />
+      <workItem from="1684676814313" duration="623000" />
+      <workItem from="1684677476945" duration="920000" />
+      <workItem from="1684678406177" duration="4854000" />
+      <workItem from="1684690375695" duration="4516000" />
+      <workItem from="1684720039741" duration="1652000" />
+      <workItem from="1684749083489" duration="39508000" />
+      <workItem from="1684835726760" duration="4983000" />
     </task>
-    <task id="LOCAL-00001" summary="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package">
-      <created>1681744646530</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1681744646530</updated>
-    </task>
-    <task id="LOCAL-00002" summary="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package&#10;Separated process using subdirectories">
-      <created>1681909819709</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1681909819709</updated>
-    </task>
-    <task id="LOCAL-00003" summary="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package&#10;Separated process using subdirectories. Now working with add_dependency">
-      <created>1682038272078</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1682038272078</updated>
-    </task>
-    <task id="LOCAL-00004" summary="Working both Class Library and Helper Functions Library lib0.cpp&#10;python package created&#10;Now working on eliminating circular references">
-      <created>1682171303472</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1682171303472</updated>
-    </task>
-    <task id="LOCAL-00005" summary="Working both Class Library and Helper Functions Library lib0.cpp&#10;python package created&#10;Cleaned up python_libraries and libboost_python libraries from&#10;cpp libraries&#10;Now working on eliminating circular references">
-      <created>1682176589270</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1682176589270</updated>
-    </task>
-    <task id="LOCAL-00006" summary="Working both Class Library and Helper Functions Library lib0.cpp&#10;python package created&#10;Cleaned up python_libraries and libboost_python libraries from&#10;cpp libraries&#10;Separate Helper and Class libraries&#10;Now working on eliminating circular references">
-      <created>1682195974847</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1682195974847</updated>
-    </task>
-    <task id="LOCAL-00007" summary="Working both Class Library and Helper Functions Library lib0.cpp&#10;python package created&#10;Cleaned up python_libraries and libboost_python libraries from&#10;cpp libraries&#10;Separate Helper and Class libraries&#10;Changing Setup.py to be done in debug mode&#10;Now working on eliminating circular references">
-      <created>1682212387406</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1682212387406</updated>
-    </task>
-    <task id="LOCAL-00008" summary="Working both Class Library and Helper Functions Library lib0.cpp&#10;python package created&#10;Cleaned up python_libraries and libboost_python libraries from&#10;cpp libraries&#10;Separate Helper and Class libraries&#10;Changing Setup.py to be done in debug mode&#10;major shake up. Next step creating the branch to aggregate everything and simplify problem&#10;Now working on eliminating circular references">
-      <created>1682335033931</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1682335033931</updated>
-    </task>
-    <task id="LOCAL-00009" summary="Join Class Library, Helper Functions Library and class wrapper in a single module.">
-      <created>1682335518898</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1682335518898</updated>
-    </task>
-    <task id="LOCAL-00010" summary="Join Class Library, Helper Functions Library and class wrapper in a single module.Working cpp library plus GalaxyProgram.&#10;Deleted GalaxyWrapper.h.">
-      <created>1682358779021</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1682358779021</updated>
-    </task>
-    <task id="LOCAL-00011" summary="Package working locally. Next I will get the one in the env to work">
-      <created>1682388362092</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1682388362092</updated>
-    </task>
-    <task id="LOCAL-00012" summary="Package working in environment with both data and function members exposed through pybind11">
-      <created>1682693238282</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1682693238282</updated>
-    </task>
-    <task id="LOCAL-00013" summary="Package working in environment with both data and function members exposed through pybind11.Getting better">
-      <created>1682731878737</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1682731878737</updated>
-    </task>
-    <task id="LOCAL-00014" summary="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Half-way to Drude Propagator">
-      <created>1682902515896</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1682902515896</updated>
-    </task>
-    <task id="LOCAL-00015" summary="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Half-way to Drude Propagator&#10;Getting the correct Accelerations. Sampling corretly r and getting the right masses">
-      <created>1682985791993</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1682985791993</updated>
-    </task>
-    <task id="LOCAL-00016" summary="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Half-way to Drude Propagator&#10;Getting the correct Accelerations. Sampling corretly r and getting the right masses. Extra exposure of data members">
-      <created>1682992389552</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1682992389552</updated>
-    </task>
-    <task id="LOCAL-00017" summary="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Working Drude Propagator. Creating r_drude to sample only luminous mass.">
-      <created>1683282822452</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1683282822453</updated>
-    </task>
-    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -437,119 +296,5 @@
     <isAutomaticCheckingOnLaunch value="false" />
     <isAutomaticFoundErrors value="true" />
     <isAutomaticFoundErrors value="true" />
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
-  </component>
-  <component name="VcsManagerConfiguration">
-    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package" />
-    <MESSAGE value="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package&#10;Separated process using subdirectories" />
-    <MESSAGE value="Working both Class Library and Helper Functions Library lib0.cpp&#10;Starting to create a python package&#10;Separated process using subdirectories. Now working with add_dependency" />
-    <MESSAGE value="Working both Class Library and Helper Functions Library lib0.cpp&#10;python package created&#10;Now working on eliminating circular references" />
-    <MESSAGE value="Working both Class Library and Helper Functions Library lib0.cpp&#10;python package created&#10;Cleaned up python_libraries and libboost_python libraries from&#10;cpp libraries&#10;Now working on eliminating circular references" />
-    <MESSAGE value="Working both Class Library and Helper Functions Library lib0.cpp&#10;python package created&#10;Cleaned up python_libraries and libboost_python libraries from&#10;cpp libraries&#10;Separate Helper and Class libraries&#10;Now working on eliminating circular references" />
-    <MESSAGE value="Working both Class Library and Helper Functions Library lib0.cpp&#10;python package created&#10;Cleaned up python_libraries and libboost_python libraries from&#10;cpp libraries&#10;Separate Helper and Class libraries&#10;Changing Setup.py to be done in debug mode&#10;Now working on eliminating circular references" />
-    <MESSAGE value="Working both Class Library and Helper Functions Library lib0.cpp&#10;python package created&#10;Cleaned up python_libraries and libboost_python libraries from&#10;cpp libraries&#10;Separate Helper and Class libraries&#10;Changing Setup.py to be done in debug mode&#10;major shake up. Next step creating the branch to aggregate everything and simplify problem&#10;Now working on eliminating circular references" />
-    <MESSAGE value="Join Class Library, Helper Functions Library and class wrapper in a single module." />
-    <MESSAGE value="Join Class Library, Helper Functions Library and class wrapper in a single module.Working cpp library plus GalaxyProgram.&#10;Deleted GalaxyWrapper.h." />
-    <MESSAGE value="Package working locally. Next I will get the one in the env to work" />
-    <MESSAGE value="Package working in environment with both data and function members exposed through pybind11" />
-    <MESSAGE value="Package working in environment with both data and function members exposed through pybind11.Getting better" />
-    <MESSAGE value="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Half-way to Drude Propagator" />
-    <MESSAGE value="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Half-way to Drude Propagator&#10;Getting the correct Accelerations. Sampling corretly r and getting the right masses" />
-    <MESSAGE value="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Half-way to Drude Propagator&#10;Getting the correct Accelerations. Sampling corretly r and getting the right masses. Extra exposure of data members" />
-    <MESSAGE value="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Working Drude Propagator. Creating r_drude to sample only luminous mass." />
-    <option name="LAST_COMMIT_MESSAGE" value="Package working in environment with both data and function members exposed through pybind11.Getting better&#10;Working Drude Propagator. Creating r_drude to sample only luminous mass." />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/src/TestGalaxy.cpp</url>
-          <line>9</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/LibGalaxy/src/lib0.cpp</url>
-          <line>115</line>
-          <option name="timeStamp" value="25" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/LibGalaxy/src/lib0.cpp</url>
-          <line>183</line>
-          <option name="timeStamp" value="35" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/GalaxyProgram/src/GalaxyApp.cpp</url>
-          <line>57</line>
-          <option name="timeStamp" value="54" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.cpp</url>
-          <line>115</line>
-          <option name="timeStamp" value="75" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="CMakeLineBreakpoint">
-          <url>file://$PROJECT_DIR$/MoveMeOut/CMakeListsFolder/PriorVersions/CMakeLists.txt</url>
-          <line>71</line>
-          <option name="timeStamp" value="7" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/HU_Galaxy/tests/testGalaxy..py</url>
-          <line>65</line>
-          <option name="timeStamp" value="18" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/HU_Galaxy/tests/test_galaxy.py</url>
-          <line>62</line>
-          <option name="timeStamp" value="31" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/HU_Galaxy/tests/test_galaxy.py</url>
-          <line>12</line>
-          <option name="timeStamp" value="36" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/HU_Galaxy/tests/test_galaxy.py</url>
-          <line>2</line>
-          <option name="timeStamp" value="38" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/venv/lib/python3.10/site-packages/bs4/builder/_htmlparser.py</url>
-          <line>10</line>
-          <option name="timeStamp" value="39" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/testwrapper.py</url>
-          <line>56</line>
-          <option name="timeStamp" value="61" />
-        </line-breakpoint>
-      </breakpoints>
-      <default-breakpoints>
-        <breakpoint type="python-exception">
-          <properties notifyOnTerminate="true" exception="BaseException">
-            <option name="notifyOnTerminate" value="true" />
-          </properties>
-        </breakpoint>
-      </default-breakpoints>
-    </breakpoint-manager>
-    <watches-manager>
-      <configuration name="tests">
-        <watch expression="self" />
-      </configuration>
-    </watches-manager>
-  </component>
-  <component name="XSLT-Support.FileAssociations.UIState">
-    <expand />
-    <select />
   </component>
 </project>

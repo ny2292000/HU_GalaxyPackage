@@ -1,0 +1,1 @@
+docker run -it --user 1000:1000 -v /home/mp74207/CLionProjects/HU_GalaxyPackage:/project quay.io/pypa/manylinux_2_28_x86_64:latest

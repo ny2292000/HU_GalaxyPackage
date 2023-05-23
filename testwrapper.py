@@ -1,6 +1,6 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from HU_Galaxy import calculate_mass, GalaxyWrapper
+import HU_Galaxy
+print(HU_Galaxy.__dir__())
 
 m33_rotational_curve = [
     [0.0, 0.0],

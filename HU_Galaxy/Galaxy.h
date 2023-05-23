@@ -2,8 +2,8 @@
 #define GALAXY_H
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #define _USE_MATH_DEFINES
+#include <Python.h>
 #include <iostream>
-
 #include <vector>
 #include <array>
 #include <cmath>
@@ -18,6 +18,8 @@ std::vector<double> zeros_1(int size) ;
 
 std::vector<std::vector<double>> zeros_2(int nr, int nz) ;
 
+std::vector<std::vector<double>> density(double rho_0, double alpha_0, double rho_1, double alpha_1,
+                                         const std::vector<double>& r, const std::vector<double>& z);
 
 void print(const std::vector<double> a) ;
 

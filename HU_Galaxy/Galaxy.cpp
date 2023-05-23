@@ -2,8 +2,8 @@
 // Created by mp74207 on 4/17/23.
 //
 #define _USE_MATH_DEFINES
-#include <cmath>
 #include <Python.h>
+#include <cmath>
 #include <nlopt.hpp>
 #include <vector>
 #include <array>

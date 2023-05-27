@@ -7,9 +7,13 @@
 #include <nlopt.hpp>
 #include <vector>
 #include <utility>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-#include <pybind11/numpy.h>
+//#include <pybind11/pybind11.h>
+//#include <pybind11/stl.h>
+//#include <pybind11/numpy.h>
+
+#include "pybind11/pybind11.h"
+#include "pybind11/stl.h"
+#include "pybind11/numpy.h"
 #include <iostream>
 
 #include "Galaxy.h"
@@ -174,6 +178,7 @@ public:
 private:
     Galaxy galaxy;
 };
+
 
 PYBIND11_MODULE(HU_Galaxy, m) {
     py::class_<GalaxyWrapper>(m, "GalaxyWrapper")

@@ -4,30 +4,37 @@
 # Array of python versions
 pythons=("cp36-cp36m" "cp37-cp37m" "cp38-cp38" "cp39-cp39" "cp310-cp310" "cp311-cp311")
 cd /project
+#PYBIN="cp38-cp38"
 # Loop over python versions
 for PYBIN in "${pythons[@]}"; do
     # Create a new virtual environment
-    /opt/python/${PYBIN}/bin/python -m venv /project/${PYBIN}
+    echo ${PYBIN}
 
-    # Activate the virtual environment
-    source /project/${PYBIN}/bin/activate
-    pip install --upgrade pip
+    # Install dependencies in the specific Python version
+    PYTHON_PATH="/opt/python/${PYBIN}/bin/python"
+    PIP_PATH="/opt/python/${PYBIN}/bin/pip"
+    $PIP_PATH install numpy pybind11 nlopt wheel cython
 
-    # Install dependencies in the virtual environment
-    pip install numpy pybind11 wheel
+    export CFLAGS="$CFLAGS -I$($PYTHON_PATH -c 'import pybind11; print(pybind11.get_include())')"
+    export CFLAGS="$CFLAGS -I$($PYTHON_PATH -c 'import numpy; print(numpy.get_include())')"
+    export CXXFLAGS="$CXXFLAGS -I$($PYTHON_PATH -c 'import pybind11; print(pybind11.get_include())')"
+    export CXXFLAGS="$CXXFLAGS -I$($PYTHON_PATH -c 'import numpy; print(numpy.get_include())')"
+    export CFLAGS="$CFLAGS -I$($PYTHON_PATH -c 'import sysconfig; print(sysconfig.get_paths()["include"])')"
+    export CXXFLAGS="$CXXFLAGS -I$($PYTHON_PATH -c 'import sysconfig; print(sysconfig.get_paths()["include"])')"
+    export CFLAGS="$CFLAGS -fPIC"
+    export CXXFLAGS="$CXXFLAGS -fPIC"
+    export Python_INCLUDE_DIRS=$($PYTHON_PATH -c 'import sysconfig; print(sysconfig.get_paths()["include"])')
+    export Python_NumPy_DIRS=$($PYTHON_PATH -c "import numpy, os; print(numpy.get_include())")
 
-    # Set environment variables
-    export Python_INCLUDE_DIRS=/opt/python/${PYBIN}/include/$(ls /opt/python/${PYBIN}/include)
-    export Python_NumPy_DIRS=$(python -c "import numpy, os; print(numpy.get_include())")
+    export PATH=/opt/python/${PYBIN}/bin:$PATH
+    export Python_EXECUTABLE=$PYTHON_PATH
 
     # Use the python version in the virtual environment to build the wheel
-#    python -m pip wheel /project/ -w wheelhouse/
     rm -rf /project/dist
-    python /project/setup.py sdist bdist_wheel
+    $PYTHON_PATH /project/setup.py sdist bdist_wheel
     mv /project/dist/* /project/wheelhouse/.
 
-    source deactivate
-    rm -rf /project/${PYBIN}
+    # Cleanup
     rm -rf /project/CMakeFiles
     rm -rf /project/HU_Galaxy/cmake_install.cmake
     rm -rf /project/HU_Galaxy/CMakeCache.txt
@@ -47,3 +54,4 @@ done
 for whl in wheelhouse/*.whl; do
     auditwheel repair "$whl" -w /project/wheelhouse/
 done
+

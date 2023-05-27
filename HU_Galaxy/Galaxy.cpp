@@ -110,7 +110,7 @@ static double error_function(const std::vector<double> &x, Galaxy &myGalaxy) {
         double a = myGalaxy.v_rotation_points[i] - vsim[i];
         error += a*a;
     }
-//    std::cout << "Total Error = " << error  << "\n";
+    std::cout << "Total Error = " << error  << "\n";
     return error + error_mass/1000.0;
 }
 

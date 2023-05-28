@@ -1,5 +1,6 @@
 #ifndef GALAXY_H
 #define GALAXY_H
+#pragma once
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #define _USE_MATH_DEFINES
 #include <Python.h>

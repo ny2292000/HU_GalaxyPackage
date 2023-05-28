@@ -1,11 +1,13 @@
 cmake_minimum_required(VERSION 3.24.0)
+set(CMAKE_STRIP "")
 project(HU_Galaxy_GalaxyWrapper LANGUAGES CXX)
 
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 14)
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto=4")
-#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto=4")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto=4")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto=4")
+
 
 
 

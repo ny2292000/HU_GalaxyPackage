@@ -56,8 +56,6 @@ else:
     ]
 
 
-package_src = {"HU_Galaxy": ["*.cpp", "*.h"]}
-
 module = Extension(
     'HU_Galaxy',
     sources=['HU_Galaxy/Galaxy.cpp', 'HU_Galaxy/HU_Galaxy.cpp'],
@@ -67,6 +65,12 @@ module = Extension(
     extra_link_args=extra_link_args,
     define_macros=[('PYBIND11_MODULE', 'HU-Galaxy')],
 )
+
+
+
+package_src = {
+    'HU_Galaxy': ["HU_Galaxy.cpp", "HU_Galaxy.h", "Galaxy.cpp", "Galaxy.h", 'forUbuntu.cmake', 'forCentos.cmake']
+}
 
 # Call setup() to build the module
 setup(

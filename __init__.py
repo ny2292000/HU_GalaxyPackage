@@ -40,4 +40,4 @@ In other words, there is a Epoch Covariance on Star Evolution.
 
 __version__ = "0.2"
 
-# from HU_Galaxy import *
+

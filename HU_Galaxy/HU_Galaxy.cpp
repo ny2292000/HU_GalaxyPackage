@@ -1,24 +1,17 @@
-//
-// Created by mp74207 on 4/22/23.
-//
-//#pragma once
 
 #include <Python.h>
 #include <nlopt.hpp>
 #include <vector>
 #include <utility>
-//#include <pybind11/pybind11.h>
-//#include <pybind11/stl.h>
-//#include <pybind11/numpy.h>
-
-#include "pybind11/pybind11.h"
-#include "pybind11/stl.h"
-#include "pybind11/numpy.h"
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/numpy.h>
 #include <iostream>
-
 #include "Galaxy.h"
+#include "HU_Galaxy.h"
 
 namespace py = pybind11;
+
 
 py::array_t<double> density_wrapper(double rho_0, double alpha_0, double rho_1, double alpha_1,
                                     const py::array_t<double>& r, const py::array_t<double>& z) {
@@ -64,20 +57,19 @@ py::array_t<double> makeNumpy(const std::vector<std::vector<double>>& result) {
 
 
 
-class GalaxyWrapper {
-public:
-    GalaxyWrapper(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
-                  double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift = 0.0)
-            : galaxy(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift) {}
 
-    py::array_t<double> DrudePropagator(double epoch, double time_step_years, double eta, double temperature) {
+    GalaxyWrapper::GalaxyWrapper(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
+                  double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift )
+            : galaxy(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift) {};
+
+    py::array_t<double> GalaxyWrapper::DrudePropagator(double epoch, double time_step_years, double eta, double temperature) {
         auto result = galaxy.DrudePropagator(epoch, time_step_years, eta, temperature);
         // Convert the 2D vector into a NumPy array using func
         return makeNumpy(result);
-    }
+}
 
 
-    std::pair<py::array_t<double>, py::array_t<double>> get_f_z(const std::vector<double> &x, bool debug = false) {
+std::pair<py::array_t<double>, py::array_t<double>> GalaxyWrapper::get_f_z(const std::vector<double> &x, bool debug) {
         auto f_z_pair = galaxy.get_f_z(x, debug);
 
         // Get the dimensions of the f_z_r and f_z_z arrays
@@ -99,7 +91,7 @@ public:
         return std::make_pair(f_z_r, f_z_z);
     };
 
-    void read_galaxy_rotation_curve(py::array_t<double, py::array::c_style | py::array::forcecast> vin) {
+    void GalaxyWrapper::read_galaxy_rotation_curve(py::array_t<double, py::array::c_style | py::array::forcecast> vin) {
         auto buf = vin.request();
         if (buf.ndim != 2 || buf.shape[1] != 2)
             throw std::runtime_error("Input should be a 2D array with 2 columns");
@@ -114,7 +106,7 @@ public:
     }
 
 
-    py::list print_rotation_curve() {
+    py::list GalaxyWrapper::print_rotation_curve() {
         py::list rotation_curve;
         for (int i = 0; i < galaxy.n_rotation_points; i++) {
             py::list point;
@@ -126,7 +118,7 @@ public:
     };
 
 
-    py::list print_simulated_curve() {
+    py::list GalaxyWrapper::print_simulated_curve() {
         py::list simulated_curve;
         for (int i = 0; i < galaxy.n_rotation_points; i++) {
             py::list point;
@@ -137,7 +129,7 @@ public:
         return simulated_curve;
     };
 
-    py::list print_density_parameters() {
+    py::list GalaxyWrapper::print_density_parameters() {
         py::list density_params;
         density_params.append(galaxy.rho_0);
         density_params.append(galaxy.alpha_0);
@@ -147,7 +139,7 @@ public:
         return density_params;
     };
 
-    py::array_t<double> simulate_rotation_curve() {
+    py::array_t<double> GalaxyWrapper::simulate_rotation_curve() {
         // Get the galaxy object
 
         // Calculate density at all radii
@@ -162,22 +154,19 @@ public:
     }
 
     // Getter member functions
-    double get_redshift() const { return galaxy.redshift; }
-    double get_R_max() const { return galaxy.R_max; }
-    int get_nz_sampling() const { return galaxy.nz_sampling; }
-    int get_nr_sampling() const { return galaxy.nr_sampling; }
-    int get_nz() const { return galaxy.nz; }
-    int get_nr() const { return galaxy.nr; }
-    double get_alpha_0() const { return galaxy.alpha_0; }
-    double get_alpha_1() const { return galaxy.alpha_1; }
-    double get_rho_0() const { return galaxy.rho_0; }
-    double get_rho_1() const { return galaxy.rho_1; }
-    double get_h0() const { return galaxy.h0; }
-    const Galaxy& get_galaxy() const { return galaxy; }
+    double GalaxyWrapper::get_redshift() const { return galaxy.redshift; }
+    double GalaxyWrapper::get_R_max() const { return galaxy.R_max; }
+    int GalaxyWrapper::get_nz_sampling() const { return galaxy.nz_sampling; }
+    int GalaxyWrapper::get_nr_sampling() const { return galaxy.nr_sampling; }
+    int GalaxyWrapper::get_nz() const { return galaxy.nz; }
+    int GalaxyWrapper::get_nr() const { return galaxy.nr; }
+    double GalaxyWrapper::get_alpha_0() const { return galaxy.alpha_0; }
+    double GalaxyWrapper::get_alpha_1() const { return galaxy.alpha_1; }
+    double GalaxyWrapper::get_rho_0() const { return galaxy.rho_0; }
+    double GalaxyWrapper::get_rho_1() const { return galaxy.rho_1; }
+    double GalaxyWrapper::get_h0() const { return galaxy.h0; }
+    const Galaxy& GalaxyWrapper::get_galaxy() const { return galaxy; }
 
-private:
-    Galaxy galaxy;
-};
 
 
 PYBIND11_MODULE(HU_Galaxy, m) {

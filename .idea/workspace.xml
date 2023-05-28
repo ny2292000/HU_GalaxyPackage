@@ -23,26 +23,20 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c4e57b9e-4beb-4d07-993f-fd7927223454" name="Changes" comment="Working buil_wheels.sh">
-      <change afterPath="$PROJECT_DIR$/setupa.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/setupnew.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/setupold.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/updatePKG_Config.sh" afterDir="false" />
+    <list default="true" id="c4e57b9e-4beb-4d07-993f-fd7927223454" name="Changes" comment="I can build wheels but they don't have symbols or wrapped class or functions. I removed the pybind module which could had created this situation and will start again. Now working on the host first.">
+      <change afterPath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rerun.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HU_Galaxy/Galaxy.h" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/Galaxy.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/forCentos.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/forCentos.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/forUbuntu.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/forUbuntu.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build_wheels.sh" beforeDir="false" afterPath="$PROJECT_DIR$/build_wheels.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build_wheels_in_manylinux.sh" beforeDir="false" afterPath="$PROJECT_DIR$/build_wheels_in_manylinux.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/createActivateScripts.sh" beforeDir="false" afterPath="$PROJECT_DIR$/createActivateScripts.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/exportStuff.sh" beforeDir="false" afterPath="$PROJECT_DIR$/exportStuff.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploadToPypi.sh" beforeDir="false" afterPath="$PROJECT_DIR$/uploadToPypi.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HU_Galaxy/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/activate" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/setupa.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/setupnew.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/setupold.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -99,8 +93,9 @@
       <recent name="$PROJECT_DIR$/HU_Galaxy/cmakeLists" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/HU_Galaxy" />
       <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/" />
+      <recent name="$PROJECT_DIR$/HU_Galaxy" />
       <recent name="$PROJECT_DIR$/deleteme" />
     </key>
   </component>
@@ -228,7 +223,7 @@
       <workItem from="1685155841959" duration="283000" />
       <workItem from="1685156126077" duration="2606000" />
       <workItem from="1685160670892" duration="3327000" />
-      <workItem from="1685177037441" duration="24935000" />
+      <workItem from="1685177037441" duration="38737000" />
     </task>
     <task id="LOCAL-00001" summary="Working buil_wheels.sh">
       <created>1684843345101</created>
@@ -244,7 +239,14 @@
       <option name="project" value="LOCAL" />
       <updated>1684844739701</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="I can build wheels but they don't have symbols or wrapped class or functions. I removed the pybind module which could had created this situation and will start again. Now working on the host first.">
+      <created>1685221866723</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1685221866723</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -256,31 +258,33 @@
     <isAutomaticFoundErrors value="true" />
     <isAutomaticFoundErrors value="true" />
   </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ID_ORDER">
+      <list>
+        <option value="Default.Root" />
+        <option value="Default.Author" />
+        <option value="Default.Date" />
+        <option value="Default.Subject" />
+        <option value="Space.CommitStatus" />
+      </list>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Working buil_wheels.sh" />
-    <option name="LAST_COMMIT_MESSAGE" value="Working buil_wheels.sh" />
+    <MESSAGE value="I can build wheels but they don't have symbols or wrapped class or functions. I removed the pybind module which could had created this situation and will start again. Now working on the host first." />
+    <option name="LAST_COMMIT_MESSAGE" value="I can build wheels but they don't have symbols or wrapped class or functions. I removed the pybind module which could had created this situation and will start again. Now working on the host first." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.cpp</url>
-          <line>5</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/HU_Galaxy/Galaxy.h</url>
-          <line>4</line>
+          <line>5</line>
           <option name="timeStamp" value="3" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/setupold.py</url>
-          <line>44</line>
-          <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="CMakeLineBreakpoint">
           <url>file://$PROJECT_DIR$/HU_Galaxy/CMakeLists.txt</url>
-          <line>13</line>
+          <line>15</line>
           <option name="timeStamp" value="7" />
         </line-breakpoint>
       </breakpoints>

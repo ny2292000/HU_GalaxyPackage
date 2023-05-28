@@ -8,5 +8,5 @@ message(" this is the path to venv "  ${VENV_PATH})
 set(ENV{VIRTUAL_ENV} ${VENV_PATH})
 set(ENV{PATH} "${VENV_PATH}/bin:$ENV{PATH}")
 
-add_subdirectory(HU_Galaxy/pybind11)
+
 add_subdirectory(HU_Galaxy)

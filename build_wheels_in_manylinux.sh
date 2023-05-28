@@ -1,18 +1,20 @@
 #!/bin/bash
 # This script should be run inside manylinux container
-
+ bash ./createActivateScripts.sh
 # Array of python versions
 pythons=("cp36-cp36m" "cp37-cp37m" "cp38-cp38" "cp39-cp39" "cp310-cp310" "cp311-cp311")
 cd /project
-#PYBIN="cp38-cp38"
+PYBIN="cp38-cp38"
 # Loop over python versions
 for PYBIN in "${pythons[@]}"; do
     # Create a new virtual environment
     echo ${PYBIN}
 
     # Install dependencies in the specific Python version
-    PYTHON_PATH="/opt/python/${PYBIN}/bin/python"
+    PYTHON_PATH_ACTIVATEME="/opt/python/${PYBIN}/bin/activate"
+    source $PYTHON_PATH_ACTIVATEME
     PIP_PATH="/opt/python/${PYBIN}/bin/pip"
+    PYTHON_PATH="/opt/python/${PYBIN}/bin/python"
     $PIP_PATH install numpy pybind11 nlopt wheel cython
 
     export CFLAGS="$CFLAGS -I$($PYTHON_PATH -c 'import pybind11; print(pybind11.get_include())')"

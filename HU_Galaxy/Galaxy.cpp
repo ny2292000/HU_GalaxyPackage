@@ -2,7 +2,6 @@
 // Created by mp74207 on 4/17/23.
 //
 #define _USE_MATH_DEFINES
-#include <Python.h>
 #include <cmath>
 #include <nlopt.hpp>
 #include <vector>
@@ -10,7 +9,8 @@
 #include <utility>
 #include <iostream>
 #include <future>
-
+#include "torch/torch.h"
+#include <cuda_runtime.h>
 #include "Galaxy.h"
 
 const double Radius_4D = 14.01;
@@ -78,105 +78,204 @@ std::vector<std::vector<double>> density(double rho_0, double alpha_0, double rh
     return density_;
 }
 
-// Define the function to be minimized
-static double error_function(const std::vector<double> &x, Galaxy &myGalaxy) {
-    // Calculate the rotation velocity using the current values of x
-    double rho_0 = x[0];
-    double alpha_0 = x[1];
-    double rho_1 = x[2];
-    double alpha_1 = x[3];
-    double h0 = x[4];
-    // Ensure that all parameters are positive
-    if (rho_0 <= 0.0 || alpha_0 <= 0.0 || rho_1 <= 0.0 || alpha_1 <= 0.0 || h0 <= 0.0) {
-        return std::numeric_limits<double>::infinity();
+void printTensorShape(const torch::Tensor& tensor) {
+    torch::IntArrayRef shape = tensor.sizes();
+
+    std::cout << "Shape of the tensor: ";
+    for (size_t i = 0; i < shape.size(); ++i) {
+        std::cout << shape[i] << " ";
     }
-    // Calculate the total mass of the galaxy
-    double Mtotal_si = calculate_mass(rho_0, alpha_0, h0);
-    double error_mass = (myGalaxy.GalaxyMass - Mtotal_si) / myGalaxy.GalaxyMass;
-    error_mass *= error_mass ;
-    bool debug = false;
-    std::vector<std::vector<double>> rho = density(rho_0, alpha_0, rho_1, alpha_1, myGalaxy.r, myGalaxy.z);
-
-    std::vector<double> vsim = calculate_rotational_velocity(myGalaxy.redshift, myGalaxy.dv0,
-                                                             myGalaxy.x_rotation_points,
-                                                             myGalaxy.r,
-                                                             myGalaxy.z,
-                                                             myGalaxy.costheta,
-                                                             myGalaxy.sintheta,
-                                                             rho,
-                                                             debug);
-    double error = 0.0;
-    for (int i = 0; i < myGalaxy.n_rotation_points; i++) {
-        double a = myGalaxy.v_rotation_points[i] - vsim[i];
-        error += a*a;
-    }
-    std::cout << "Total Error = " << error  << "\n";
-    return error + error_mass/1000.0;
-}
-
-// Define the objective function wrapper
-auto objective_wrapper = [](const std::vector<double> &x, std::vector<double> &grad, void *data) {
-    Galaxy *myGalaxy = static_cast<Galaxy *>(data);
-    return error_function(x, *myGalaxy);
-};
-
-// Returns a vector of zeros with the given size
-std::vector<double> zeros_1(int size) {
-    return std::vector<double>(size, 0.0);
-}
-
-std::vector<std::vector<double>> zeros_2(int nr, int nz) {
-    std::vector<std::vector<double>> vec(nr, std::vector<double>(nz, 0.0));
-    return vec;
+    std::cout << std::endl;
 }
 
 
 
-void print(const std::vector<double> a) {
-    std::cout << "The vector elements are : " << "\n";
-    for (int i = 0; i < a.size(); i++)
-        std::cout << std::scientific << a.at(i) << '\n';
+void print_tensor_point(const torch::Tensor& tensor, int i, int j, int k) {
+    auto tensor_acc = tensor.accessor<double,3>();
+    std::cout << "Tensor point at (" << i << ", " << j << ", " << k << "): " << tensor_acc[i][j][k] << std::endl;
 }
 
-void print_2D(const std::vector<std::vector<double>>& a) {
-    std::cout << "The 2D vector elements are : " << "\n";
-    for (int i = 0; i < a.size(); i++) {
-        for (int j = 0; j < a[i].size(); j++) {
-            std::cout << std::scientific << a[i][j] << " ";
+
+
+std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> get_g_torch(
+        const torch::Tensor& r_sampling,
+        const torch::Tensor& z_sampling,
+        const torch::Tensor& G,
+        const torch::Tensor& dv0,
+        const torch::Tensor& r,
+        const torch::Tensor& z,
+        const torch::Tensor& costheta,
+        const torch::Tensor& sintheta,
+        const torch::Tensor& rho,
+        bool debug) {
+
+    auto options = r.options();
+
+    // Get the sizes for each dimension
+    int r_size = r_sampling.size(0);
+    int z_size = z_sampling.size(0);
+    int n_r = r.size(0);
+    int n_theta = sintheta.size(0);
+    int n_z = z.size(0);
+
+    // Reshape tensors for broadcasting
+    auto r_broadcasted = r.unsqueeze(1).unsqueeze(2);
+    auto dv0_broadcasted = dv0.unsqueeze(1).unsqueeze(2);
+    auto rho_broadcasted = rho.unsqueeze(1);
+    auto G_broadcasted = G.unsqueeze(1).unsqueeze(2);
+    auto sintheta_broadcasted = sintheta.unsqueeze(0).unsqueeze(2);
+    auto costheta_broadcasted = costheta.unsqueeze(0).unsqueeze(2);
+    auto z_broadcasted = z.unsqueeze(0).unsqueeze(1);
+
+    // Initialize the output vectors with the correct dimensions
+    std::vector<std::vector<double>> radial_value_2d(r_size, std::vector<double>(z_size));
+    std::vector<std::vector<double>> vertical_value_2d(r_size, std::vector<double>(z_size));
+
+    // Loop over r_sampling values
+    for (int i = 0; i < r_size; ++i) {
+        auto r_sampling_ii = r_sampling[i].unsqueeze(0).unsqueeze(1).unsqueeze(2);
+        // Create masks for radial value calculation
+        auto mask = (r_broadcasted >= r_sampling_ii);
+
+        // Loop over z_sampling values
+        for (int j = 0; j < z_size; ++j) {
+            auto z_sampling_jj = z_sampling[j].unsqueeze(0).unsqueeze(1).unsqueeze(2);
+
+            // Calculate the common factor without the mask
+            // Calculate the distances
+            auto d_3 = ( (z_broadcasted - z_sampling_jj).pow(2) +
+                       (r_sampling_ii - r_broadcasted * sintheta_broadcasted).pow(2) +
+                       (r_broadcasted * costheta_broadcasted).pow(2) ).pow(3/2);
+
+            // Calculate the common factor
+            auto commonfactor = G_broadcasted * rho_broadcasted * dv0_broadcasted;
+
+            // Perform the summation over the last three dimensions
+            vertical_value_2d[i][j] = (commonfactor/d_3 * (z_broadcasted - z_sampling_jj)).view({-1}).sum().item<double>();
+
+            // Apply the mask to commonfactor before the division
+            auto commonfactor_masked = (commonfactor/d_3).masked_fill_(mask, 0);
+
+            auto commonfactor_masked_cpu = commonfactor_masked.to(torch::kCPU);
+
+            auto tensor_acc = commonfactor_masked_cpu.accessor<double,3>();
+            std::cout << "Tensor point at " << tensor_acc[5][5][5] << std::endl;
+
+            // Then divide by d_3
+            radial_value_2d[i][j] = (commonfactor_masked).view({-1}).sum().item<double>();
         }
-        std::cout << '\n';
     }
+
+    return std::make_pair(radial_value_2d, vertical_value_2d);
 }
 
 
-std::vector<double> costhetaFunc(const std::vector<double> &theta) {
-    unsigned int points = theta.size();
-    std::vector<double> res(points);
-    for (unsigned int i = 0; i < points; i++) {
-        res[i] = std::cos(theta[i]);
+torch::Tensor move_data_to_gpu(const std::vector<double>& host_data, const torch::Device& device) {
+    try {
+        auto options = torch::TensorOptions().dtype(torch::kFloat64).device(device);
+        int sizes = host_data.size();
+        // Allocate GPU memory for the tensor
+        auto gpu_tensor = torch::empty(sizes, options);
+
+        // Copy host data to GPU tensor
+        gpu_tensor.copy_(torch::from_blob(const_cast<double*>(host_data.data()), sizes));
+
+        return gpu_tensor;
+    } catch (const std::exception& e) {
+        // Exception handling
+        std::cerr << "Exception caught: " << e.what() << std::endl;
+        return torch::Tensor();
     }
-    return res;
 }
 
-std::vector<double> sinthetaFunc(const std::vector<double> &theta) {
-    unsigned int points = theta.size();
-    std::vector<double> res(points);
-    for (unsigned int i = 0; i < points; i++) {
-        res[i] = std::sin(theta[i]);
+torch::Tensor move_data_to_gpu2D(const std::vector<std::vector<double>>& host_data, const torch::Device& device) {
+    try {
+        auto options = torch::TensorOptions().dtype(torch::kFloat64).device(device);
+
+        if (host_data.empty()) {
+            return torch::empty({0}, options);  // Return an empty tensor
+        }
+
+        // Get the size of the host data
+        int64_t rows = host_data.size();
+        int64_t cols = (host_data[0].size() > 0) ? host_data[0].size() : 1;
+
+        // Allocate GPU memory for the tensor
+        auto gpu_tensor = torch::empty({rows, cols}, options);
+
+        // Copy host data to GPU tensor
+        for (int64_t i = 0; i < rows; i++) {
+            gpu_tensor[i].copy_(torch::from_blob(const_cast<double*>(host_data[i].data()), {cols}));
+        }
+
+        return gpu_tensor;
+    } catch (const std::exception& e) {
+        // Exception handling
+        std::cerr << "Exception caught: " << e.what() << std::endl;
+        return torch::Tensor();
     }
-    return res;
 }
 
+std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
+get_all_torch(double redshift,
+              const std::vector<double> &dv0_in,
+              const std::vector<double> &r_sampling_in,
+              const std::vector<double> &z_sampling_in,
+              const std::vector<double> &r_in,
+              const std::vector<double> &z_in,
+              const std::vector<double> &costheta_in,
+              const std::vector<double> &sintheta_in,
+              const std::vector<std::vector<double>> &rho_in,
+              bool debug) {
 
-std::vector<double> linspace(double start, double end, size_t points) {
-    std::vector<double> res(points);
-    double step = (end - start) / (points - 1);
-    size_t i = 0;
-    for (auto &e: res) {
-        e = start + step * i++;
+    // Define options for GPU tensors
+    // Create tensors and move to GPU
+
+    if (torch::cuda::is_available()) {
+//        std::cout << "CUDA is available! Training on GPU." << std::endl;
+        int num_devices = torch::cuda::device_count();
+//        std::cout << "Number of GPUs: " << num_devices << std::endl;
+
+        for (int i = 0; i < num_devices; ++i) {
+            torch::Device device(torch::kCUDA, i);
+//            std::cout << "GPU " << i << ": " << device << std::endl;
+
+            cudaDeviceProp props;
+            cudaGetDeviceProperties(&props, i);
+//            std::cout << "GPU name: " << props.name << std::endl;
+//            std::cout << "GPU capability: " << props.major << "." << props.minor << std::endl;
+            // Access more information about the GPU using other fields in props
+        }
+    } else {
+        std::cout << "No GPUs available." << std::endl;
     }
-    return res;
+
+    int GPU_N = 0;
+    torch::Device device(torch::kCUDA, GPU_N);
+
+// Move data to GPU
+    torch::Tensor dv0 = move_data_to_gpu(dv0_in, device);
+    torch::Tensor r_sampling = move_data_to_gpu(r_sampling_in, device);
+    torch::Tensor z_sampling = move_data_to_gpu(z_sampling_in, device);
+    torch::Tensor r = move_data_to_gpu(r_in, device);
+    torch::Tensor z = move_data_to_gpu(z_in, device);
+    torch::Tensor costheta = move_data_to_gpu(costheta_in, device);
+    torch::Tensor sintheta = move_data_to_gpu(sintheta_in, device);
+    torch::Tensor rho = move_data_to_gpu2D(rho_in, device);
+
+    // Create G tensor
+    auto options = torch::TensorOptions().dtype(torch::kFloat64).device(device);
+    auto G = torch::full({1}, 7.456866768350099e-46 * (1 + redshift), options);
+
+    // Initialize the 2D arrays
+    std::vector<std::vector<double>> radial_values_2d(r_sampling_in.size(), std::vector<double>(z_sampling_in.size()));
+    std::vector<std::vector<double>> vertical_values_2d(r_sampling_in.size(), std::vector<double>(z_sampling_in.size()));
+
+    auto [radial_value_2d, vertical_value_2d] = get_g_torch(r_sampling, z_sampling, G, dv0, r, z, costheta, sintheta, rho, debug);
+
+    return {radial_values_2d, vertical_values_2d};
 }
+
 
 
 
@@ -208,7 +307,7 @@ std::pair<double, double> get_g_cpu(double r_sampling_ii, double z_sampling_jj, 
                 }
                 thisvertical_value = commonfactor * (z[j] - z_sampling_jj);
                 vertical_value += thisvertical_value;
-                if (debug) {
+                if (false) {
                     if (i==5 && j==5 && k == 5){
                         printf("CPU \n");
                         printf("The value of f_z is %e\n", thisradial_value);
@@ -273,14 +372,20 @@ std::vector<double> calculate_rotational_velocity(double redshift, const std::ve
                                                   const std::vector<double> &z,
                                                   const std::vector<double> &costheta,
                                                   const std::vector<double> &sintheta,
-                                                  const std::vector<std::vector<double>> &rho, bool debug) {
+                                                  const std::vector<std::vector<double>> &rho, bool debug, bool cuda) {
     int nr_sampling = r_sampling.size();
     double km_lyr = 9460730472580.8; //uu.lyr.to(uu.km)
     // Allocate result vector
     std::vector<double> z_sampling = {0.0};
     std::vector<double> v_r(nr_sampling,0.0);
-    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z = get_all_g(redshift, dv0, r_sampling, z_sampling, r, z,
-                                                                                                  costheta, sintheta, rho, debug);
+    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z;
+    if(cuda){
+        f_z = get_all_torch(redshift, dv0, r_sampling, z_sampling, r, z, costheta, sintheta, rho, debug);
+    }
+    else {
+        f_z = get_all_g(redshift, dv0, r_sampling, z_sampling, r, z, costheta, sintheta, rho, debug);
+    }
+
     // Calculate velocities
     double v_squared;
     for (int i = 0; i < nr_sampling; i++) {
@@ -299,10 +404,102 @@ std::vector<double> calculate_rotational_velocity(double redshift, const std::ve
     return v_r;
 }
 
+// Define the function to be minimized
+static double error_function(const std::vector<double> &x, Galaxy &myGalaxy) {
+    // Calculate the rotation velocity using the current values of x
+    double rho_0 = x[0];
+    double alpha_0 = x[1];
+    double rho_1 = x[2];
+    double alpha_1 = x[3];
+    double h0 = x[4];
+    // Ensure that all parameters are positive
+    if (rho_0 <= 0.0 || alpha_0 <= 0.0 || rho_1 <= 0.0 || alpha_1 <= 0.0 || h0 <= 0.0) {
+        return std::numeric_limits<double>::infinity();
+    }
+    // Calculate the total mass of the galaxy
+    double Mtotal_si = calculate_mass(rho_0, alpha_0, h0);
+    double error_mass = (myGalaxy.GalaxyMass - Mtotal_si) / myGalaxy.GalaxyMass;
+    error_mass *= error_mass ;
+    bool debug = false;
+    std::vector<std::vector<double>> rho = density(rho_0, alpha_0, rho_1, alpha_1, myGalaxy.r, myGalaxy.z);
 
+    std::vector<double> vsim = calculate_rotational_velocity(myGalaxy.redshift, myGalaxy.dv0,
+                                                             myGalaxy.x_rotation_points,
+                                                             myGalaxy.r,
+                                                             myGalaxy.z,
+                                                             myGalaxy.costheta,
+                                                             myGalaxy.sintheta,
+                                                             rho,
+                                                             debug,
+                                                             myGalaxy.cuda);
+    double error = 0.0;
+    for (int i = 0; i < myGalaxy.n_rotation_points; i++) {
+        double a = myGalaxy.v_rotation_points[i] - vsim[i];
+        error += a*a;
+    }
+    std::cout << "Total Error = " << error  << "\n";
+    return error + error_mass/1000.0;
+}
 
+// Define the objective function wrapper
+auto objective_wrapper = [](const std::vector<double> &x, std::vector<double> &grad, void *data) {
+    Galaxy *myGalaxy = static_cast<Galaxy *>(data);
+    return error_function(x, *myGalaxy);
+};
 
+// Returns a vector of zeros with the given size
+std::vector<double> zeros_1(int size) {
+    return std::vector<double>(size, 0.0);
+}
 
+std::vector<std::vector<double>> zeros_2(int nr, int nz) {
+    std::vector<std::vector<double>> vec(nr, std::vector<double>(nz, 0.0));
+    return vec;
+}
+
+void print(const std::vector<double> a) {
+    std::cout << "The vector elements are : " << "\n";
+    for (int i = 0; i < a.size(); i++)
+        std::cout << std::scientific << a.at(i) << '\n';
+}
+
+void print_2D(const std::vector<std::vector<double>>& a) {
+    std::cout << "The 2D vector elements are : " << "\n";
+    for (int i = 0; i < a.size(); i++) {
+        for (int j = 0; j < a[i].size(); j++) {
+            std::cout << std::scientific << a[i][j] << " ";
+        }
+        std::cout << '\n';
+    }
+}
+
+std::vector<double> costhetaFunc(const std::vector<double> &theta) {
+    unsigned int points = theta.size();
+    std::vector<double> res(points);
+    for (unsigned int i = 0; i < points; i++) {
+        res[i] = std::cos(theta[i]);
+    }
+    return res;
+}
+
+std::vector<double> sinthetaFunc(const std::vector<double> &theta) {
+    unsigned int points = theta.size();
+    std::vector<double> res(points);
+    for (unsigned int i = 0; i < points; i++) {
+        res[i] = std::sin(theta[i]);
+    }
+    return res;
+}
+
+std::vector<double> linspace(double start, double end, size_t points) {
+    std::vector<double> res(points);
+    double step = (end - start) / (points - 1);
+    size_t i = 0;
+    for (auto &e: res) {
+        e = start + step * i++;
+    }
+    return res;
+}
 
 std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, double alpha_1, int n) {
     if (alpha_1 > alpha_0) {
@@ -342,9 +539,9 @@ std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, doubl
 // #############################################################################
 
 Galaxy::Galaxy(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
-               double R_max, int nr_init, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift)
+               double R_max, int nr_init, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift, bool cuda)
         : R_max(R_max), nr(nr_init), nz(nz), nr_sampling(nr_sampling), nz_sampling(nz_sampling),
-          alpha_0(alpha_0), rho_0(rho_0), alpha_1(alpha_1), rho_1(rho_1), h0(h0), redshift(redshift),
+          alpha_0(alpha_0), rho_0(rho_0), alpha_1(alpha_1), rho_1(rho_1), h0(h0), redshift(redshift), cuda(cuda),
           GalaxyMass(GalaxyMass), n_rotation_points(0) {
 
     r = creategrid(rho_0, alpha_0, rho_1, alpha_1, nr);
@@ -405,6 +602,14 @@ std::vector<std::vector<double>>  Galaxy::DrudePropagator(double epoch, double t
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z =
             get_all_g(redshift, dv0_drude, r_drude, z, r_drude, z, costheta, sintheta, rho_drude, false);
 
+    if(cuda){
+        std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z = get_all_torch(redshift, dv0_drude, r_drude, z,
+                                                                                        r_drude, z, costheta, sintheta, rho_drude, false);
+    }
+    else {
+        std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z = get_all_g(redshift, dv0_drude, r_drude, z,
+                                                                                      r_drude, z, costheta, sintheta, rho_drude, false);
+    }
     auto z_acceleration = f_z.second;
 
     std::vector<std::vector<double>> tau = calculate_tau(effective_cross_section, rho_drude, temperature);
@@ -474,16 +679,17 @@ Galaxy::get_f_z(const std::vector<double> &x, bool debug) {
     std::vector<double> z_sampling;
 //    std::vector<double> z_sampling = this->z;
     if (debug) {
-        z_sampling = {this->h0 / 2.0};
+        z_sampling = {0.0};
     } else {
         z_sampling = {this->z};
     }
-    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z = get_all_g(redshift, dv0,
-                                                                                                  r_sampling,
-                                                                                                  z_sampling, r, z,
-                                                                                                  costheta,
-                                                                                                  sintheta, rho,
-                                                                                                  debug);
+    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z;
+    if(cuda){
+        f_z = get_all_torch(redshift, dv0, r_sampling, z_sampling, r, z, costheta, sintheta, rho, debug);
+    }
+    else {
+        f_z = get_all_g(redshift, dv0, r_sampling, z_sampling, r, z, costheta, sintheta, rho, debug);
+    }
     return f_z;
 }
 
@@ -505,6 +711,7 @@ Galaxy::nelder_mead(const std::vector<double> &x0, Galaxy &myGalaxy, int max_ite
     nlopt::opt opt(nlopt::LN_NELDERMEAD, x0.size());
     opt.set_min_objective(objective_wrapper, &myGalaxy);
     opt.set_xtol_rel(xtol_rel);
+    opt.set_maxeval(max_iter);
     std::vector<double> x = x0;
     double minf;
     nlopt::result result = opt.optimize(x, minf);
@@ -530,7 +737,7 @@ std::vector<double> Galaxy::simulate_rotation_curve() {
     // Calculate rotational velocity at all radii
     v_simulated_points = calculate_rotational_velocity(redshift, dv0, x_rotation_points,
                                                        r, z, costheta, sintheta,
-                                                       rho, false);
+                                                       rho, false, cuda);
     return v_simulated_points;
 }
 

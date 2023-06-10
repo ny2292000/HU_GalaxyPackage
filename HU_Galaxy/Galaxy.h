@@ -12,7 +12,7 @@
 #include <nlopt.hpp>
 #include <future>
 #include <utility>
-
+#include "torch/torch.h"
 
 // Returns a vector of zeros with the given size
 std::vector<double> zeros_1(int size) ;
@@ -37,7 +37,29 @@ std::vector<double> sinthetaFunc(const std::vector<double> &theta) ;
 
 std::vector<double> linspace(double start, double end, size_t points) ;
 
-//std::vector<std::vector<double>> density(double rho_0, double alpha_0, double rho_1, double alpha_1, std::vector<double> r, std::vector<double> z) ;
+std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
+get_all_torch(double redshift,
+              const std::vector<double> &dv0_in,
+              const std::vector<double> &r_sampling_in,
+              const std::vector<double> &z_sampling_in,
+              const std::vector<double> &r_in,
+              const std::vector<double> &z_in,
+              const std::vector<double> &costheta_in,
+              const std::vector<double> &sintheta_in,
+              const std::vector<std::vector<double>> &rho_in,
+              bool debug);
+
+std::pair<torch::Tensor, torch::Tensor> get_g_torch(
+        double r_sampling_ii,
+        double z_sampling_jj,
+        const torch::Tensor& G,
+        const torch::Tensor& dv0,
+        const torch::Tensor& r,
+        const torch::Tensor& z,
+        const torch::Tensor& costheta,
+        const torch::Tensor& sintheta,
+        const torch::Tensor& rho,
+        bool debug);
 
 // # CPU functions
 std::pair<double, double> get_g_cpu(double r_sampling_ii, double z_sampling_jj, double G,
@@ -58,7 +80,7 @@ std::vector<double> calculate_rotational_velocity(double redshift, const std::ve
                                                   const std::vector<double> &z,
                                                   const std::vector<double> &costheta,
                                                   const std::vector<double> &sintheta,
-                                                  const std::vector<std::vector<double>> &rho, bool debug) ;
+                                                  const std::vector<std::vector<double>> &rho, bool debug, bool cuda) ;
 
 
 std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, double alpha_1, int n) ;
@@ -68,7 +90,7 @@ std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, doubl
 class Galaxy {
 public:
     Galaxy(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
-           double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift);
+           double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift, bool cuda);
     ~Galaxy();
 
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
@@ -78,7 +100,7 @@ public:
     std::vector<std::vector<double>> print_rotation_curve();
     std::vector<std::vector<double>>print_simulated_curve();
     std::vector<double> print_density_parameters();
-    std::vector<double> nelder_mead(const std::vector<double> &, Galaxy &, int, double);
+    std::vector<double> nelder_mead(const std::vector<double> &x0, Galaxy &myGalaxy, int max_iter=1000, double xtol_rel=1E-6);
     void recalculate_density(const std::vector<std::vector<double>>& currentMasses);
     std::vector<std::vector<double>>  DrudePropagator(double epoch, double time_step, double eta, double temperature);
     double get_R_max() const { return R_max; };
@@ -96,6 +118,7 @@ public:
     double dz;
     double dtheta;
     double redshift;
+    bool cuda;
     double GalaxyMass;
     std::vector<double> r;
     std::vector<double> dv0;

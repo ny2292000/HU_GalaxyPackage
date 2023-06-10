@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.24.0)
+cmake_minimum_required(VERSION 3.22.0)
 project(HU_GalaxyPackage LANGUAGES CXX)
 
 ## Set the virtual environment path
@@ -10,3 +10,4 @@ project(HU_GalaxyPackage LANGUAGES CXX)
 
 
 add_subdirectory(HU_Galaxy)
+add_subdirectory(testCPPLibrary)

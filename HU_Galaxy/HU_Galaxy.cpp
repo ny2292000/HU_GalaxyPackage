@@ -59,8 +59,8 @@ py::array_t<double> makeNumpy(const std::vector<std::vector<double>>& result) {
 
 
     GalaxyWrapper::GalaxyWrapper(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
-                  double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift )
-            : galaxy(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift) {};
+                  double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift, bool cuda )
+            : galaxy(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift, cuda) {};
 
     py::array_t<double> GalaxyWrapper::DrudePropagator(double epoch, double time_step_years, double eta, double temperature) {
         auto result = galaxy.DrudePropagator(epoch, time_step_years, eta, temperature);
@@ -168,12 +168,11 @@ std::pair<py::array_t<double>, py::array_t<double>> GalaxyWrapper::get_f_z(const
     const Galaxy& GalaxyWrapper::get_galaxy() const { return galaxy; }
 
 
-
 PYBIND11_MODULE(HU_Galaxy, m) {
     py::class_<GalaxyWrapper>(m, "GalaxyWrapper")
-            .def(py::init<double, double, double, double, double, double, double, int, int, int, int, int, double>(),
+            .def(py::init<double, double, double, double, double, double, double, int, int, int, int, int, double, bool>(),
                  py::arg("GalaxyMass"), py::arg("rho_0"), py::arg("alpha_0"), py::arg("rho_1"), py::arg("alpha_1"), py::arg("h0"),
-                 py::arg("R_max"), py::arg("nr"), py::arg("nz"), py::arg("nr_sampling"), py::arg("nz_sampling"), py::arg("ntheta"), py::arg("redshift") = 0.0)
+                 py::arg("R_max"), py::arg("nr"), py::arg("nz"), py::arg("nr_sampling"), py::arg("nz_sampling"), py::arg("ntheta"), py::arg("redshift") = 0.0, py::arg("cuda") = false )
             .def("DrudePropagator", &GalaxyWrapper::DrudePropagator, py::arg("epoch"), py::arg("time_step_years"), py::arg("eta"), py::arg("temperature"),
                  "Propagate the mass distribution in a galaxy using the Drude model")
             .def("get_galaxy", &GalaxyWrapper::get_galaxy)
@@ -209,7 +208,7 @@ PYBIND11_MODULE(HU_Galaxy, m) {
             .def_property_readonly("rho_1", &GalaxyWrapper::get_rho_1)
             .def_property_readonly("h0", &GalaxyWrapper::get_h0)
             .def("read_galaxy_rotation_curve", &GalaxyWrapper::read_galaxy_rotation_curve)
-            .def("get_f_z", &GalaxyWrapper::get_f_z, py::arg("x"), py::arg("debug") = false)
+            .def("get_f_z", &GalaxyWrapper::get_f_z, py::arg("x"), py::arg("debug") = false )
             .def("print_rotation_curve", &GalaxyWrapper::print_rotation_curve)
             .def("print_simulated_curve", &GalaxyWrapper::print_simulated_curve)
             .def("simulate_rotation_curve", &GalaxyWrapper::simulate_rotation_curve)

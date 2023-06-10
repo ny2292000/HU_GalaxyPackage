@@ -15,6 +15,7 @@
   <component name="CMakeRunConfigurationManager">
     <generated>
       <config projectName="HU_GalaxyPackage" targetName="HU_Galaxy_GalaxyWrapper" />
+      <config projectName="HU_GalaxyPackage" targetName="TestLib" />
     </generated>
   </component>
   <component name="CMakeSettings" AUTO_RELOAD="true">
@@ -23,12 +24,40 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c4e57b9e-4beb-4d07-993f-fd7927223454" name="Changes" comment="Working and exposing pybind11 wrappers">
+    <list default="true" id="c4e57b9e-4beb-4d07-993f-fd7927223454" name="Changes" comment="Working and exposing pybind11 wrappers. Now, working on the manylinux2014">
+      <change afterPath="$PROJECT_DIR$/build.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/setupnew.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/testCPPLibrary/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/forCentos.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/forCentos.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build_wheels_in_manylinux.sh" beforeDir="false" afterPath="$PROJECT_DIR$/build_wheels_in_manylinux.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HU_Galaxy/Galaxy.h" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/Galaxy.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.h" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HU_Galaxy/forCentos.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/HU_Galaxy/forUbuntu.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake/FindNLopt.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/FindNLopt.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake/FindNumPy.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake/FindPackageHandleStandardArgs.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake/FindPackageMessage.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake/FindPython.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake/FindPython/Support.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake/FindPython2.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake/FindPython2.rst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake/FindPython3.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake/FindPython3.rst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake/FindPythonInterp.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake/FindPythonInterp.rst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake/FindPythonLibs.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake/FindPythonLibs.rst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake/Findpybind11.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake/Support.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/exportStuff.sh" beforeDir="false" afterPath="$PROJECT_DIR$/exportStuff.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rerun.sh" beforeDir="false" afterPath="$PROJECT_DIR$/rerun.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,7 +67,14 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Release" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -61,90 +97,92 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "last_opened_file_path": "/home/mp74207/CLionProjects/HU_GalaxyPackage/HU_Galaxy",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "CMakeSettings",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/mp74207/CLionProjects/HU_GalaxyPackage/testCPPLibrary&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;two.files.diff.last.used.file&quot;: &quot;/home/mp74207/CLionProjects/testTorch/requirements.txt&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/HU_Galaxy" />
+      <recent name="$PROJECT_DIR$/testCPPLibrary" />
       <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/HU_Galaxy/cmakeLists" />
+      <recent name="$PROJECT_DIR$/cmake" />
+      <recent name="$PROJECT_DIR$/tests" />
+      <recent name="$PROJECT_DIR$/HU_Galaxy" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/testCPPLibrary" />
+      <recent name="$PROJECT_DIR$/deleteme" />
+      <recent name="$PROJECT_DIR$/HU_Galaxy" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/" />
-      <recent name="$PROJECT_DIR$/HU_Galaxy" />
-      <recent name="$PROJECT_DIR$/deleteme" />
     </key>
   </component>
-  <component name="RunManager" selected="Docker.Docker Image (5)">
+  <component name="RunManager" selected="CMake Application.testCPP_Porgram">
     <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
         <option name="CLION.EXTERNAL.BUILD" enabled="true" />
       </method>
+    </configuration>
+    <configuration name="Unnamed" type="CLion_CoreDump" nameIsGenerated="true" version="1" coreDump="" symbolFile="" sysroot="">
+      <debugger kind="GDB" isBundled="true" />
+      <method v="2" />
+    </configuration>
+    <configuration name="HU_Galaxy_GalaxyWrapper" type="CMakeListConfigurationType" factoryName="CMakeListConfigurationFactory" temporary="true">
+      <method v="2" />
+    </configuration>
+    <configuration name="testTorch" type="CMakeListConfigurationType" factoryName="CMakeListConfigurationFactory">
+      <method v="2" />
     </configuration>
     <configuration name="HU_Galaxy_GalaxyWrapper" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="HU_GalaxyPackage" TARGET_NAME="HU_Galaxy_GalaxyWrapper" CONFIG_NAME="Debug">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Docker Image (1)" type="docker-deploy" factoryName="docker-image" temporary="true" server-name="Docker">
-      <deployment type="docker-image">
-        <settings>
-          <option name="imageTag" value="mycentos2014:latest" />
-          <option name="containerName" value="" />
-        </settings>
-      </deployment>
-      <method v="2" />
+    <configuration name="TestLib" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="HU_GalaxyPackage" TARGET_NAME="TestLib" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="HU_GalaxyPackage" RUN_TARGET_NAME="TestLib">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
     </configuration>
-    <configuration name="Docker Image (2)" type="docker-deploy" factoryName="docker-image" temporary="true" server-name="Docker">
-      <deployment type="docker-image">
-        <settings>
-          <option name="imageTag" value="quay.io/pypa/manylinux2014_x86_64:latest" />
-          <option name="containerName" value="mycentosContainer" />
-        </settings>
-      </deployment>
-      <method v="2" />
+    <configuration name="testCPP_Porgram" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="HU_GalaxyPackage" TARGET_NAME="TestLib" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="HU_GalaxyPackage" RUN_TARGET_NAME="TestLib">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
     </configuration>
-    <configuration name="Docker Image (3)" type="docker-deploy" factoryName="docker-image" temporary="true" server-name="Docker">
-      <deployment type="docker-image">
-        <settings>
-          <option name="imageTag" value="mycentos2014:latest" />
-          <option name="containerName" value="" />
-        </settings>
-      </deployment>
-      <method v="2" />
-    </configuration>
-    <configuration name="Docker Image (4)" type="docker-deploy" factoryName="docker-image" temporary="true" server-name="Docker">
-      <deployment type="docker-image">
-        <settings>
-          <option name="imageTag" value="mycentos2014:latest" />
-          <option name="containerName" value="myContainer" />
-        </settings>
-      </deployment>
-      <method v="2" />
-    </configuration>
-    <configuration name="Docker Image (5)" type="docker-deploy" factoryName="docker-image" temporary="true" server-name="Docker">
-      <deployment type="docker-image">
-        <settings>
-          <option name="imageTag" value="mycentos2014:latest" />
-          <option name="containerName" value="" />
-        </settings>
-      </deployment>
+    <configuration name="testlib" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="HU_GalaxyPackage" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="$USER_HOME$/anaconda3/envs/pytorch_env/bin/python" />
+      <option name="SDK_NAME" value="pytorch_env (2)" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/dist/expand_dir" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/dist/expand_dir/testlib.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
     <configuration default="true" type="docker-deploy" factoryName="docker-image" temporary="true">
@@ -160,20 +198,18 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="CMake Application.testCPP_Porgram" />
       <item itemvalue="CMake Application.HU_Galaxy_GalaxyWrapper" />
-      <item itemvalue="Docker.Docker Image (5)" />
-      <item itemvalue="Docker.Docker Image (2)" />
-      <item itemvalue="Docker.Docker Image (3)" />
-      <item itemvalue="Docker.Docker Image (4)" />
-      <item itemvalue="Docker.Docker Image (1)" />
+      <item itemvalue="CMake Application.TestLib" />
+      <item itemvalue="CMake Debug.testTorch" />
+      <item itemvalue="CMake Debug.HU_Galaxy_GalaxyWrapper" />
+      <item itemvalue="Core Dump Debug.Unnamed" />
+      <item itemvalue="Python.testlib" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Docker.Docker Image (5)" />
-        <item itemvalue="Docker.Docker Image (4)" />
-        <item itemvalue="Docker.Docker Image (3)" />
-        <item itemvalue="Docker.Docker Image (2)" />
-        <item itemvalue="Docker.Docker Image (1)" />
+        <item itemvalue="Python.testlib" />
+        <item itemvalue="CMake Debug.HU_Galaxy_GalaxyWrapper" />
       </list>
     </recent_temporary>
   </component>
@@ -215,7 +251,40 @@
       <workItem from="1685155841959" duration="283000" />
       <workItem from="1685156126077" duration="2606000" />
       <workItem from="1685160670892" duration="3327000" />
-      <workItem from="1685177037441" duration="40265000" />
+      <workItem from="1685177037441" duration="40311000" />
+      <workItem from="1685279814379" duration="4719000" />
+      <workItem from="1685349374857" duration="1992000" />
+      <workItem from="1685376068180" duration="2799000" />
+      <workItem from="1685398716580" duration="2826000" />
+      <workItem from="1685444490059" duration="2774000" />
+      <workItem from="1685454094789" duration="4019000" />
+      <workItem from="1685466507301" duration="6428000" />
+      <workItem from="1685505622548" duration="1570000" />
+      <workItem from="1685531778331" duration="10459000" />
+      <workItem from="1685613738544" duration="9344000" />
+      <workItem from="1685674012821" duration="650000" />
+      <workItem from="1685705361228" duration="11228000" />
+      <workItem from="1685722665583" duration="9688000" />
+      <workItem from="1685787441352" duration="27023000" />
+      <workItem from="1685872781483" duration="2078000" />
+      <workItem from="1685882380215" duration="863000" />
+      <workItem from="1685887398253" duration="11991000" />
+      <workItem from="1685919505896" duration="5000" />
+      <workItem from="1685936716018" duration="1118000" />
+      <workItem from="1685999461969" duration="627000" />
+      <workItem from="1686002200499" duration="11000" />
+      <workItem from="1686094142937" duration="24000" />
+      <workItem from="1686101295101" duration="21000" />
+      <workItem from="1686142179543" duration="167000" />
+      <workItem from="1686142372954" duration="6203000" />
+      <workItem from="1686150584767" duration="13000" />
+      <workItem from="1686219166757" duration="7000" />
+      <workItem from="1686219377921" duration="3560000" />
+      <workItem from="1686224769358" duration="10581000" />
+      <workItem from="1686302790723" duration="12014000" />
+      <workItem from="1686322784493" duration="18808000" />
+      <workItem from="1686352187260" duration="6632000" />
+      <workItem from="1686405395915" duration="4127000" />
     </task>
     <task id="LOCAL-00001" summary="Working buil_wheels.sh">
       <created>1684843345101</created>
@@ -245,7 +314,14 @@
       <option name="project" value="LOCAL" />
       <updated>1685245253621</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Working and exposing pybind11 wrappers. Now, working on the manylinux2014">
+      <created>1685246778567</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1685246778567</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -268,11 +344,23 @@
       </list>
     </option>
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Working buil_wheels.sh" />
     <MESSAGE value="I can build wheels but they don't have symbols or wrapped class or functions. I removed the pybind module which could had created this situation and will start again. Now working on the host first." />
     <MESSAGE value="Working and exposing pybind11 wrappers" />
-    <option name="LAST_COMMIT_MESSAGE" value="Working and exposing pybind11 wrappers" />
+    <MESSAGE value="Working and exposing pybind11 wrappers. Now, working on the manylinux2014" />
+    <option name="LAST_COMMIT_MESSAGE" value="Working and exposing pybind11 wrappers. Now, working on the manylinux2014" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -282,12 +370,31 @@
           <line>5</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp</url>
+          <line>160</line>
+          <option name="timeStamp" value="17" />
+        </line-breakpoint>
         <line-breakpoint enabled="true" type="CMakeLineBreakpoint">
-          <url>file://$PROJECT_DIR$/HU_Galaxy/CMakeLists.txt</url>
-          <line>15</line>
-          <option name="timeStamp" value="7" />
+          <url>file://$PROJECT_DIR$/cmake/FindTorch.cmake</url>
+          <line>76</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="CMakeLineBreakpoint">
+          <url>file://$PROJECT_DIR$/cmake/FindTorch.cmake</url>
+          <line>22</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/dist/expand_dir/testlib.py</url>
+          <line>2</line>
+          <option name="timeStamp" value="13" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

@@ -30,7 +30,7 @@ py::array_t<double> makeNumpy(const std::vector<std::vector<double>>& result);
 class GalaxyWrapper {
 public:
     GalaxyWrapper(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
-                  double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift = 0.0, bool cuda=false);
+                  double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift = 0.0, bool cuda=false, bool debug=false);
 
     py::array_t<double> DrudePropagator(double epoch, double time_step_years, double eta, double temperature);
 

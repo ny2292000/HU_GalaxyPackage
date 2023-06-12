@@ -1,0 +1,77 @@
+cmake_minimum_required(VERSION 3.22.0)
+set(CMAKE_STRIP "")
+project(HU_Galaxy_GalaxyWrapper LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CUDA_ARCHITECTURES 50 86)
+
+#conda create -n pytorch_env
+#conda install pytorch torchvision torchaudio pytorch-cuda=11.8 nlopt pybind11  -c pytorch -c nvidia
+#conda install -c anaconda _ipyw_jlab_nb_ext_conf
+#conda install -c conda-forge nb_conda nb_conda_kernels
+
+#export Python_EXECUTABLE=`which python`
+#export Python_INCLUDE_DIRS=`python -c "import sysconfig; print(sysconfig.get_paths()['include'])"`
+#export NUMPY_INCLUDE_DIRS=$(python -c "import numpy, os; print(numpy.get_include())")
+#export pybind11_INCLUDE_DIR=$(python -c "import pybind11, os; print(pybind11.get_include())")
+#export CMAKE_PREFIX_PATH=`python -c 'import torch;print_1D(torch.utils.cmake_prefix_path)'`
+#printenv |grep -i python
+#printenv |grep -i pybind11
+
+set(Python_INCLUDE_DIRS "/home/mp74207/anaconda3/envs/pytorch_env/include/python3.9")
+set(CMAKE_PREFIX_PATH "/home/mp74207/anaconda3/envs/pytorch_env/lib/python3.9/site-packages/torch/share/cmake")
+set(NUMPY_INCLUDE_DIRS "/home/mp74207/anaconda3/envs/pytorch_env/lib/python3.9/site-packages/numpy/core/include")
+set(pybind11_INCLUDE_DIR "/home/mp74207/anaconda3/envs/pytorch_env/lib/python3.9/site-packages/pybind11/include")
+set(CONDA_PYTHON_EXE "/home/mp74207/anaconda3/bin/python")
+set(Python_EXECUTABLE "/home/mp74207/anaconda3/envs/pytorch_env/bin/python")
+set(CUDA_NVRTC_LIB "/home/mp74207/anaconda3/envs/pytorch_env/lib/libnvrtc.so.11.8.89")
+set(CMAKE_CUDA_COMPILER "/usr/local/cuda/bin/nvcc")
+
+#set( CMAKE_MODULE_PATH  ${CMAKE_SOURCE_DIR}/cmake)
+find_package(NLopt REQUIRED)
+if (${NLOPT_FOUND})
+    message("found nlopt "  )
+else()
+    message("not found nlopt "  )
+endif()
+message("this is nlopt library dirs " ${NLOPT_LIBRARIES} )
+
+
+find_package(Torch REQUIRED)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto=4 -lnlopt ${TORCH_CXX_FLAGS}")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto=4 -lnlopt ${TORCH_C_FLAGS}")
+message("Torch includes" "${TORCH_INCLUDE_DIRS}")
+message("Torch libraries" "${TORCH_LIBRARIES}")
+
+find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
+message("this is python include dirs " ${Python_INCLUDE_DIRS} )
+
+find_package(pybind11 CONFIG REQUIRED)
+message("this is pybind include dirs " ${pybind11_INCLUDE_DIRS} )
+
+# Add source files
+pybind11_add_module(${PROJECT_NAME}
+        HU_Galaxy.cpp
+        Galaxy.cpp
+        )
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+        ${TORCH_INCLUDE_DIRECTORIES}
+        ${pybind11_INCLUDE_DIRS}
+        ${Python_INCLUDE_DIRS}
+        ${Python_Numpy_INCLUDE_DIRS}
+        )
+
+
+# Link libraries
+target_link_libraries(${PROJECT_NAME} PRIVATE
+        ${TORCH_LIBRARIES}
+        ${Python_LIBRARIES}
+        ${Python_NumPy_LIBRARIES}
+        NLopt::nlopt
+        pybind11::module
+        pybind11::lto
+        m
+        c
+        stdc++fs
+        )

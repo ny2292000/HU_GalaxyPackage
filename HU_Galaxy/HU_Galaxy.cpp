@@ -59,8 +59,8 @@ py::array_t<double> makeNumpy(const std::vector<std::vector<double>>& result) {
 
 
     GalaxyWrapper::GalaxyWrapper(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
-                  double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift, bool cuda )
-            : galaxy(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift, cuda) {};
+                  double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift, bool cuda, bool debug )
+            : galaxy(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift, cuda, debug) {};
 
     py::array_t<double> GalaxyWrapper::DrudePropagator(double epoch, double time_step_years, double eta, double temperature) {
         auto result = galaxy.DrudePropagator(epoch, time_step_years, eta, temperature);

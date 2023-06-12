@@ -22,7 +22,7 @@ std::vector<std::vector<double>> zeros_2(int nr, int nz) ;
 std::vector<std::vector<double>> density(double rho_0, double alpha_0, double rho_1, double alpha_1,
                                          const std::vector<double>& r, const std::vector<double>& z);
 
-void print(const std::vector<double> a) ;
+void print_1D(const std::vector<double> a) ;
 
 void print_2D(const std::vector<std::vector<double>>& a);
 
@@ -90,7 +90,7 @@ std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, doubl
 class Galaxy {
 public:
     Galaxy(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
-           double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift, bool cuda);
+           double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift, bool cuda, bool debug);
     ~Galaxy();
 
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
@@ -119,6 +119,7 @@ public:
     double dtheta;
     double redshift;
     bool cuda;
+    bool debug;
     double GalaxyMass;
     std::vector<double> r;
     std::vector<double> dv0;

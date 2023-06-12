@@ -71,13 +71,17 @@ int main() {
     const double pi= 3.141592653589793238;
     //    const std::vector<double> r = linspace(1,R_max, nr);
     std::vector<double> r = creategrid(rho_0, alpha_0, rho_1, alpha_1, nr);
+    torch::Tensor r_cpu = torch::tensor(r, torch::dtype(torch::kDouble));  // Convert to tensor
+    auto mask = (r_cpu < 8089.462);
+    int count = mask.sum().item<int>();  // Extract the value as an integer
+
     const std::vector<double> z = linspace(-h0 / 2.0, h0 / 2.0, nz);
     const std::vector<std::vector<double>> rho = density(rho_0, alpha_0, rho_1, alpha_1, r, z);
     const std::vector<double> theta = linspace(0, 2 * pi, ntheta);
-    bool debug = true;
+    bool debug = false;
     const bool cuda= false;
     Galaxy M33(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0,
-               R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift, cuda);
+               R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift, cuda, debug);
     M33.read_galaxy_rotation_curve(m33_rotational_curve);
     std::vector<std::vector<double>> f_z = zeros_2(M33.n_rotation_points, 2);
     std::vector<double> x0 = {rho_0, alpha_0, rho_1, alpha_1, h0};

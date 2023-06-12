@@ -24,40 +24,13 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c4e57b9e-4beb-4d07-993f-fd7927223454" name="Changes" comment="Working and exposing pybind11 wrappers. Now, working on the manylinux2014">
-      <change afterPath="$PROJECT_DIR$/build.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/setupnew.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testCPPLibrary/CMakeLists.txt" afterDir="false" />
+    <list default="true" id="c4e57b9e-4beb-4d07-993f-fd7927223454" name="Changes" comment="Wonrking on getting torch version to work. Still not working.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy/Galaxy.h" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/Galaxy.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.h" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/HU_Galaxy.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/forCentos.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/HU_Galaxy/forUbuntu.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/FindNLopt.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/FindNLopt.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/FindNumPy.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/FindPackageHandleStandardArgs.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/FindPackageMessage.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/FindPython.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/FindPython/Support.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/FindPython2.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/FindPython2.rst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/FindPython3.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/FindPython3.rst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/FindPythonInterp.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/FindPythonInterp.rst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/FindPythonLibs.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/FindPythonLibs.rst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/Findpybind11.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/Support.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/exportStuff.sh" beforeDir="false" afterPath="$PROJECT_DIR$/exportStuff.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rerun.sh" beforeDir="false" afterPath="$PROJECT_DIR$/rerun.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testCPPLibrary/TestGalaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/testCPPLibrary/TestGalaxy.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -97,25 +70,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/mp74207/CLionProjects/HU_GalaxyPackage/testCPPLibrary&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
-    &quot;two.files.diff.last.used.file&quot;: &quot;/home/mp74207/CLionProjects/testTorch/requirements.txt&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "last_opened_file_path": "/home/mp74207/CLionProjects/HU_GalaxyPackage/testCPPLibrary",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "structure.view.defaults.are.configured": "true",
+    "two.files.diff.last.used.file": "/home/mp74207/CLionProjects/testTorch/requirements.txt",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/testCPPLibrary" />
@@ -125,10 +99,10 @@
       <recent name="$PROJECT_DIR$/HU_Galaxy" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/testCPPLibrary" />
       <recent name="$PROJECT_DIR$/deleteme" />
       <recent name="$PROJECT_DIR$/HU_Galaxy" />
-      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/" />
     </key>
   </component>
@@ -162,6 +136,27 @@
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
+    </configuration>
+    <configuration name="libTorchSpiralGalaxy" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="HU_GalaxyPackage" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/libTorchSpiralGalaxy.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
     </configuration>
     <configuration name="testlib" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="HU_GalaxyPackage" />
@@ -204,10 +199,12 @@
       <item itemvalue="CMake Debug.testTorch" />
       <item itemvalue="CMake Debug.HU_Galaxy_GalaxyWrapper" />
       <item itemvalue="Core Dump Debug.Unnamed" />
+      <item itemvalue="Python.libTorchSpiralGalaxy" />
       <item itemvalue="Python.testlib" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.libTorchSpiralGalaxy" />
         <item itemvalue="Python.testlib" />
         <item itemvalue="CMake Debug.HU_Galaxy_GalaxyWrapper" />
       </list>
@@ -284,7 +281,11 @@
       <workItem from="1686302790723" duration="12014000" />
       <workItem from="1686322784493" duration="18808000" />
       <workItem from="1686352187260" duration="6632000" />
-      <workItem from="1686405395915" duration="4127000" />
+      <workItem from="1686405395915" duration="4316000" />
+      <workItem from="1686416536675" duration="7505000" />
+      <workItem from="1686467053800" duration="3835000" />
+      <workItem from="1686485280388" duration="10425000" />
+      <workItem from="1686514015172" duration="17650000" />
     </task>
     <task id="LOCAL-00001" summary="Working buil_wheels.sh">
       <created>1684843345101</created>
@@ -321,7 +322,14 @@
       <option name="project" value="LOCAL" />
       <updated>1685246778567</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Wonrking on getting torch version to work. Still not working.">
+      <created>1686411054737</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1686411054737</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -360,7 +368,8 @@
     <MESSAGE value="I can build wheels but they don't have symbols or wrapped class or functions. I removed the pybind module which could had created this situation and will start again. Now working on the host first." />
     <MESSAGE value="Working and exposing pybind11 wrappers" />
     <MESSAGE value="Working and exposing pybind11 wrappers. Now, working on the manylinux2014" />
-    <option name="LAST_COMMIT_MESSAGE" value="Working and exposing pybind11 wrappers. Now, working on the manylinux2014" />
+    <MESSAGE value="Wonrking on getting torch version to work. Still not working." />
+    <option name="LAST_COMMIT_MESSAGE" value="Wonrking on getting torch version to work. Still not working." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -372,8 +381,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp</url>
-          <line>160</line>
-          <option name="timeStamp" value="17" />
+          <line>300</line>
+          <option name="timeStamp" value="56" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="CMakeLineBreakpoint">
           <url>file://$PROJECT_DIR$/cmake/FindTorch.cmake</url>

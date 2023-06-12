@@ -207,6 +207,132 @@ std::vector<std::vector<double>> density(double rho_0, double alpha_0, double rh
     return density_;
 }
 
+//
+//std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> get_g_torch(
+//        const torch::Tensor& r_sampling,
+//        const torch::Tensor& z_sampling,
+//        const torch::Tensor& G,
+//        const torch::Tensor& dv0,
+//        const torch::Tensor& r,
+//        const torch::Tensor& z,
+//        const torch::Tensor& costheta,
+//        const torch::Tensor& sintheta,
+//        const torch::Tensor& rho,
+//        bool debug) {
+//
+//
+//    // Get the sizes for each dimension
+//    int r_size = r_sampling.size(0);
+//    int z_size = z_sampling.size(0);
+//    int n_r = r.size(0);
+//    int n_theta = sintheta.size(0);
+//    int n_z = z.size(0);
+//
+//    // Reshape tensors for broadcasting
+//    auto r_broadcasted = r.unsqueeze(1).unsqueeze(2);
+//    auto dv0_broadcasted = dv0.unsqueeze(1).unsqueeze(2);
+//    auto rho_broadcasted = rho.unsqueeze(1);
+//    auto G_broadcasted = G.unsqueeze(1).unsqueeze(2);
+//    auto sintheta_broadcasted = sintheta.unsqueeze(0).unsqueeze(2);
+//    auto costheta_broadcasted = costheta.unsqueeze(0).unsqueeze(2);
+//    auto z_broadcasted = z.unsqueeze(0).unsqueeze(1);
+//
+//    // Initialize the output vectors with the correct dimensions
+//    std::vector<std::vector<double>> radial_values_2d(r_size, std::vector<double>(z_size));
+//    std::vector<std::vector<double>> vertical_values_2d(r_size, std::vector<double>(z_size));
+//    // Loop over r_sampling values
+//    for (int i = 0; i < r_size; ++i) {
+//        auto r_sampling_ii = r_sampling[i].unsqueeze(0).unsqueeze(1).unsqueeze(2);
+//        // Create masks for radial value calculation
+//        auto mask = (r_broadcasted <= r_sampling_ii).to(r_sampling_ii.dtype());
+//        // Loop over z_sampling values
+//        for (int j = 0; j < z_size; ++j) {
+//            auto z_sampling_jj = z_sampling[j].unsqueeze(0).unsqueeze(1).unsqueeze(2);
+//
+//            // Calculate the common factor without the mask
+//            // Calculate the distances
+//            auto d_3 = ( (z_broadcasted - z_sampling_jj).pow(2) +
+//                         (r_sampling_ii - r_broadcasted * sintheta_broadcasted).pow(2) +
+//                         (r_broadcasted * costheta_broadcasted).pow(2) ).pow(1.5);
+//
+//
+//            // Calculate the common factor
+//            auto commonfactor = G_broadcasted * rho_broadcasted * dv0_broadcasted/d_3;
+//
+//            // Perform the summation over the last three dimensions
+//            vertical_values_2d[i][j] = (commonfactor* (z_broadcasted - z_sampling_jj)).view({-1}).sum().item<double>();
+//
+//            // Apply the mask to commonfactor before the division
+//            radial_values_2d[i][j] = (commonfactor * mask * (r_sampling_ii - r_broadcasted * sintheta_broadcasted)).view({-1}).sum().item<double>();
+//        }
+//    }
+//    return std::make_pair(radial_values_2d, vertical_values_2d);
+//}
+
+//std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> get_g_torch(
+//        const torch::Tensor& r_sampling,
+//        const torch::Tensor& z_sampling,
+//        const torch::Tensor& G,
+//        const torch::Tensor& dv0,
+//        const torch::Tensor& r,
+//        const torch::Tensor& z,
+//        const torch::Tensor& costheta,
+//        const torch::Tensor& sintheta,
+//        const torch::Tensor& rho,
+//        bool debug) {
+//
+//    // Get the sizes for each dimension
+//    int r_size = r_sampling.size(0);
+//    int z_size = z_sampling.size(0);
+//    int n_r = r.size(0);
+//    int n_theta = sintheta.size(0);
+//    int n_z = z.size(0);
+//
+//    // Reshape tensors for broadcasting
+//    auto r_broadcasted = r.unsqueeze(0).unsqueeze(1).unsqueeze(2).unsqueeze(3);
+//    auto dv0_broadcasted = dv0.unsqueeze(0).unsqueeze(1).unsqueeze(2).unsqueeze(3);
+//    auto rho_broadcasted = rho.unsqueeze(0).unsqueeze(1).unsqueeze(2);
+//    auto G_broadcasted = G.unsqueeze(0).unsqueeze(1).unsqueeze(2).unsqueeze(3);
+//    auto sintheta_broadcasted = sintheta.unsqueeze(0).unsqueeze(1).unsqueeze(2).unsqueeze(3);
+//    auto costheta_broadcasted = costheta.unsqueeze(0).unsqueeze(1).unsqueeze(2).unsqueeze(3);
+//    auto z_broadcasted = z.unsqueeze(0).unsqueeze(1).unsqueeze(2);
+//
+//    // Reshape r_sampling for broadcasting
+//    auto r_sampling_broadcasted = r_sampling.unsqueeze(1).unsqueeze(2).unsqueeze(3);
+//
+//    // Create masks for radial value calculation
+//    auto mask = (r_broadcasted <= r_sampling_broadcasted).to(r_sampling_broadcasted.dtype());
+//
+//    // Initialize the output tensors with the correct dimensions
+//    torch::Tensor radial_values_2d = torch::zeros({r_size, z_size});
+//    torch::Tensor vertical_values_2d = torch::zeros({r_size, z_size});
+//
+//    // Loop over z_sampling values
+//    for (int j = 0; j < z_size; ++j) {
+//        auto z_sampling_jj = z_sampling[j].unsqueeze(0).unsqueeze(1).unsqueeze(2).unsqueeze(3);
+//
+//        // Calculate the common factor without the mask
+//        // Calculate the distances
+//        auto d_3 = ( (z_broadcasted - z_sampling_jj).pow(2) +
+//                     (r_sampling_broadcasted - r_broadcasted * sintheta_broadcasted).pow(2) +
+//                     (r_broadcasted * costheta_broadcasted).pow(2) ).pow(1.5);
+//
+//        // Calculate the common factor
+//        auto commonfactor = G_broadcasted * rho_broadcasted * dv0_broadcasted/d_3;
+//
+//        // Perform the summation over the last three dimensions
+//        vertical_values_2d.slice(1, j, j+1) = (commonfactor * (z_broadcasted - z_sampling_jj)).sum({2,3,4});
+//
+//        // Apply the mask to commonfactor before the division
+//        radial_values_2d.slice(1, j, j+1) = (commonfactor * mask * (r_sampling_broadcasted - r_broadcasted * sintheta_broadcasted)).sum({2,3,4});
+//    }
+//
+//    // Convert the result to vector of vector of doubles
+//    auto radial_values = tensor_to_vec_of_vec(radial_values_2d);
+//    auto vertical_values = tensor_to_vec_of_vec(vertical_values_2d);
+//
+//    return std::make_pair(radial_values, vertical_values);
+//}
 
 std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> get_g_torch(
         const torch::Tensor& r_sampling,
@@ -220,7 +346,6 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> ge
         const torch::Tensor& rho,
         bool debug) {
 
-
     // Get the sizes for each dimension
     int r_size = r_sampling.size(0);
     int z_size = z_sampling.size(0);
@@ -229,50 +354,51 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> ge
     int n_z = z.size(0);
 
     // Reshape tensors for broadcasting
-    auto r_broadcasted = r.unsqueeze(1).unsqueeze(2);
-    auto dv0_broadcasted = dv0.unsqueeze(1).unsqueeze(2);
-    auto rho_broadcasted = rho.unsqueeze(1);
-    auto G_broadcasted = G.unsqueeze(1).unsqueeze(2);
-    auto sintheta_broadcasted = sintheta.unsqueeze(0).unsqueeze(2);
-    auto costheta_broadcasted = costheta.unsqueeze(0).unsqueeze(2);
-    auto z_broadcasted = z.unsqueeze(0).unsqueeze(1);
+# tensor alignment r_sampling, z_sampling, r, theta, z = (0,1,2,3,4)
+    // Reshape r_sampling for broadcasting
+    auto r_sampling_broadcasted = r_sampling.unsqueeze(1).unsqueeze(2).unsqueeze(3).unsqueeze(4);
+    auto z_sampling_broadcasted = z_sampling.unsqueeze(0).unsqueeze(2).unsqueeze(3.unsqueeze(4));
 
-    // Initialize the output vectors with the correct dimensions
-    std::vector<std::vector<double>> radial_values_2d(r_size, std::vector<double>(z_size));
-    std::vector<std::vector<double>> vertical_values_2d(r_size, std::vector<double>(z_size));
-    // Loop over r_sampling values
-    for (int i = 0; i < r_size; ++i) {
-        auto r_sampling_ii = r_sampling[i].unsqueeze(0).unsqueeze(1).unsqueeze(2);
-        // Create masks for radial value calculation
-        auto mask = (r_broadcasted <= r_sampling_ii).to(r_sampling_ii.dtype());
+    auto r_broadcasted =     r.unsqueeze(0).unsqueeze(1).unsqueeze(3).unsqueeze(4);
+    auto dv0_broadcasted = dv0.unsqueeze(0).unsqueeze(1).unsqueeze(3).unsqueeze(4);
+    auto rho_broadcasted = rho.unsqueeze(0).unsqueeze(1).unsqueeze(3);
+    auto G_broadcasted = G.unsqueeze(0).unsqueeze(1).unsqueeze(2).unsqueeze(3).unsqueeze(4);
+    auto sintheta_broadcasted = sintheta.unsqueeze(0).unsqueeze(1).unsqueeze(2).unsqueeze(4);
+    auto costheta_broadcasted = costheta.unsqueeze(0).unsqueeze(1).unsqueeze(2).unsqueeze(4);
+    auto z_broadcasted = z.unsqueeze(0).unsqueeze(1).unsqueeze(2).unsqueeze(3);
 
-        int count = mask.sum().item<int>();
-//        print_tensor(mask);
-        // Loop over z_sampling values
-        for (int j = 0; j < z_size; ++j) {
-            auto z_sampling_jj = z_sampling[j].unsqueeze(0).unsqueeze(1).unsqueeze(2);
+    // Create masks for radial value calculation
+    auto mask = (r_broadcasted <= r_sampling_broadcasted).to(r_sampling_broadcasted.dtype());
 
-            // Calculate the common factor without the mask
-            // Calculate the distances
-            auto d_3 = ( (z_broadcasted - z_sampling_jj).pow(2) +
-                         (r_sampling_ii - r_broadcasted * sintheta_broadcasted).pow(2) +
-                         (r_broadcasted * costheta_broadcasted).pow(2) ).pow(1.5);
+    // Initialize the output tensors with the correct dimensions
+    torch::Tensor radial_values_2d = torch::zeros({r_size, z_size});
+    torch::Tensor vertical_values_2d = torch::zeros({r_size, z_size});
 
 
-            // Calculate the common factor
-            auto commonfactor = G_broadcasted * rho_broadcasted * dv0_broadcasted/d_3;
+    // Calculate the common factor without the mask
+    // Calculate the distances
+    // Calculate the distances
+    auto d_3 = ( (z_sampling_broadcasted - z_broadcasted).pow(2) +
+                 (r_sampling_broadcasted - r_broadcasted * sintheta_broadcasted).pow(2) +
+                 (r_broadcasted * costheta_broadcasted).pow(2) ).pow(1.5);
 
-            // Perform the summation over the last three dimensions
-            vertical_values_2d[i][j] = (commonfactor* (z_broadcasted - z_sampling_jj)).view({-1}).sum().item<double>();
 
-            // Apply the mask to commonfactor before the division
-            radial_values_2d[i][j] = (commonfactor * mask * (r_sampling_ii - r_broadcasted * sintheta_broadcasted)).view({-1}).sum().item<double>();
-        }
-    }
-    return std::make_pair(radial_values_2d, vertical_values_2d);
+    // Calculate the common factor
+    auto commonfactor = G_broadcasted * rho_broadcasted * dv0_broadcasted/d_3;
+
+    // Perform the summation over the last three dimensions
+    vertical_values_2d = (commonfactor * (z_sampling_broadcasted - z_broadcasted)).sum({2,3,4});
+
+    // Apply the mask to commonfactor before the division
+    radial_values_2d = (commonfactor * mask * (r_sampling_broadcasted - r_broadcasted * sintheta_broadcasted)).sum({2,3,4});
+
+
+    // Convert the result to vector of vector of doubles
+    auto radial_values = tensor_to_vec_of_vec(radial_values_2d);
+    auto vertical_values = tensor_to_vec_of_vec(vertical_values_2d);
+
+    return std::make_pair(radial_values, vertical_values);
 }
-
-
 
 std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
 get_all_torch(double redshift,
@@ -287,7 +413,7 @@ get_all_torch(double redshift,
               bool debug) {
 
 
-    int GPU_N = 1;
+    int GPU_N = 0;
     torch::Device device(torch::kCUDA, GPU_N);
 
 // Move data to GPU

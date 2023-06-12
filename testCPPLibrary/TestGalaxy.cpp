@@ -29,27 +29,27 @@
 int main() {
 
     std::vector<std::array<double, 2>> m33_rotational_curve = {
-//            {0.0f,       0.0f},
-//            {1508.7187f, 38.674137f},
-//            {2873.3889f, 55.65067f},
-//            {4116.755f,  67.91063f},
-//            {5451.099f,  79.22689f},
-//            {6846.0957f, 85.01734f},
+            {0.0f,       0.0f},
+            {1508.7187f, 38.674137f},
+            {2873.3889f, 55.65067f},
+            {4116.755f,  67.91063f},
+            {5451.099f,  79.22689f},
+            {6846.0957f, 85.01734f},
             {8089.462f,  88.38242f},
-//            {9393.48f,   92.42116f},
-//            {10727.824f, 95.11208f},
-//            {11880.212f, 98.342697f},
-//            {13275.208f, 99.82048f},
-//            {14609.553f, 102.10709f},
-//            {18521.607f, 104.25024f},
-//            {22403.336f, 107.60643f},
-//            {26406.369f, 115.40966f},
-//            {30379.076f, 116.87875f},
-//            {34382.107f, 116.05664f},
-//            {38354.813f, 117.93005f},
-//            {42266.87f,  121.42091f},
-//            {46300.227f, 128.55017f},
-//            {50212.285f, 132.84966f}
+            {9393.48f,   92.42116f},
+            {10727.824f, 95.11208f},
+            {11880.212f, 98.342697f},
+            {13275.208f, 99.82048f},
+            {14609.553f, 102.10709f},
+            {18521.607f, 104.25024f},
+            {22403.336f, 107.60643f},
+            {26406.369f, 115.40966f},
+            {30379.076f, 116.87875f},
+            {34382.107f, 116.05664f},
+            {38354.813f, 117.93005f},
+            {42266.87f,  121.42091f},
+            {46300.227f, 128.55017f},
+            {50212.285f, 132.84966f}
     };
 
 
@@ -85,31 +85,23 @@ int main() {
     M33.read_galaxy_rotation_curve(m33_rotational_curve);
     std::vector<std::vector<double>> f_z = zeros_2(M33.n_rotation_points, 2);
     std::vector<double> x0 = {rho_0, alpha_0, rho_1, alpha_1, h0};
-    auto F_pair = M33.get_f_z(x0, debug);
-    auto f_z_radial = F_pair.first;
-    auto f_z_vertical = F_pair.second;
-    print_2D(f_z_radial);
-    print_2D(f_z_vertical);
+//    auto F_pair = M33.get_f_z(x0, debug);
+//    auto f_z_radial = F_pair.first;
+//    auto f_z_vertical = F_pair.second;
+//    print_2D(f_z_radial);
+//    print_2D(f_z_vertical);
+//    M33.cuda = true;
+//    F_pair = M33.get_f_z(x0, debug);
+//    f_z_radial = F_pair.first;
+//    f_z_vertical = F_pair.second;
+//    print_2D(f_z_radial);
+//    print_2D(f_z_vertical);
+
+
+    x0 = {1.844838e+01, 4.740178e-04, 1.457440e-01, 2.269589e-05, 1.360035e+05};
     M33.cuda = true;
-    F_pair = M33.get_f_z(x0, debug);
-    f_z_radial = F_pair.first;
-    f_z_vertical = F_pair.second;
-    print_2D(f_z_radial);
-    print_2D(f_z_vertical);
-
-
-//    std::vector<double> rotational_velocity1 = calculate_rotational_velocity(redshift, M33.dv0, M33.r_sampling, r, z,
-//                                                                             M33.costheta, M33.sintheta, M33.rho, debug, true);
-//
-//    std::vector<double> rotational_velocity2 = calculate_rotational_velocity(redshift, M33.dv0, M33.r_sampling, r, z,
-//                                                                             M33.costheta, M33.sintheta, M33.rho, debug, false);
-
-//    std::vector<double> xout = {rho_0, alpha_0, rho_1, alpha_1, h0};
-
-//    std::vector<double> x0 = {1.709545e+01, 4.773922e-04, 1.512449e-01, 2.400304e-05, 1.488530e+05};
-//
-//    xout = M33.nelder_mead(x0, M33,1000, 1E-6);
-//    print(xout);
+    auto xout = M33.nelder_mead(x0, M33,1000, 1E-3);
+    print_1D(xout);
 
 //    bool debug = false;
 //    //    std::vector<double> rotational_velocity = calculate_rotational_velocity(redshift, M33.dv0, M33.r_sampling, r, z, M33.costheta, M33.sintheta, M33.rho, debug);

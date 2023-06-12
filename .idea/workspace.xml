@@ -21,12 +21,14 @@
   <component name="CMakeSettings" AUTO_RELOAD="true">
     <configurations>
       <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
+      <configuration PROFILE_NAME="Release" ENABLED="true" CONFIG_NAME="Release" />
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c4e57b9e-4beb-4d07-993f-fd7927223454" name="Changes" comment="Wonrking on getting torch version to work. Still not working. Only problem is mask">
+    <list default="true" id="c4e57b9e-4beb-4d07-993f-fd7927223454" name="Changes" comment="Wonrking torch version. Next I will check the nelder.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy/Galaxy.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testCPPLibrary/TestGalaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/testCPPLibrary/TestGalaxy.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,7 +38,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Release" />
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -66,26 +68,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/mp74207/CLionProjects/HU_GalaxyPackage/testCPPLibrary&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
-    &quot;structure.view.defaults.are.configured&quot;: &quot;true&quot;,
-    &quot;two.files.diff.last.used.file&quot;: &quot;/home/mp74207/CLionProjects/testTorch/requirements.txt&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "last_opened_file_path": "/home/mp74207/CLionProjects/HU_GalaxyPackage/testCPPLibrary",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "CMakeSettings",
+    "structure.view.defaults.are.configured": "true",
+    "two.files.diff.last.used.file": "/home/mp74207/CLionProjects/testTorch/requirements.txt",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/testCPPLibrary" />
@@ -282,7 +284,7 @@
       <workItem from="1686467053800" duration="3835000" />
       <workItem from="1686485280388" duration="10425000" />
       <workItem from="1686514015172" duration="17981000" />
-      <workItem from="1686562752537" duration="3894000" />
+      <workItem from="1686562752537" duration="9641000" />
     </task>
     <task id="LOCAL-00001" summary="Working buil_wheels.sh">
       <created>1684843345101</created>
@@ -333,7 +335,14 @@
       <option name="project" value="LOCAL" />
       <updated>1686538930916</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Wonrking torch version. Next I will check the nelder.">
+      <created>1686566877402</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1686566877402</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -374,7 +383,8 @@
     <MESSAGE value="Working and exposing pybind11 wrappers. Now, working on the manylinux2014" />
     <MESSAGE value="Wonrking on getting torch version to work. Still not working." />
     <MESSAGE value="Wonrking on getting torch version to work. Still not working. Only problem is mask" />
-    <option name="LAST_COMMIT_MESSAGE" value="Wonrking on getting torch version to work. Still not working. Only problem is mask" />
+    <MESSAGE value="Wonrking torch version. Next I will check the nelder." />
+    <option name="LAST_COMMIT_MESSAGE" value="Wonrking torch version. Next I will check the nelder." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

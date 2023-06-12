@@ -220,7 +220,6 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> ge
         const torch::Tensor& rho,
         bool debug) {
 
-    auto options = r.options();
 
     // Get the sizes for each dimension
     int r_size = r_sampling.size(0);
@@ -231,24 +230,22 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> ge
 
     // Reshape tensors for broadcasting
     auto r_broadcasted = r.unsqueeze(1).unsqueeze(2);
-//    print_tensor(r_broadcasted);
     auto dv0_broadcasted = dv0.unsqueeze(1).unsqueeze(2);
     auto rho_broadcasted = rho.unsqueeze(1);
-//    print_tensor(rho_broadcasted);
     auto G_broadcasted = G.unsqueeze(1).unsqueeze(2);
     auto sintheta_broadcasted = sintheta.unsqueeze(0).unsqueeze(2);
     auto costheta_broadcasted = costheta.unsqueeze(0).unsqueeze(2);
     auto z_broadcasted = z.unsqueeze(0).unsqueeze(1);
 
     // Initialize the output vectors with the correct dimensions
-    std::vector<std::vector<double>> radial_value_2d = zeros_2(r_size, z_size);
-    std::vector<std::vector<double>> vertical_value_2d = zeros_2(r_size, z_size);
-
+    std::vector<std::vector<double>> radial_values_2d(r_size, std::vector<double>(z_size));
+    std::vector<std::vector<double>> vertical_values_2d(r_size, std::vector<double>(z_size));
     // Loop over r_sampling values
     for (int i = 0; i < r_size; ++i) {
         auto r_sampling_ii = r_sampling[i].unsqueeze(0).unsqueeze(1).unsqueeze(2);
         // Create masks for radial value calculation
-        auto mask = (r_broadcasted >= r_sampling_ii);
+        auto mask = (r_broadcasted <= r_sampling_ii).to(r_sampling_ii.dtype());
+
         int count = mask.sum().item<int>();
 //        print_tensor(mask);
         // Loop over z_sampling values
@@ -266,39 +263,13 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> ge
             auto commonfactor = G_broadcasted * rho_broadcasted * dv0_broadcasted/d_3;
 
             // Perform the summation over the last three dimensions
-            vertical_value_2d[i][j] = (commonfactor* (z_broadcasted - z_sampling_jj)).view({-1}).sum().item<double>();
+            vertical_values_2d[i][j] = (commonfactor* (z_broadcasted - z_sampling_jj)).view({-1}).sum().item<double>();
 
             // Apply the mask to commonfactor before the division
-            auto commonfactor_masked = (commonfactor).masked_fill_(mask, 0);
-//            if (commonfactor_masked.dtype() == torch::kDouble) {
-//                std::cout << "The tensor is of type double" << std::endl;
-//            } else {
-//                std::cout << "The tensor is NOT of type double" << std::endl;
-//            }
-
-
-            if (debug) {
-                try {
-                    auto tensor_acc = commonfactor_masked.accessor<double,3>();
-                    printTensorShape(commonfactor);
-                    printTensorShape(commonfactor_masked);
-                    print_tensor_point(commonfactor, 5,5,5);
-                    print_tensor_point(commonfactor_masked, 5,5,5);
-                } catch (std::exception& e) {
-                    std::cout << "Exception: " << e.what() << std::endl;
-                } catch (...) {
-                    std::cout << "Unknown exception" << std::endl;
-                }
-            }
-
-            // Then divide by d_3
-//            radial_value_2d[i][j] = (commonfactor_masked).view({-1}).sum().item<double>();
-            radial_value_2d[i][j] = (commonfactor).view({-1}).sum().item<double>();
+            radial_values_2d[i][j] = (commonfactor * mask * (r_sampling_ii - r_broadcasted * sintheta_broadcasted)).view({-1}).sum().item<double>();
         }
     }
-    print_2D(radial_value_2d);
-    print_2D(vertical_value_2d);
-    return std::make_pair(radial_value_2d, vertical_value_2d);
+    return std::make_pair(radial_values_2d, vertical_values_2d);
 }
 
 
@@ -315,33 +286,6 @@ get_all_torch(double redshift,
               const std::vector<std::vector<double>> &rho_in,
               bool debug) {
 
-    // Define options for GPU tensors
-    // Create tensors and move to GPU
-//    int count = 0;
-//    for (int i=0; i < r_in.size(); i++){
-//        if (r_in[i] < r_sampling_in[0]){
-//            count+=1;
-//        }
-//    }
-//    std::cout << count << std::endl;
-//    if (torch::cuda::is_available()) {
-//        std::cout << "CUDA is available! Training on GPU." << std::endl;
-//        int num_devices = torch::cuda::device_count();
-//        std::cout << "Number of GPUs: " << num_devices << std::endl;
-//
-//        for (int i = 0; i < num_devices; ++i) {
-//            torch::Device device(torch::kCUDA, i);
-//            std::cout << "GPU " << i << ": " << device << std::endl;
-//
-//            cudaDeviceProp props;
-//            cudaGetDeviceProperties(&props, i);
-//            std::cout << "GPU name: " << props.name << std::endl;
-//            std::cout << "GPU capability: " << props.major << "." << props.minor << std::endl;
-//            // Access more information about the GPU using other fields in props
-//        }
-//    } else {
-//        std::cout << "No GPUs available." << std::endl;
-//    }
 
     int GPU_N = 1;
     torch::Device device(torch::kCUDA, GPU_N);
@@ -351,7 +295,6 @@ get_all_torch(double redshift,
     torch::Tensor r_sampling = move_data_to_gpu(r_sampling_in, device);
     torch::Tensor z_sampling = move_data_to_gpu(z_sampling_in, device);
     torch::Tensor r = move_data_to_gpu(r_in, device);
-//    print_1D(r_in);
     torch::Tensor z = move_data_to_gpu(z_in, device);
     torch::Tensor costheta = move_data_to_gpu(costheta_in, device);
     torch::Tensor sintheta = move_data_to_gpu(sintheta_in, device);
@@ -360,15 +303,7 @@ get_all_torch(double redshift,
     // Create G tensor
     auto options = torch::TensorOptions().dtype(torch::kFloat64).device(device);
     auto G = torch::full({1}, 7.456866768350099e-46 * (1 + redshift), options);
-
-    // Initialize the 2D arrays
-//    std::vector<std::vector<double>> radial_values_2d(r_sampling_in.size(), std::vector<double>(z_sampling_in.size()));
-//    std::vector<std::vector<double>> vertical_values_2d(r_sampling_in.size(), std::vector<double>(z_sampling_in.size()));
-    std::vector<std::vector<double>> radial_values_2d(1, std::vector<double>(3));
-    std::vector<std::vector<double>> vertical_values_2d(1, std::vector<double>(3));
-
-    auto [radial_value_2d, vertical_value_2d] = get_g_torch(r_sampling, z_sampling, G, dv0, r, z, costheta, sintheta, rho, debug);
-    return {radial_values_2d, vertical_values_2d};
+    return get_g_torch(r_sampling, z_sampling, G, dv0, r, z, costheta, sintheta, rho, debug);
 }
 
 
@@ -723,7 +658,7 @@ Galaxy::get_f_z(const std::vector<double> &x, bool debug) {
     if (debug) {
         z_sampling = {0.0};
     } else {
-        z_sampling = {-10000, 0.0, 10000}; //{this->z};
+        z_sampling = {this->z};
     }
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z;
     if(cuda){

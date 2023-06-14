@@ -11,7 +11,7 @@
 #include <future>
 #include "torch/torch.h"
 #include <cuda_runtime.h>
-#include <fstream>
+#include "tensor_utils.h"
 #include "Galaxy.h"
 
 const double Radius_4D = 14.01;
@@ -354,15 +354,15 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> ge
     int n_z = z.size(0);
 
     // Reshape tensors for broadcasting
-# tensor alignment r_sampling, z_sampling, r, theta, z = (0,1,2,3,4)
+    // tensor alignment r_sampling, z_sampling, r, theta, z = (0,1,2,3,4)
     // Reshape r_sampling for broadcasting
     auto r_sampling_broadcasted = r_sampling.unsqueeze(1).unsqueeze(2).unsqueeze(3).unsqueeze(4);
-    auto z_sampling_broadcasted = z_sampling.unsqueeze(0).unsqueeze(2).unsqueeze(3.unsqueeze(4));
+    auto z_sampling_broadcasted = z_sampling.unsqueeze(0).unsqueeze(2).unsqueeze(3).unsqueeze(4);
 
     auto r_broadcasted =     r.unsqueeze(0).unsqueeze(1).unsqueeze(3).unsqueeze(4);
     auto dv0_broadcasted = dv0.unsqueeze(0).unsqueeze(1).unsqueeze(3).unsqueeze(4);
     auto rho_broadcasted = rho.unsqueeze(0).unsqueeze(1).unsqueeze(3);
-    auto G_broadcasted = G.unsqueeze(0).unsqueeze(1).unsqueeze(2).unsqueeze(3).unsqueeze(4);
+    auto G_broadcasted = G.unsqueeze(1).unsqueeze(2).unsqueeze(3).unsqueeze(4);
     auto sintheta_broadcasted = sintheta.unsqueeze(0).unsqueeze(1).unsqueeze(2).unsqueeze(4);
     auto costheta_broadcasted = costheta.unsqueeze(0).unsqueeze(1).unsqueeze(2).unsqueeze(4);
     auto z_broadcasted = z.unsqueeze(0).unsqueeze(1).unsqueeze(2).unsqueeze(3);
@@ -415,7 +415,7 @@ get_all_torch(double redshift,
 
     int GPU_N = 0;
     torch::Device device(torch::kCUDA, GPU_N);
-
+    auto options = torch::TensorOptions().dtype(torch::kFloat64).device(device);
 // Move data to GPU
     torch::Tensor dv0 = move_data_to_gpu(dv0_in, device);
     torch::Tensor r_sampling = move_data_to_gpu(r_sampling_in, device);
@@ -427,7 +427,7 @@ get_all_torch(double redshift,
     torch::Tensor rho = move_data_to_gpu2D(rho_in, device);
 
     // Create G tensor
-    auto options = torch::TensorOptions().dtype(torch::kFloat64).device(device);
+
     auto G = torch::full({1}, 7.456866768350099e-46 * (1 + redshift), options);
     return get_g_torch(r_sampling, z_sampling, G, dv0, r, z, costheta, sintheta, rho, debug);
 }
@@ -816,7 +816,7 @@ Galaxy::nelder_mead(const std::vector<double> &x0, Galaxy &myGalaxy, int max_ite
     opt.set_xtol_rel(xtol_rel);
     opt.set_maxeval(max_iter);
     std::vector<double> x = x0;
-    double minf;
+    double minf=0.0;
     nlopt::result result = opt.optimize(x, minf);
     if (result < 0) {
         std::cerr << "nlopt failed: " << strerror(result) << std::endl;

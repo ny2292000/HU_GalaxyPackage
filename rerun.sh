@@ -19,7 +19,7 @@ rm -f HU_Galaxy.cpython*
 rm -f cmake-build-debug/CMakeCache.txt
 rm -rf wheelhouse/*
 pip uninstall -y HU-Galaxy
-rm -rf `find /home/mp74207/anaconda3/envs/pytorch_env/lib/python3.9/site-packages  |grep HU_Galaxy`
+rm -rf `find /home/mp74207/CLionProjects/HU_GalaxyPackage/myvenv/lib/python3.10/site-packages  |grep HU_Galaxy`
 python setup.py sdist bdist_wheel
 pip install dist/HU_Galaxy-0.1-cp39-cp39-linux_x86_64.whl
-#python -c "from HU_Galaxy import GalaxyWrapper as GW"
+python -c "from HU_Galaxy import GalaxyWrapper as GW"

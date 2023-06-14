@@ -7,21 +7,21 @@
 //============================================================================
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 
-#include "/home/mp74207/anaconda3/envs/pytorch_env/include/python3.9/Python.h"
+#include "/usr/include/python3.10/Python.h"
 #include <vector>
 #include <memory>  // for std::unique_ptr
 #include <cmath>
 #include <stdio.h>
 #include <stdexcept>
 #include <cstring>
-#include "/home/mp74207/anaconda3/envs/pytorch_env/lib/python3.9/site-packages/numpy/core/include/numpy/arrayobject.h"
-#include "/home/mp74207/anaconda3/envs/pytorch_env/lib/python3.9/site-packages/numpy/core/include/numpy/ndarraytypes.h"
+#include "/home/mp74207/CLionProjects/HU_GalaxyPackage/myvenv/lib/python3.10/site-packages/numpy/core/include/numpy/arrayobject.h"
+#include "/home/mp74207/CLionProjects/HU_GalaxyPackage/myvenv/lib/python3.10/site-packages/numpy/core/include/numpy/ndarrayobject.h"
 #include <array>
 #include <iostream>
 #include <future>
 #include <nlopt.hpp>
 #include <string>
-#include "../HU_Galaxy/Galaxy.h"
+#include "Galaxy.h"
 
 
 

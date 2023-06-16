@@ -1,6 +1,5 @@
 import numpy as np
-import HU_Galaxy
-print(HU_Galaxy.__dir__())
+from hugalaxy import GalaxyWrapper, calculate_mass
 
 m33_rotational_curve = [
     [0.0, 0.0],
@@ -40,7 +39,7 @@ rho_0, alpha_0, rho_1, alpha_1, h0 = x0
 GalaxyMass = 5E10
 pi = 3.141592653589793238
 
-M33 = GalaxyWrapper(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift)
+M33 = GalaxyWrapper(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift, cuda=True)
 
 M33.read_galaxy_rotation_curve(m33_rotational_curve)
 v_sim = M33.simulate_rotation_curve()
@@ -50,7 +49,7 @@ myMass = calculate_mass(rho_0, alpha_0, h0)
 gasMass = calculate_mass(rho_1, alpha_1, h0)
 print( myMass, gasMass)
 debug = False
-
+cuda = false
 # Replace with the correct function call when available
 # rotational_velocity = calculate_rotational_velocity(redshift, M33.dv0, M33.r_sampling, r, z, M33.costheta, M33.sintheta, M33.rho, debug)
 

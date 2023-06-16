@@ -1,5 +1,20 @@
 cmake_minimum_required(VERSION 3.22.0)
-project(testCPPLibrary LANGUAGES CXX)
+#set(CMAKE_STRIP "")
+project(HU_Galaxy_GalaxyWrapper LANGUAGES CXX)
+
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
+
+
+message("VARIABLES AT HU GALAXY DIRECTORY")
+message("Torch include directories: ${TORCH_INCLUDE_DIRS}")
+message("Torch libraries: ${TORCH_LIBRARIES}")
+message("Pybind11 include directory: ${pybind11_INCLUDE_DIR}")
+message("Python include directories: ${Python_INCLUDE_DIRS}")
+message("Python NumPy include directories: ${Python_NumPy_INCLUDE_DIRS}")
+message("NLopt include directories: ${NLOPT_INCLUDE_DIRS}")
+message("NLopt library directories: ${NLOPT_LIBRARIES}")
+
 
 #set(CMAKE_STRIP "")
 
@@ -47,26 +62,43 @@ message("this is nlopt library dirs " ${NLOPT_LIBRARIES} )
 
 
 
-message("Torch includes - testCPPLibrary  " "${TORCH_INCLUDE_DIRS}")
+
+#if(NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
+#    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+#endif()
+message("CMAKE_LIBRARY_OUTPUT_DIRECTORY output directories: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
 
-add_executable(${PROJECT_NAME} TestGalaxy.cpp)
+if(createTest)
+    add_library(${PROJECT_NAME} SHARED
+            HU_Galaxy.cpp
+            Galaxy.cpp
+            )
+else()
+    # Add source files
+    pybind11_add_module(${PROJECT_NAME} SHARED
+            HU_Galaxy.cpp
+            Galaxy.cpp
+            )
+endif()
+
+message("CMAKE_CURRENT_SOURCE_DIR  is ${CMAKE_CURRENT_SOURCE_DIR}")
 
 target_include_directories(${PROJECT_NAME} PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${TORCH_INCLUDE_DIRS}
+        ${pybind11_INCLUDE_DIR}
         ${Python_INCLUDE_DIRS}
-        ${TORCH_INCLUDE_DIRECTORIES}
-        ${pybind11_INCLUDE_DIRS}
         ${Python_NumPy_INCLUDE_DIRS}
-        ${NLopt_INCLUDE_DIRS}
-        /home/mp74207/CLionProjects/HU_GalaxyPackage/HU_Galaxy
+        ${NLOPT_INCLUDE_DIRS}
         )
+
 
 # Link libraries
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        /home/mp74207/CLionProjects/HU_GalaxyPackage/build/HU_Galaxy/libHU_Galaxy_GalaxyWrapper.so
         ${TORCH_LIBRARIES}
-        ${Python_NumPy_LIBRARIES}
         ${Python_LIBRARIES}
+        ${Python_NumPy_LIBRARIES}
         ${NLOPT_LIBRARIES}
         NLopt::nlopt
         pybind11::module

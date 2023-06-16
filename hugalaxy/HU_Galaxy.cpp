@@ -168,7 +168,7 @@ std::pair<py::array_t<double>, py::array_t<double>> GalaxyWrapper::get_f_z(const
     const Galaxy& GalaxyWrapper::get_galaxy() const { return galaxy; }
 
 
-PYBIND11_MODULE(HU_Galaxy, m) {
+PYBIND11_MODULE(HU_Galaxy_GalaxyWrapper, m) {
     py::class_<GalaxyWrapper>(m, "GalaxyWrapper")
             .def(py::init<double, double, double, double, double, double, double, int, int, int, int, int, double, bool>(),
                  py::arg("GalaxyMass"), py::arg("rho_0"), py::arg("alpha_0"), py::arg("rho_1"), py::arg("alpha_1"), py::arg("h0"),
@@ -176,6 +176,20 @@ PYBIND11_MODULE(HU_Galaxy, m) {
             .def("DrudePropagator", &GalaxyWrapper::DrudePropagator, py::arg("epoch"), py::arg("time_step_years"), py::arg("eta"), py::arg("temperature"),
                  "Propagate the mass distribution in a galaxy using the Drude model")
             .def("get_galaxy", &GalaxyWrapper::get_galaxy)
+
+//            .def_property_readonly("r", [](const GalaxyWrapper& galaxyWrapper) {
+//                const double* data_ptr = galaxyWrapper.get_r().data();
+//                py::array_t<double> arr({static_cast<ssize_t>(galaxyWrapper.get_r().size())}, data_ptr);
+//                return arr;
+//            })
+//            .def_property_readonly("z", [](const GalaxyWrapper& galaxyWrapper) {
+//                const double* data_ptr = galaxyWrapper.get_z().data();
+//                py::array_t<double> arr({static_cast<ssize_t>(galaxyWrapper.get_z().size())}, data_ptr);
+//                return arr;
+//            })
+
+
+
             .def_property_readonly("r", [](const Galaxy& galaxy) {
                 // Get a pointer to the data in the `r` vector
                 const double* data_ptr = galaxy.r.data();
@@ -196,6 +210,7 @@ PYBIND11_MODULE(HU_Galaxy, m) {
                 // Return the NumPy array wrapper
                 return arr;
             })
+
             .def_property_readonly("redshift", &GalaxyWrapper::get_redshift)
             .def_property_readonly("R_max", &GalaxyWrapper::get_R_max)
             .def_property_readonly("nz_sampling", &GalaxyWrapper::get_nz_sampling)

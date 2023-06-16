@@ -1,24 +1,49 @@
+auditwheel==5.4.0
+build==0.10.0
 certifi==2023.5.7
-charset-normalizer @ file:///home/conda/feedstock_root/build_artifacts/charset-normalizer_1678108872112/work
-filelock @ file:///home/conda/feedstock_root/build_artifacts/filelock_1681839547898/work
-gmpy2 @ file:///home/conda/feedstock_root/build_artifacts/gmpy2_1666808679441/work
-idna @ file:///home/conda/feedstock_root/build_artifacts/idna_1663625384323/work
-Jinja2 @ file:///home/conda/feedstock_root/build_artifacts/jinja2_1654302431367/work
-MarkupSafe @ file:///home/conda/feedstock_root/build_artifacts/markupsafe_1685769048265/work
-mkl-fft==1.3.1
-mkl-random==1.2.2
-mkl-service==2.4.0
-mpmath @ file:///home/conda/feedstock_root/build_artifacts/mpmath_1678228039184/work
-networkx @ file:///home/conda/feedstock_root/build_artifacts/networkx_1680692919326/work
-numpy @ file:///croot/numpy_and_numpy_base_1682520569166/work
-Pillow @ file:///home/conda/feedstock_root/build_artifacts/pillow_1675487166627/work
-PySocks @ file:///home/conda/feedstock_root/build_artifacts/pysocks_1661604839144/work
-requests @ file:///home/conda/feedstock_root/build_artifacts/requests_1684774241324/work
-six @ file:///home/conda/feedstock_root/build_artifacts/six_1620240208055/work
-sympy @ file:///home/conda/feedstock_root/build_artifacts/sympy_1684180540116/work
+charset-normalizer==3.1.0
+click==8.1.3
+cmake==3.26.4
+distlib==0.3.6
+exceptiongroup==1.1.1
+filelock==3.12.2
+flit_core==3.9.0
+hugalaxy @ file:///home/mp74207/CLionProjects/HU_GalaxyPackage/dist/hugalaxy-0.0.1-py3-none-any.whl#sha256=aeaaf45802b32fc6a5b70ea70a94bcdf2a8538684e9d138586733836fe6ce345
+idna==3.4
+iniconfig==2.0.0
+Jinja2==3.1.2
+lit==16.0.5.post0
+MarkupSafe==2.1.3
+mpmath==1.3.0
+networkx==3.1
+nlopt==2.7.1
+numpy==1.24.3
+nvidia-cublas-cu11==11.10.3.66
+nvidia-cuda-cupti-cu11==11.7.101
+nvidia-cuda-nvrtc-cu11==11.7.99
+nvidia-cuda-runtime-cu11==11.7.99
+nvidia-cudnn-cu11==8.5.0.96
+nvidia-cufft-cu11==10.9.0.58
+nvidia-curand-cu11==10.2.10.91
+nvidia-cusolver-cu11==11.4.0.1
+nvidia-cusparse-cu11==11.7.4.91
+nvidia-nccl-cu11==2.14.3
+nvidia-nvtx-cu11==11.7.91
+packaging==23.1
+patchelf==0.17.2.1
+Pillow==9.5.0
+pluggy==1.0.0
+py==1.11.0
+py_build_cmake==0.1.8
+pybind11==2.10.4
+pyelftools==0.29
+pyproject_hooks==1.0.0
+pytest==3.1.0
+requests==2.31.0
+sympy==1.12
+tomli==2.0.1
 torch==2.0.1
-torchaudio==2.0.2
 torchvision==0.15.2
 triton==2.0.0
-typing_extensions @ file:///home/conda/feedstock_root/build_artifacts/typing_extensions_1685704949284/work
-urllib3 @ file:///home/conda/feedstock_root/build_artifacts/urllib3_1683161174614/work
+typing_extensions==4.6.3
+urllib3==2.0.3

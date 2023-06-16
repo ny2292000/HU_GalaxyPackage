@@ -1,14 +1,16 @@
 #!/bin/bash
-
-
 rm -rf CMakeFiles
-rm -rf HU_Galaxy/cmake_install.cmake
-rm -rf HU_Galaxy/CMakeCache.txt
-rm -rf HU_Galaxy/_deps
-rm -rf HU_Galaxy/HU_Galaxy_GalaxyWrapper.cpython-*
-rm -rf HU_Galaxy/libHU_Galaxy_GalaxyWrapperLib.so
-rm -rf HU_Galaxy/Makefile
-rm -rf HU_Galaxy/CMakeFiles
+rm -rf hugalaxy/detect_cuda_compute_capabilities.cu
+rm -rf hugalaxy/detect_cuda_version.cc
+rm -rf hugalaxy/cmake_install.cmake
+rm -rf hugalaxy/CMakeCache.txt
+rm -rf hugalaxy/_deps
+rm -rf hugalaxy/hugalaxy
+rm -rf hugalaxy/HU_Galaxy_GalaxyWrapper.cpython-*
+rm -rf hugalaxy/libHU_Galaxy_GalaxyWrapperLib.so
+rm hugalaxy/HU_Galaxy_GalaxyWrapper.cpython-310-x86_64-linux-gnu.so
+rm -rf hugalaxy/Makefile
+rm -rf hugalaxy/CMakeFiles
 rm -rf HU_Galaxy.egg-info
 rm -rf build
 rm -rf dist
@@ -18,8 +20,18 @@ rm -rf auditedwheels/*
 rm -f HU_Galaxy.cpython*
 rm -f cmake-build-debug/CMakeCache.txt
 rm -rf wheelhouse/*
-pip uninstall -y HU-Galaxy
-rm -rf `find /home/mp74207/CLionProjects/HU_GalaxyPackage/myvenv/lib/python3.10/site-packages  |grep HU_Galaxy`
-python setup.py sdist bdist_wheel
-pip install dist/HU_Galaxy-0.1-cp39-cp39-linux_x86_64.whl
-python -c "from HU_Galaxy import GalaxyWrapper as GW"
+pip uninstall -y hugalaxy
+cd hugalaxy; cmake . ; make; cd ..
+rm -rf hugalaxy/CMakeFiles
+rm -rf hugalaxy/CMakeCache.txt
+rm hugalaxy/Makefile
+rm hugalaxy/cmake_install.cmake
+rm -rf hugalaxy/detect_cuda_compute_capabilities.cu
+rm -rf hugalaxy/detect_cuda_version.cc
+python -m build .
+pip install dist/hugalaxy-0.0.1-py3-none-any.whl
+python -c "import hugalaxy as hh; print(hh.__dir__())"
+
+
+#pip install dist/hugalaxy-0.1-cp39-cp39-linux_x86_64.whl
+#python -c "from hugalaxy import GalaxyWrapper as GW"

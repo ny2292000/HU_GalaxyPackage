@@ -5,22 +5,8 @@
 // Copyright   : Your copyright notice
 // Description : Hypergeometrical Universe Galaxy Formation in C++, Ansi-style
 //============================================================================
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-
-#include "/usr/include/python3.10/Python.h"
 #include <vector>
-#include <memory>  // for std::unique_ptr
-#include <cmath>
-#include <stdio.h>
-#include <stdexcept>
-#include <cstring>
-#include "/home/mp74207/CLionProjects/HU_GalaxyPackage/myvenv/lib/python3.10/site-packages/numpy/core/include/numpy/arrayobject.h"
-#include "/home/mp74207/CLionProjects/HU_GalaxyPackage/myvenv/lib/python3.10/site-packages/numpy/core/include/numpy/ndarrayobject.h"
 #include <array>
-#include <iostream>
-#include <future>
-#include <nlopt.hpp>
-#include <string>
 #include "Galaxy.h"
 
 

@@ -410,10 +410,10 @@ get_all_torch(double redshift,
               const std::vector<double> &costheta_in,
               const std::vector<double> &sintheta_in,
               const std::vector<std::vector<double>> &rho_in,
+              int GPU_N,
               bool debug) {
 
 
-    int GPU_N = 0;
     torch::Device device(torch::kCUDA, GPU_N);
     auto options = torch::TensorOptions().dtype(torch::kFloat64).device(device);
 // Move data to GPU
@@ -528,7 +528,7 @@ std::vector<double> calculate_rotational_velocity(double redshift, const std::ve
                                                   const std::vector<double> &z,
                                                   const std::vector<double> &costheta,
                                                   const std::vector<double> &sintheta,
-                                                  const std::vector<std::vector<double>> &rho, bool debug, bool cuda) {
+                                                  const std::vector<std::vector<double>> &rho, bool debug, int GPU_ID, bool cuda) {
     int nr_sampling = r_sampling.size();
     double km_lyr = 9460730472580.8; //uu.lyr.to(uu.km)
     // Allocate result vector
@@ -536,7 +536,7 @@ std::vector<double> calculate_rotational_velocity(double redshift, const std::ve
     std::vector<double> v_r(nr_sampling,0.0);
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z;
     if(cuda){
-        f_z = get_all_torch(redshift, dv0, r_sampling, z_sampling, r, z, costheta, sintheta, rho, debug);
+        f_z = get_all_torch(redshift, dv0, r_sampling, z_sampling, r, z, costheta, sintheta, rho, GPU_ID, debug);
     }
     else {
         f_z = get_all_g(redshift, dv0, r_sampling, z_sampling, r, z, costheta, sintheta, rho, debug);
@@ -587,6 +587,7 @@ static double error_function(const std::vector<double> &x, Galaxy &myGalaxy) {
                                                              myGalaxy.sintheta,
                                                              rho,
                                                              debug,
+                                                             myGalaxy.GPU_ID,
                                                              myGalaxy.cuda);
     double error = 0.0;
     for (int i = 0; i < myGalaxy.n_rotation_points; i++) {
@@ -642,9 +643,9 @@ std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, doubl
 // #############################################################################
 
 Galaxy::Galaxy(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
-               double R_max, int nr_init, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift, bool cuda, bool debug)
+               double R_max, int nr_init, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift, int GPU_ID, bool cuda, bool debug)
         : R_max(R_max), nr(nr_init), nz(nz), nr_sampling(nr_sampling), nz_sampling(nz_sampling),
-          alpha_0(alpha_0), rho_0(rho_0), alpha_1(alpha_1), rho_1(rho_1), h0(h0), redshift(redshift), cuda(cuda),debug(debug),
+          alpha_0(alpha_0), rho_0(rho_0), alpha_1(alpha_1), rho_1(rho_1), h0(h0), redshift(redshift), GPU_ID(GPU_ID), cuda(cuda),debug(debug),
           GalaxyMass(GalaxyMass), n_rotation_points(0) {
 
     r = creategrid(rho_0, alpha_0, rho_1, alpha_1, nr);
@@ -840,7 +841,7 @@ std::vector<double> Galaxy::simulate_rotation_curve() {
     // Calculate rotational velocity at all radii
     v_simulated_points = calculate_rotational_velocity(redshift, dv0, x_rotation_points,
                                                        r, z, costheta, sintheta,
-                                                       rho, false, cuda);
+                                                       rho, GPU_ID, false, cuda);
     return v_simulated_points;
 }
 

@@ -8,7 +8,6 @@ distlib==0.3.6
 exceptiongroup==1.1.1
 filelock==3.12.2
 flit_core==3.9.0
-hugalaxy @ file:///home/mp74207/CLionProjects/HU_GalaxyPackage/dist/hugalaxy-0.0.1-py3-none-any.whl#sha256=aeaaf45802b32fc6a5b70ea70a94bcdf2a8538684e9d138586733836fe6ce345
 idna==3.4
 iniconfig==2.0.0
 Jinja2==3.1.2

@@ -136,18 +136,16 @@ objective_wrapper = lambda x, grad, data: error_function(x, data)
 
 # Returns a vector of zeros with the given size
 def zeros_1(size):
-    return [0.0] * size
+    return [0.0]*size
 
 
 def zeros_2(nr, nz):
-    return [[0.0] * nz for _ in range(nr)]
-
+    return [[0.0]*nz for _ in range(nr)]
 
 def print_a(a):
     print("The vector elements are : ")
     for i in range(len(a)):
         print("{:.6e}".format(a[i]))
-
 
 def print_2D(a):
     print("The 2D vector elements are : ")
@@ -159,7 +157,6 @@ def print_2D(a):
 
 def linspace(start, end, points):
     return np.linspace(start, end, points).tolist()
-
 
 def creategrid(rho_0, alpha_0, rho_1, alpha_1, n):
     if alpha_1 > alpha_0:

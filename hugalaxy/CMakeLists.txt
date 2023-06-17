@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.22.0)
-#set(CMAKE_STRIP "")
 project(HU_Galaxy_GalaxyWrapper LANGUAGES CXX)
 
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
@@ -21,7 +20,7 @@ message("NLopt library directories: ${NLOPT_LIBRARIES}")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CUDA_ARCHITECTURES 50 86)
 
-set(Torch_DIR "/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.10/site-packages/torch/share/cmake/Torch")
+set(Torch_DIR "/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.9/site-packages/torch/share/cmake/Torch")
 find_package(Torch REQUIRED)
 message("Torch includes" "${TORCH_INCLUDE_DIRS}")
 message("Torch libraries" "${TORCH_LIBRARIES}")
@@ -33,7 +32,7 @@ message(" this is the path to venv "  ${VENV_PATH})
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 message(" CMAKE_MODULE_PATH   is ${CMAKE_MODULE_PATH}  ")
-set(Pybind11_DIR '/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.10/site-packages/pybind11/share/cmake/pybind11')
+set(Pybind11_DIR '/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.9/site-packages/pybind11/share/cmake/pybind11')
 find_package(pybind11 CONFIG REQUIRED)
 message("this is pybind include dirs " ${pybind11_INCLUDE_DIR} )
 

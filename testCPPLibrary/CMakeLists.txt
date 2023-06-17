@@ -1,12 +1,26 @@
 cmake_minimum_required(VERSION 3.22.0)
 project(testCPPLibrary LANGUAGES CXX)
 
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
+
+
+message("VARIABLES AT HU GALAXY DIRECTORY")
+message("Torch include directories: ${TORCH_INCLUDE_DIRS}")
+message("Torch libraries: ${TORCH_LIBRARIES}")
+message("Pybind11 include directory: ${pybind11_INCLUDE_DIR}")
+message("Python include directories: ${Python_INCLUDE_DIRS}")
+message("Python NumPy include directories: ${Python_NumPy_INCLUDE_DIRS}")
+message("NLopt include directories: ${NLOPT_INCLUDE_DIRS}")
+message("NLopt library directories: ${NLOPT_LIBRARIES}")
+
+
 #set(CMAKE_STRIP "")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CUDA_ARCHITECTURES 50 86)
 
-set(Torch_DIR "/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.10/site-packages/torch/share/cmake/Torch")
+set(Torch_DIR "/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.9/site-packages/torch/share/cmake/Torch")
 find_package(Torch REQUIRED)
 message("Torch includes" "${TORCH_INCLUDE_DIRS}")
 message("Torch libraries" "${TORCH_LIBRARIES}")
@@ -18,7 +32,7 @@ message(" this is the path to venv "  ${VENV_PATH})
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 message(" CMAKE_MODULE_PATH   is ${CMAKE_MODULE_PATH}  ")
-set(Pybind11_DIR '/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.10/site-packages/pybind11/share/cmake/pybind11')
+set(Pybind11_DIR '/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.9/site-packages/pybind11/share/cmake/pybind11')
 find_package(pybind11 CONFIG REQUIRED)
 message("this is pybind include dirs " ${pybind11_INCLUDE_DIR} )
 
@@ -47,26 +61,29 @@ message("this is nlopt library dirs " ${NLOPT_LIBRARIES} )
 
 
 
-message("Torch includes - testCPPLibrary  " "${TORCH_INCLUDE_DIRS}")
 
 
 add_executable(${PROJECT_NAME} TestGalaxy.cpp)
 
+
+message("CMAKE_CURRENT_SOURCE_DIR  is ${CMAKE_CURRENT_SOURCE_DIR}")
+
 target_include_directories(${PROJECT_NAME} PRIVATE
+        /home/mp74207/CLionProjects/HU_GalaxyPackage/hugalaxy
+        ${TORCH_INCLUDE_DIRS}
+        ${pybind11_INCLUDE_DIR}
         ${Python_INCLUDE_DIRS}
-        ${TORCH_INCLUDE_DIRECTORIES}
-        ${pybind11_INCLUDE_DIRS}
         ${Python_NumPy_INCLUDE_DIRS}
-        ${NLopt_INCLUDE_DIRS}
-        /home/mp74207/CLionProjects/HU_GalaxyPackage/HU_Galaxy
+        ${NLOPT_INCLUDE_DIRS}
         )
+
 
 # Link libraries
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        /home/mp74207/CLionProjects/HU_GalaxyPackage/build/HU_Galaxy/libHU_Galaxy_GalaxyWrapper.so
+        build/hugalaxy/libHU_Galaxy_GalaxyWrapper.so
         ${TORCH_LIBRARIES}
-        ${Python_NumPy_LIBRARIES}
         ${Python_LIBRARIES}
+        ${Python_NumPy_LIBRARIES}
         ${NLOPT_LIBRARIES}
         NLopt::nlopt
         pybind11::module

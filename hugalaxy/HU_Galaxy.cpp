@@ -4,7 +4,6 @@
 #include <vector>
 #include <utility>
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 #include <iostream>
 #include "Galaxy.h"
@@ -59,8 +58,8 @@ py::array_t<double> makeNumpy(const std::vector<std::vector<double>>& result) {
 
 
     GalaxyWrapper::GalaxyWrapper(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
-                  double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift, bool cuda, bool debug )
-            : galaxy(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift, cuda, debug) {};
+                  double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift, int GPU_ID, bool cuda, bool debug )
+            : galaxy(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift, GPU_ID, cuda, debug) {};
 
     py::array_t<double> GalaxyWrapper::DrudePropagator(double epoch, double time_step_years, double eta, double temperature) {
         auto result = galaxy.DrudePropagator(epoch, time_step_years, eta, temperature);
@@ -118,6 +117,26 @@ std::pair<py::array_t<double>, py::array_t<double>> GalaxyWrapper::get_f_z(const
     };
 
 
+    py::bool_ GalaxyWrapper::getCuda() const {
+        return galaxy.cuda;
+    };
+
+    // Setter for cuda
+    void GalaxyWrapper::setCuda(bool value) {
+        galaxy.cuda=value;
+    };
+
+    py::int_ GalaxyWrapper::getGPU_ID() const {
+        return galaxy.GPU_ID;
+    };
+
+    // Setter for cuda
+    void GalaxyWrapper::setGPU_ID(int value) {
+        galaxy.GPU_ID=value;
+    };
+
+
+
     py::list GalaxyWrapper::print_simulated_curve() {
         py::list simulated_curve;
         for (int i = 0; i < galaxy.n_rotation_points; i++) {
@@ -143,6 +162,7 @@ std::pair<py::array_t<double>, py::array_t<double>> GalaxyWrapper::get_f_z(const
         // Get the galaxy object
 
         // Calculate density at all radii
+        std::cout << "CUDA STATUS "   << galaxy.cuda <<std::endl;
         std::vector<double> xout = galaxy.simulate_rotation_curve();
 
         // Convert the result to a NumPy array
@@ -170,9 +190,9 @@ std::pair<py::array_t<double>, py::array_t<double>> GalaxyWrapper::get_f_z(const
 
 PYBIND11_MODULE(HU_Galaxy_GalaxyWrapper, m) {
     py::class_<GalaxyWrapper>(m, "GalaxyWrapper")
-            .def(py::init<double, double, double, double, double, double, double, int, int, int, int, int, double, bool>(),
+            .def(py::init<double, double, double, double, double, double, double, int, int, int, int, int, double,int, bool, bool>(),
                  py::arg("GalaxyMass"), py::arg("rho_0"), py::arg("alpha_0"), py::arg("rho_1"), py::arg("alpha_1"), py::arg("h0"),
-                 py::arg("R_max"), py::arg("nr"), py::arg("nz"), py::arg("nr_sampling"), py::arg("nz_sampling"), py::arg("ntheta"), py::arg("redshift") = 0.0, py::arg("cuda") = false )
+                 py::arg("R_max"), py::arg("nr"), py::arg("nz"), py::arg("nr_sampling"), py::arg("nz_sampling"), py::arg("ntheta"), py::arg("redshift") = 0.0, py::arg("GPU_ID") = 0, py::arg("cuda") = false, py::arg("debug") = false )
             .def("DrudePropagator", &GalaxyWrapper::DrudePropagator, py::arg("epoch"), py::arg("time_step_years"), py::arg("eta"), py::arg("temperature"),
                  "Propagate the mass distribution in a galaxy using the Drude model")
             .def("get_galaxy", &GalaxyWrapper::get_galaxy)
@@ -187,8 +207,6 @@ PYBIND11_MODULE(HU_Galaxy_GalaxyWrapper, m) {
 //                py::array_t<double> arr({static_cast<ssize_t>(galaxyWrapper.get_z().size())}, data_ptr);
 //                return arr;
 //            })
-
-
 
             .def_property_readonly("r", [](const Galaxy& galaxy) {
                 // Get a pointer to the data in the `r` vector
@@ -210,7 +228,6 @@ PYBIND11_MODULE(HU_Galaxy_GalaxyWrapper, m) {
                 // Return the NumPy array wrapper
                 return arr;
             })
-
             .def_property_readonly("redshift", &GalaxyWrapper::get_redshift)
             .def_property_readonly("R_max", &GalaxyWrapper::get_R_max)
             .def_property_readonly("nz_sampling", &GalaxyWrapper::get_nz_sampling)
@@ -222,6 +239,10 @@ PYBIND11_MODULE(HU_Galaxy_GalaxyWrapper, m) {
             .def_property_readonly("rho_0", &GalaxyWrapper::get_rho_0)
             .def_property_readonly("rho_1", &GalaxyWrapper::get_rho_1)
             .def_property_readonly("h0", &GalaxyWrapper::get_h0)
+            .def("setCuda", &GalaxyWrapper::setCuda, py::arg("cuda") )
+            .def("getCuda", &GalaxyWrapper::getCuda )
+            .def("setGPU_ID", &GalaxyWrapper::setGPU_ID, py::arg("value") )
+            .def("getGPU_ID", &GalaxyWrapper::getGPU_ID )
             .def("read_galaxy_rotation_curve", &GalaxyWrapper::read_galaxy_rotation_curve)
             .def("get_f_z", &GalaxyWrapper::get_f_z, py::arg("x"), py::arg("debug") = false )
             .def("print_rotation_curve", &GalaxyWrapper::print_rotation_curve)

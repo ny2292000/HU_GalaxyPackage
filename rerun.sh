@@ -8,7 +8,7 @@ rm -rf hugalaxy/_deps
 rm -rf hugalaxy/hugalaxy
 rm -rf hugalaxy/HU_Galaxy_GalaxyWrapper.cpython-*
 rm -rf hugalaxy/libHU_Galaxy_GalaxyWrapperLib.so
-rm hugalaxy/HU_Galaxy_GalaxyWrapper.cpython-310-x86_64-linux-gnu.so
+rm hugalaxy/HU_Galaxy_GalaxyWrapper.cpython-3.9-x86_64-linux-gnu.so
 rm -rf hugalaxy/Makefile
 rm -rf hugalaxy/CMakeFiles
 rm -rf HU_Galaxy.egg-info
@@ -30,7 +30,11 @@ rm -rf hugalaxy/detect_cuda_compute_capabilities.cu
 rm -rf hugalaxy/detect_cuda_version.cc
 python -m build .
 pip install dist/hugalaxy-0.0.1-py3-none-any.whl
-python -c "import hugalaxy as hh; print(hh.__dir__())"
+deactivate
+conda activate Cosmos
+pip uninstall -y hugalaxy
+pip install dist/hugalaxy-0.0.1-py3-none-any.whl
+python -c "import hugalaxy.HU_Galaxy_GalaxyWrapper as hh; print(hh.__dir__())"
 
 
 #pip install dist/hugalaxy-0.1-cp39-cp39-linux_x86_64.whl

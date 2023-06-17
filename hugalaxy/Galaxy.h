@@ -47,7 +47,8 @@ get_all_torch(double redshift,
               const std::vector<double> &costheta_in,
               const std::vector<double> &sintheta_in,
               const std::vector<std::vector<double>> &rho_in,
-              bool debug);
+              int GPU_N=0,
+              bool debug=false);
 
 std::pair<torch::Tensor, torch::Tensor> get_g_torch(
         double r_sampling_ii,
@@ -59,7 +60,7 @@ std::pair<torch::Tensor, torch::Tensor> get_g_torch(
         const torch::Tensor& costheta,
         const torch::Tensor& sintheta,
         const torch::Tensor& rho,
-        bool debug);
+        bool debug=false);
 
 // # CPU functions
 std::pair<double, double> get_g_cpu(double r_sampling_ii, double z_sampling_jj, double G,
@@ -80,7 +81,7 @@ std::vector<double> calculate_rotational_velocity(double redshift, const std::ve
                                                   const std::vector<double> &z,
                                                   const std::vector<double> &costheta,
                                                   const std::vector<double> &sintheta,
-                                                  const std::vector<std::vector<double>> &rho, bool debug, bool cuda) ;
+                                                  const std::vector<std::vector<double>> &rho, bool debug, int GPU_ID, bool cuda) ;
 
 
 std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, double alpha_1, int n) ;
@@ -90,7 +91,7 @@ std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, doubl
 class Galaxy {
 public:
     Galaxy(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
-           double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift, bool cuda, bool debug);
+           double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift, int GPU_ID, bool cuda, bool debug);
     ~Galaxy();
 
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
@@ -118,6 +119,7 @@ public:
     double dz;
     double dtheta;
     double redshift;
+    int GPU_ID;
     bool cuda;
     bool debug;
     double GalaxyMass;

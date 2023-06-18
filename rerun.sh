@@ -20,6 +20,7 @@ rm -rf auditedwheels/*
 rm -f HU_Galaxy.cpython*
 rm -f cmake-build-debug/CMakeCache.txt
 rm -rf wheelhouse/*
+rm /home/mp74207/CLionProjects/HU_GalaxyPackage/hugalaxy/HU_Galaxy_GalaxyWrapper.cpython-39-x86_64-linux-gnu.so
 pip uninstall -y hugalaxy
 cd hugalaxy; cmake . ; make; cd ..
 rm -rf hugalaxy/CMakeFiles

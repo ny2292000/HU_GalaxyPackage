@@ -14,7 +14,6 @@
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 #include <iostream>
-
 #include "Galaxy.h"
 
 namespace py = pybind11;

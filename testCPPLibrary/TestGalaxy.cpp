@@ -7,8 +7,10 @@
 //============================================================================
 #include <vector>
 #include <array>
-#include "Galaxy.h"
 #include "tensor_utils.h"
+#include "Galaxy.h"
+
+
 
 
 
@@ -67,8 +69,9 @@ int main() {
     const std::vector<double> theta = linspace(0, 2 * pi, ntheta);
     bool debug = false;
     const bool cuda= false;
+    int GPU_ID = 0;
     Galaxy M33(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0,
-               R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift, cuda, debug);
+               R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift, GPU_ID, cuda, debug);
     M33.read_galaxy_rotation_curve(m33_rotational_curve);
     std::vector<std::vector<double>> f_z = zeros_2(M33.n_rotation_points, 2);
     std::vector<double> x0 = {rho_0, alpha_0, rho_1, alpha_1, h0};

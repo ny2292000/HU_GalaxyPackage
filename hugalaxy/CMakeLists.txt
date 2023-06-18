@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.22.0)
 project(HU_Galaxy_GalaxyWrapper LANGUAGES CXX)
 
-set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
+#set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+#set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
 
 message("VARIABLES AT HU GALAXY DIRECTORY")
@@ -72,12 +72,14 @@ if(createTest)
     add_library(${PROJECT_NAME} SHARED
             HU_Galaxy.cpp
             Galaxy.cpp
+            tensor_utils.cpp
             )
 else()
     # Add source files
     pybind11_add_module(${PROJECT_NAME} SHARED
             HU_Galaxy.cpp
             Galaxy.cpp
+            tensor_utils.cpp
             )
 endif()
 

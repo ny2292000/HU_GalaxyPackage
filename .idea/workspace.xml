@@ -24,18 +24,18 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c4e57b9e-4beb-4d07-993f-fd7927223454" name="Changes" comment="Perfectly working version with toml instead of setup.py. GalaxyWrapper and functions visible to python.">
+    <list default="true" id="c4e57b9e-4beb-4d07-993f-fd7927223454" name="Changes" comment="Perfectly working version with toml instead of setup.py. GalaxyWrapper and functions visible to python. Added get/set for GPU_ID and cuda.&#10;Problem with the testCPPLIbrary executable.">
+      <change afterPath="$PROJECT_DIR$/hugalaxy/tensor_utils.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.ipynb_checkpoints/HU_Galaxy_Notebook-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/.ipynb_checkpoints/HU_Galaxy_Notebook-checkpoint.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy_Notebook.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy_Notebook.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hugalaxy/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hugalaxy/Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/Galaxy.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hugalaxy/Galaxy.h" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/Galaxy.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hugalaxy/HU_Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/HU_Galaxy.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hugalaxy/HU_Galaxy.h" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/HU_Galaxy.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hugalaxy/HU_Galaxy_GalaxyWrapper.py" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy_GalaxyWrapper.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hugalaxy/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libTorchSpiralGalaxy.py" beforeDir="false" afterPath="$PROJECT_DIR$/libTorchSpiralGalaxy.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hugalaxy/tensor_utils.h" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/tensor_utils.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rerun.sh" beforeDir="false" afterPath="$PROJECT_DIR$/rerun.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/testCPPLibrary/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/testCPPLibrary/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/testCPPLibrary/TestGalaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/testCPPLibrary/TestGalaxy.cpp" afterDir="false" />
@@ -84,27 +84,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "last_opened_file_path": "/home/mp74207/CLionProjects/HU_GalaxyPackage/hugalaxy",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "structure.view.defaults.are.configured": "true",
-    "two.files.diff.last.used.file": "/home/mp74207/CLionProjects/HU_GalaxyPackage/pyproject.toml",
-    "two.files.diff.last.used.folder": "/home/mp74207/CLionProjects/HU_GalaxyPackage-compact",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/mp74207/CLionProjects/HU_GalaxyPackage/hugalaxy&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;structure.view.defaults.are.configured&quot;: &quot;true&quot;,
+    &quot;two.files.diff.last.used.file&quot;: &quot;/home/mp74207/CLionProjects/HU_GalaxyPackage/pyproject.toml&quot;,
+    &quot;two.files.diff.last.used.folder&quot;: &quot;/home/mp74207/CLionProjects/HU_GalaxyPackage-compact&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/hugalaxy" />
@@ -368,7 +368,11 @@
       <workItem from="1686915937411" duration="8794000" />
       <workItem from="1686937085016" duration="4043000" />
       <workItem from="1686963299664" duration="599000" />
-      <workItem from="1686999434741" duration="15358000" />
+      <workItem from="1686999434741" duration="15551000" />
+      <workItem from="1687016232821" duration="147000" />
+      <workItem from="1687032374179" duration="16220000" />
+      <workItem from="1687056636142" duration="3296000" />
+      <workItem from="1687080394143" duration="1964000" />
     </task>
     <task id="LOCAL-00001" summary="Working buil_wheels.sh">
       <created>1684843345101</created>
@@ -447,7 +451,14 @@
       <option name="project" value="LOCAL" />
       <updated>1686883332489</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Perfectly working version with toml instead of setup.py. GalaxyWrapper and functions visible to python. Added get/set for GPU_ID and cuda.&#10;Problem with the testCPPLIbrary executable.">
+      <created>1687015857174</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1687015857174</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -492,25 +503,26 @@
     <MESSAGE value="Wonrking fully-tensor sum torch version.  Nelder working. Cannot allocate to the right gpu" />
     <MESSAGE value="Wonrking fully-tensor sum torch version.  Nelder working. About to check python setup.py sdist bdist_wheel" />
     <MESSAGE value="Perfectly working version with toml instead of setup.py. GalaxyWrapper and functions visible to python." />
-    <option name="LAST_COMMIT_MESSAGE" value="Perfectly working version with toml instead of setup.py. GalaxyWrapper and functions visible to python." />
+    <MESSAGE value="Perfectly working version with toml instead of setup.py. GalaxyWrapper and functions visible to python. Added get/set for GPU_ID and cuda.&#10;Problem with the testCPPLIbrary executable." />
+    <option name="LAST_COMMIT_MESSAGE" value="Perfectly working version with toml instead of setup.py. GalaxyWrapper and functions visible to python. Added get/set for GPU_ID and cuda.&#10;Problem with the testCPPLIbrary executable." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/hugalaxy/Galaxy.cpp</url>
+          <line>37</line>
+          <option name="timeStamp" value="32" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/hugalaxy/Galaxy.h</url>
           <line>5</line>
-          <option name="timeStamp" value="3" />
+          <option name="timeStamp" value="33" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="CMakeLineBreakpoint">
           <url>file://$PROJECT_DIR$/cmake/FindTorch.cmake</url>
           <line>76</line>
           <option name="timeStamp" value="9" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="CMakeLineBreakpoint">
-          <url>file://$PROJECT_DIR$/CMakeLists.txt</url>
-          <line>12</line>
-          <option name="timeStamp" value="14" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="CMakeLineBreakpoint">
           <url>file://$PROJECT_DIR$/cmake/Findpybind11.cmake</url>
@@ -523,14 +535,14 @@
           <option name="timeStamp" value="16" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="CMakeLineBreakpoint">
-          <url>file://$PROJECT_DIR$/CMakeLists.txt</url>
-          <line>11</line>
-          <option name="timeStamp" value="17" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="CMakeLineBreakpoint">
           <url>file://$PROJECT_DIR$/venv/lib/python3.10/site-packages/cmake/data/share/cmake-3.26/Modules/FindPackageHandleStandardArgs.cmake</url>
           <line>434</line>
           <option name="timeStamp" value="25" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="CMakeLineBreakpoint">
+          <url>file://$PROJECT_DIR$/CMakeLists.txt</url>
+          <line>12</line>
+          <option name="timeStamp" value="34" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/dist/expand_dir/testlib.py</url>

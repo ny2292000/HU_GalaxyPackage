@@ -58,15 +58,15 @@ endif()
 message("this is nlopt library dirs " ${NLOPT_LIBRARIES} )
 
 
-
-
-
-
-
 add_executable(${PROJECT_NAME} TestGalaxy.cpp)
 
 
 message("CMAKE_CURRENT_SOURCE_DIR  is ${CMAKE_CURRENT_SOURCE_DIR}")
+
+link_directories(${PROJECT_NAME} PRIVATE
+        /home/mp74207/CLionProjects/HU_GalaxyPackage/hugalaxy
+        )
+
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         /home/mp74207/CLionProjects/HU_GalaxyPackage/hugalaxy
@@ -80,7 +80,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 # Link libraries
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        build/hugalaxy/libHU_Galaxy_GalaxyWrapper.so
+        HU_Galaxy_GalaxyWrapper
         ${TORCH_LIBRARIES}
         ${Python_LIBRARIES}
         ${Python_NumPy_LIBRARIES}

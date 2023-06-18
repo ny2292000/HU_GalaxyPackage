@@ -24,21 +24,11 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c4e57b9e-4beb-4d07-993f-fd7927223454" name="Changes" comment="Perfectly working version with toml instead of setup.py. GalaxyWrapper and functions visible to python. Added get/set for GPU_ID and cuda.&#10;Problem with the testCPPLIbrary executable.">
-      <change afterPath="$PROJECT_DIR$/hugalaxy/tensor_utils.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="c4e57b9e-4beb-4d07-993f-fd7927223454" name="Changes" comment="Perfectly working version with toml instead of setup.py. GalaxyWrapper and functions visible to python. Added get/set for GPU_ID and cuda.&#10;Fixed the testCPPLIbrary executable. Next DrudePropagator">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.ipynb_checkpoints/HU_Galaxy_Notebook-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/.ipynb_checkpoints/HU_Galaxy_Notebook-checkpoint.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy_Notebook.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy_Notebook.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hugalaxy/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hugalaxy/Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/Galaxy.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hugalaxy/Galaxy.h" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/Galaxy.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hugalaxy/HU_Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/HU_Galaxy.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hugalaxy/HU_Galaxy.h" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/HU_Galaxy.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hugalaxy/tensor_utils.h" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/tensor_utils.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rerun.sh" beforeDir="false" afterPath="$PROJECT_DIR$/rerun.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testCPPLibrary/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/testCPPLibrary/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testCPPLibrary/TestGalaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/testCPPLibrary/TestGalaxy.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -372,7 +362,7 @@
       <workItem from="1687016232821" duration="147000" />
       <workItem from="1687032374179" duration="16220000" />
       <workItem from="1687056636142" duration="3296000" />
-      <workItem from="1687080394143" duration="1964000" />
+      <workItem from="1687080394143" duration="9419000" />
     </task>
     <task id="LOCAL-00001" summary="Working buil_wheels.sh">
       <created>1684843345101</created>
@@ -458,7 +448,14 @@
       <option name="project" value="LOCAL" />
       <updated>1687015857174</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Perfectly working version with toml instead of setup.py. GalaxyWrapper and functions visible to python. Added get/set for GPU_ID and cuda.&#10;Fixed the testCPPLIbrary executable. Next DrudePropagator">
+      <created>1687083994362</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1687083994362</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -504,7 +501,8 @@
     <MESSAGE value="Wonrking fully-tensor sum torch version.  Nelder working. About to check python setup.py sdist bdist_wheel" />
     <MESSAGE value="Perfectly working version with toml instead of setup.py. GalaxyWrapper and functions visible to python." />
     <MESSAGE value="Perfectly working version with toml instead of setup.py. GalaxyWrapper and functions visible to python. Added get/set for GPU_ID and cuda.&#10;Problem with the testCPPLIbrary executable." />
-    <option name="LAST_COMMIT_MESSAGE" value="Perfectly working version with toml instead of setup.py. GalaxyWrapper and functions visible to python. Added get/set for GPU_ID and cuda.&#10;Problem with the testCPPLIbrary executable." />
+    <MESSAGE value="Perfectly working version with toml instead of setup.py. GalaxyWrapper and functions visible to python. Added get/set for GPU_ID and cuda.&#10;Fixed the testCPPLIbrary executable. Next DrudePropagator" />
+    <option name="LAST_COMMIT_MESSAGE" value="Perfectly working version with toml instead of setup.py. GalaxyWrapper and functions visible to python. Added get/set for GPU_ID and cuda.&#10;Fixed the testCPPLIbrary executable. Next DrudePropagator" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

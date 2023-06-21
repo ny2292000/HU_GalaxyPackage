@@ -75,35 +75,18 @@ int main() {
     M33.read_galaxy_rotation_curve(m33_rotational_curve);
     std::vector<std::vector<double>> f_z = zeros_2(M33.n_rotation_points, 2);
     std::vector<double> x0 = {rho_0, alpha_0, rho_1, alpha_1, h0};
-//    auto F_pair = M33.get_f_z(x0, debug);
-//    auto f_z_radial = F_pair.first;
-//    auto f_z_vertical = F_pair.second;
-//    print_2D(f_z_radial);
-//    print_2D(f_z_vertical);
-//    M33.cuda = true;
-//    F_pair = M33.get_f_z(x0, debug);
-//    f_z_radial = F_pair.first;
-//    f_z_vertical = F_pair.second;
-//    print_2D(f_z_radial);
-//    print_2D(f_z_vertical);
 
-
-    x0 = {1.844838e+01, 4.740178e-04, 1.457440e-01, 2.269589e-05, 1.360035e+05};
+    x0 = {1.844837e+01, 4.740177e-04, 1.457439e-01, 2.269586e-05, 1.360023e+05};
     M33.cuda = true;
     auto xout = M33.nelder_mead(x0, M33,1000, 1E-3);
     print_1D(xout);
 
-//    bool debug = false;
-//    //    std::vector<double> rotational_velocity = calculate_rotational_velocity(redshift, M33.dv0, M33.r_sampling, r, z, M33.costheta, M33.sintheta, M33.rho, debug);
-//    std::vector<std::vector<double>> f_z_radial = zeros_2(M33.n_rotation_points, M33.nz);
-//    std::vector<std::vector<double>> f_z_vertical = zeros_2(M33.n_rotation_points, M33.nz);
-//    auto start = std::chrono::high_resolution_clock::now();
-//    auto F_pair = M33.get_f_z(x0, debug);
-//    f_z_radial = F_pair.first;
-//    f_z_vertical = F_pair.second;
-//    auto stop = std::chrono::high_resolution_clock::now();
-//    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-//    std::cout << duration.count() << std::endl;
-//    print_2D(f_z_radial);
-
+    // Drude Propagation
+//    double epoch = 100E6;
+//    redshift = Radius_Universe_4D/epoch -1;
+    double time_step = 10E6;
+    double eta =100.0;
+    double temperature =7.0;
+    std::vector<std::vector<double>> current_masses = M33.DrudePropagator(redshift, time_step, eta, temperature);
+    int a =1;
 }

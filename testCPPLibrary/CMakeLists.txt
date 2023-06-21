@@ -14,6 +14,8 @@ message("Python NumPy include directories: ${Python_NumPy_INCLUDE_DIRS}")
 message("NLopt include directories: ${NLOPT_INCLUDE_DIRS}")
 message("NLopt library directories: ${NLOPT_LIBRARIES}")
 
+set(CMAKE_BUILD_TYPE Release)
+
 
 #set(CMAKE_STRIP "")
 

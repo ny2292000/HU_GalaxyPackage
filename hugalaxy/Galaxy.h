@@ -33,7 +33,7 @@ public:
     std::vector<double> print_density_parameters();
     std::vector<double> nelder_mead(const std::vector<double> &x0, Galaxy &myGalaxy, int max_iter=1000, double xtol_rel=1E-6);
     void recalculate_density(const std::vector<std::vector<double>>& currentMasses);
-    std::vector<std::vector<double>>  DrudePropagator(double epoch, double time_step, double eta, double temperature);
+    std::vector<std::vector<double>>  DrudePropagator(double redshift, double time_step, double eta, double temperature);
     double get_R_max() const { return R_max; };
     void set_R_max(double value) { R_max = value; };
     int nr;

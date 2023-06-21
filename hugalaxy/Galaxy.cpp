@@ -118,14 +118,27 @@ Galaxy::Galaxy(double GalaxyMass, double rho_0, double alpha_0, double rho_1, do
 Galaxy::~Galaxy() {};
 
 
-std::vector<std::vector<double>>  Galaxy::DrudePropagator(double epoch, double time_step_years, double eta, double temperature) {
+std::vector<std::vector<double>>  Galaxy::DrudePropagator(double redshift, double time_step_years, double eta, double temperature) {
     // Calculate the effective cross-section
+    double time_of_cmb = 11E6;
+    double density_at_cmb = 1E3; // hydrogen atoms per cubic centimeter
     double time_step_seconds = time_step_years * 365*3600*24;
     double lyr_to_m = 9.46073047258E+15;
     double H_cross_section = 3.53E-20;  //m^2
     double effective_cross_section = eta * H_cross_section;
-    double scaling_factor = epoch/Radius_4D;
-    double redshift = 1.0/scaling_factor-1;
+    double scaling_factor = pow(1/(1+redshift),2.33) ;
+    //////////////
+    // redshift 13 means 4D radius of 1 billion light years or 1 billion years after the Universe Creation.
+    // The current distance ladder tells you 332 million years.
+    // https://www.astro.ucla.edu/~wright/CosmoCalc.html
+    // Table 3.  The Universe goes from a superfluid neutron matter Neutronium phase to a plasma phase during the
+    // process of Neutronium decay. Plasma Gamma is the average gamma coefficient until the recombination event.
+    // The recombination event happened when the Universe was 11.1 million years old, the plasma temperature
+    // was 3443 Kelvin and the gas density was 8.30E-17 kg/m3. The redshift for the CMB is z=1263.
+    // So, 1 atom of Hydrogen weighs 1.008/(6.023x10^23) g = 0.167x10^(-23) g = 1.67x10^(-27) kg
+    // 49700 atoms/cubic centimeter
+    // Density at redshift 139 (at 100 million years old universe) =((1 + redshift)/(1+1263))**3*49700
+    //////////////
     std::vector<double> r_drude = create_subgrid(r, scaling_factor);
     std::vector<double> dv0_drude = create_subgrid(dv0, scaling_factor* scaling_factor);
     std::vector<std::vector<double>> rho_drude(nr, std::vector<double>(nz, 0.0));;

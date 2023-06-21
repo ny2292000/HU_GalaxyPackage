@@ -31,7 +31,7 @@ public:
     GalaxyWrapper(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
                   double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift = 0.0, int GPU_ID=0, bool cuda=false, bool debug=false);
 
-    py::array_t<double> DrudePropagator(double epoch, double time_step_years, double eta, double temperature);
+    py::array_t<double> DrudePropagator(double redshift, double time_step_years, double eta, double temperature);
 
     std::pair<py::array_t<double>, py::array_t<double>> get_f_z(const std::vector<double>&x, bool debug = false);
 

@@ -25,7 +25,7 @@ classifiers = [
        "Topic :: Scientific/Engineering"
 ]
 urls = { "Documentation" = "https://www.github.com/ny2292000/HU_Galaxy" }
-dependencies = ["numpy", "pybind11", "nlopt", "torch"]
+dependencies = ["numpy", "pybind11", "nlopt", "torch", "matplotlib"]
 
 
 

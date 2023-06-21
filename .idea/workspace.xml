@@ -25,10 +25,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c4e57b9e-4beb-4d07-993f-fd7927223454" name="Changes" comment="Perfectly working version with toml instead of setup.py. GalaxyWrapper and functions visible to python. Added get/set for GPU_ID and cuda.&#10;Fixed the testCPPLIbrary executable. Next DrudePropagator">
+      <change afterPath="$PROJECT_DIR$/.ipynb_checkpoints/AI_tools-checkpoint.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AI_tools.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Untitled.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.ipynb_checkpoints/HU_Galaxy_Notebook-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/.ipynb_checkpoints/HU_Galaxy_Notebook-checkpoint.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy_Notebook.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy_Notebook.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hugalaxy/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hugalaxy/Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/Galaxy.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hugalaxy/Galaxy.h" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/Galaxy.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hugalaxy/HU_Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/HU_Galaxy.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hugalaxy/HU_Galaxy.h" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/HU_Galaxy.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hugalaxy/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rerun.sh" beforeDir="false" afterPath="$PROJECT_DIR$/rerun.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testCPPLibrary/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/testCPPLibrary/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testCPPLibrary/TestGalaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/testCPPLibrary/TestGalaxy.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -111,12 +123,7 @@
       <recent name="$PROJECT_DIR$/testCPPLibrary" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.testwrapper">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="CMake Application.HU_Galaxy_GalaxyWrapper">
     <configuration name="Unnamed" type="CLion_CoreDump" nameIsGenerated="true" version="1" coreDump="" symbolFile="" sysroot="">
       <debugger kind="GDB" isBundled="true" />
       <method v="2" />
@@ -128,6 +135,11 @@
       <method v="2" />
     </configuration>
     <configuration name="HU_Galaxy_GalaxyWrapper" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="HU_GalaxyPackage" TARGET_NAME="HU_Galaxy_GalaxyWrapper" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -362,7 +374,17 @@
       <workItem from="1687016232821" duration="147000" />
       <workItem from="1687032374179" duration="16220000" />
       <workItem from="1687056636142" duration="3296000" />
-      <workItem from="1687080394143" duration="9419000" />
+      <workItem from="1687080394143" duration="9483000" />
+      <workItem from="1687104394672" duration="9000" />
+      <workItem from="1687114898954" duration="1546000" />
+      <workItem from="1687137485979" duration="1700000" />
+      <workItem from="1687185741267" duration="2302000" />
+      <workItem from="1687196622616" duration="5410000" />
+      <workItem from="1687229913229" duration="1583000" />
+      <workItem from="1687257530832" duration="1849000" />
+      <workItem from="1687277043961" duration="599000" />
+      <workItem from="1687278848532" duration="2251000" />
+      <workItem from="1687343531505" duration="2647000" />
     </task>
     <task id="LOCAL-00001" summary="Working buil_wheels.sh">
       <created>1684843345101</created>
@@ -455,7 +477,14 @@
       <option name="project" value="LOCAL" />
       <updated>1687083994362</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Perfectly working version with toml instead of setup.py. GalaxyWrapper and functions visible to python. Added get/set for GPU_ID and cuda.&#10;Fixed the testCPPLIbrary executable. Next DrudePropagator">
+      <created>1687094548653</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1687094548653</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -508,14 +537,19 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/hugalaxy/Galaxy.cpp</url>
-          <line>37</line>
-          <option name="timeStamp" value="32" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/hugalaxy/Galaxy.h</url>
           <line>5</line>
           <option name="timeStamp" value="33" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/testCPPLibrary/TestGalaxy.cpp</url>
+          <line>90</line>
+          <option name="timeStamp" value="37" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/hugalaxy/Galaxy.cpp</url>
+          <line>141</line>
+          <option name="timeStamp" value="39" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="CMakeLineBreakpoint">
           <url>file://$PROJECT_DIR$/cmake/FindTorch.cmake</url>

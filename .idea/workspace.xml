@@ -25,22 +25,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c4e57b9e-4beb-4d07-993f-fd7927223454" name="Changes" comment="Perfectly working version with toml instead of setup.py. GalaxyWrapper and functions visible to python. Added get/set for GPU_ID and cuda.&#10;Fixed the testCPPLIbrary executable. Next DrudePropagator">
-      <change afterPath="$PROJECT_DIR$/.ipynb_checkpoints/AI_tools-checkpoint.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AI_tools.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Untitled.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.ipynb_checkpoints/HU_Galaxy_Notebook-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/.ipynb_checkpoints/HU_Galaxy_Notebook-checkpoint.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HU_Galaxy_Notebook.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/HU_Galaxy_Notebook.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hugalaxy/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hugalaxy/Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/Galaxy.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hugalaxy/Galaxy.h" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/Galaxy.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hugalaxy/HU_Galaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/HU_Galaxy.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hugalaxy/HU_Galaxy.h" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/HU_Galaxy.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hugalaxy/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/hugalaxy/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rerun.sh" beforeDir="false" afterPath="$PROJECT_DIR$/rerun.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testCPPLibrary/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/testCPPLibrary/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testCPPLibrary/TestGalaxy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/testCPPLibrary/TestGalaxy.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -384,7 +375,9 @@
       <workItem from="1687257530832" duration="1849000" />
       <workItem from="1687277043961" duration="599000" />
       <workItem from="1687278848532" duration="2251000" />
-      <workItem from="1687343531505" duration="2647000" />
+      <workItem from="1687343531505" duration="8076000" />
+      <workItem from="1687368264294" duration="9481000" />
+      <workItem from="1687427132381" duration="2000" />
     </task>
     <task id="LOCAL-00001" summary="Working buil_wheels.sh">
       <created>1684843345101</created>
@@ -484,7 +477,14 @@
       <option name="project" value="LOCAL" />
       <updated>1687094548653</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Perfectly working version with toml instead of setup.py. GalaxyWrapper and functions visible to python. Added get/set for GPU_ID and cuda.&#10;Fixed the testCPPLIbrary executable. Next DrudePropagator">
+      <created>1687356760158</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1687356760158</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

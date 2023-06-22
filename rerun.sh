@@ -31,8 +31,8 @@ rm -rf hugalaxy/detect_cuda_compute_capabilities.cu
 rm -rf hugalaxy/detect_cuda_version.cc
 python -m build .
 pip install dist/hugalaxy-0.0.1-py3-none-any.whl
-#deactivate
-#/home/mp74207/anaconda3/bin/activate Cosmos
-#pip uninstall -y hugalaxy
-#pip install dist/hugalaxy-0.0.1-py3-none-any.whl
-#python -c "import hugalaxy.HU_Galaxy_GalaxyWrapper as hh; print(hh.__dir__())"
+deactivate
+conda activate Cosmos
+pip uninstall -y hugalaxy
+pip install dist/hugalaxy-0.0.1-py3-none-any.whl
+python -c "import hugalaxy as hh; print(hh.__dir__())"

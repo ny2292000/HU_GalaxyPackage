@@ -8,6 +8,7 @@
 #include <iostream>
 #include "HU_Galaxy.h"
 #include "tensor_utils.h"
+
 namespace py = pybind11;
 
 
@@ -127,7 +128,7 @@ void GalaxyWrapper::setCuda(bool value) {
 
 py::int_ GalaxyWrapper::getGPU_ID() const {
     return galaxy.GPU_ID;
-};
+}
 
 // Setter for cuda
 void GalaxyWrapper::setGPU_ID(int value) {
@@ -172,6 +173,63 @@ py::array_t<double> GalaxyWrapper::simulate_rotation_curve() {
     return result;
 }
 
+// Getter and setter for r vector
+py::array_t<double> GalaxyWrapper::get_r() const {
+    const double* data_ptr = galaxy.r.data();
+    py::array_t<double> arr({static_cast<ssize_t>(galaxy.r.size())}, data_ptr);
+    return arr;
+}
+void GalaxyWrapper::set_r(const py::array_t<double>& arr) {
+    auto buf = arr.unchecked<1>(); // Extract the underlying buffer of arr as a 1D array
+    unsigned int size = buf.shape(0);
+    galaxy.r.resize(size);
+    for (unsigned int i = 0; i < size; i++) {
+        galaxy.r[i] = buf(i);
+    }
+}
+
+// Getter and setter for rotation_curve
+py::array_t<double> GalaxyWrapper::get_rotation_curve() const {
+    const double* data_ptr_x = galaxy.x_rotation_points.data();
+    py::array_t<double> arrx({static_cast<ssize_t>(galaxy.x_rotation_points.size())}, data_ptr_x);
+
+    const double* data_ptr_v = galaxy.v_rotation_points.data();
+    py::array_t<double> arrv({static_cast<ssize_t>(galaxy.v_rotation_points.size())}, data_ptr_v);
+
+    // Create a tuple of arrx and arrv
+    py::tuple result(2);
+    result[0] = arrx;
+    result[1] = arrv;
+
+    return result;
+}
+
+void GalaxyWrapper::set_rotation_curve(const py::array_t<double>& arr) {
+    auto buf = arr.unchecked<2>(); // Extract the underlying buffer of arr as a 2D array
+    unsigned int size = buf.shape(1);
+    galaxy.x_rotation_points.resize(size);
+    galaxy.v_rotation_points.resize(size);
+    for (unsigned int i = 0; i < size; i++) {
+        galaxy.x_rotation_points[i] = buf(0,i);
+        galaxy.v_rotation_points[i] = buf(1,i);
+    }
+}
+
+
+
+// Setter member functions
+void GalaxyWrapper::set_redshift(double redshift) { galaxy.redshift = redshift; }
+void GalaxyWrapper::set_R_max(double R_max) { galaxy.R_max = R_max; }
+void GalaxyWrapper::set_nz_sampling(int nz_sampling) { galaxy.nz_sampling = nz_sampling; }
+void GalaxyWrapper::set_nr_sampling(int nr_sampling) { galaxy.nr_sampling = nr_sampling;}
+void GalaxyWrapper::set_nz(int nz) {galaxy.nz = nz;}
+void GalaxyWrapper::set_nr(int nr) {galaxy.nr = nr;}
+void GalaxyWrapper::set_alpha_0(double alpha_0) {galaxy.alpha_0 = alpha_0;}
+void GalaxyWrapper::set_alpha_1(double alpha_1) {galaxy.alpha_1 = alpha_1;}
+void GalaxyWrapper::set_rho_0(double rho_0) {galaxy.rho_0 = rho_0;}
+void GalaxyWrapper::set_rho_1(double rho_1) {galaxy.rho_1 = rho_1;}
+void GalaxyWrapper::set_h0(double h0) {galaxy.h0 = h0;}
+
 // Getter member functions
 double GalaxyWrapper::get_redshift() const { return galaxy.redshift; }
 double GalaxyWrapper::get_R_max() const { return galaxy.R_max; }
@@ -207,16 +265,7 @@ PYBIND11_MODULE(HU_Galaxy_GalaxyWrapper, m) {
 //                return arr;
 //            })
 
-            .def_property_readonly("r", [](const Galaxy& galaxy) {
-                // Get a pointer to the data in the `r` vector
-                const double* data_ptr = galaxy.r.data();
 
-                // Create a NumPy array wrapper around the data in the `r` vector
-                py::array_t<double> arr({static_cast<ssize_t>(galaxy.r.size())}, data_ptr);
-
-                // Return the NumPy array wrapper
-                return arr;
-            })
             .def_property_readonly("z", [](const Galaxy& galaxy) {
                 // Get a pointer to the data in the `r` vector
                 const double* data_ptr = galaxy.z.data();
@@ -227,17 +276,17 @@ PYBIND11_MODULE(HU_Galaxy_GalaxyWrapper, m) {
                 // Return the NumPy array wrapper
                 return arr;
             })
-            .def_property_readonly("redshift", &GalaxyWrapper::get_redshift)
-            .def_property_readonly("R_max", &GalaxyWrapper::get_R_max)
-            .def_property_readonly("nz_sampling", &GalaxyWrapper::get_nz_sampling)
-            .def_property_readonly("nr_sampling", &GalaxyWrapper::get_nr_sampling)
-            .def_property_readonly("nz", &GalaxyWrapper::get_nz)
-            .def_property_readonly("nr", &GalaxyWrapper::get_nr)
-            .def_property_readonly("alpha_0", &GalaxyWrapper::get_alpha_0)
-            .def_property_readonly("alpha_1", &GalaxyWrapper::get_alpha_1)
-            .def_property_readonly("rho_0", &GalaxyWrapper::get_rho_0)
-            .def_property_readonly("rho_1", &GalaxyWrapper::get_rho_1)
-            .def_property_readonly("h0", &GalaxyWrapper::get_h0)
+            .def_property("redshift", &GalaxyWrapper::get_redshift, &GalaxyWrapper::set_redshift)
+            .def_property("R_max", &GalaxyWrapper::get_R_max, &GalaxyWrapper::set_R_max)
+            .def_property("nz_sampling", &GalaxyWrapper::get_nz_sampling, &GalaxyWrapper::set_nz_sampling)
+            .def_property("nr_sampling", &GalaxyWrapper::get_nr_sampling, &GalaxyWrapper::set_nr_sampling)
+            .def_property("nz", &GalaxyWrapper::get_nz, &GalaxyWrapper::set_nz)
+            .def_property("nr", &GalaxyWrapper::get_nr, &GalaxyWrapper::set_nr)
+            .def_property("alpha_0", &GalaxyWrapper::get_alpha_0, &GalaxyWrapper::set_alpha_0)
+            .def_property("alpha_1", &GalaxyWrapper::get_alpha_1, &GalaxyWrapper::set_alpha_1)
+            .def_property("rho_0", &GalaxyWrapper::get_rho_0, &GalaxyWrapper::set_rho_0)
+            .def_property("rho_1", &GalaxyWrapper::get_rho_1, &GalaxyWrapper::set_rho_1)
+            .def_property("h0", &GalaxyWrapper::get_h0, &GalaxyWrapper::set_h0)
             .def("setCuda", &GalaxyWrapper::setCuda, py::arg("cuda") )
             .def("getCuda", &GalaxyWrapper::getCuda )
             .def("setGPU_ID", &GalaxyWrapper::setGPU_ID, py::arg("value") )
@@ -247,7 +296,9 @@ PYBIND11_MODULE(HU_Galaxy_GalaxyWrapper, m) {
             .def("print_rotation_curve", &GalaxyWrapper::print_rotation_curve)
             .def("print_simulated_curve", &GalaxyWrapper::print_simulated_curve)
             .def("simulate_rotation_curve", &GalaxyWrapper::simulate_rotation_curve)
-            .def("print_density_parameters", &GalaxyWrapper::print_density_parameters);
+            .def("print_density_parameters", &GalaxyWrapper::print_density_parameters)
+            .def_property("r", &GalaxyWrapper::get_r, &GalaxyWrapper::set_r)
+            .def_property("rotation_curve", &GalaxyWrapper::get_rotation_curve, &GalaxyWrapper::set_rotation_curve);
     m.def("calculate_mass", &calculate_mass, py::arg("rho"), py::arg("alpha"), py::arg("h0"), "A function to calculate the mass of the galaxy");
     m.def("density_wrapper", &density_wrapper, py::arg("rho_0"), py::arg("alpha_0"), py::arg("rho_1"), py::arg("alpha_1"),
           py::arg("r"), py::arg("z"), "Calculate density using the given parameters");

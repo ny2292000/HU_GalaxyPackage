@@ -7,8 +7,8 @@
 //============================================================================
 #include <vector>
 #include <array>
-#include "tensor_utils.h"
-#include "galaxy.h"
+#include "../src/hugalaxy/tensor_utils.h"
+#include "../src/hugalaxy/galaxy.h"
 
 
 

@@ -17,7 +17,7 @@ message(" this is the path to venv "  ${VENV_PATH})
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 message(" CMAKE_MODULE_PATH   is ${CMAKE_MODULE_PATH}  ")
-set(Pybind11_DIR '/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.10/site-packages/pybind11/share/cmake/pybind11')
+set(Pybind11_DIR '/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.9/site-packages/pybind11/share/cmake/pybind11')
 find_package(pybind11 CONFIG REQUIRED)
 message("this is pybind include dirs " ${pybind11_INCLUDE_DIR} )
 
@@ -44,10 +44,6 @@ message("this is nlopt library dirs " ${NLOPT_LIBRARIES} )
 
 
 
-#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "/home/mp74207/CLionProjects/HU_GalaxyPackage/src/hugalaxy")
-#message("CMAKE_LIBRARY_OUTPUT_DIRECTORY output directories: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
-
-
 # Add source files
 pybind11_add_module(${PROJECT_NAME} SHARED
         src/hugalaxy/hugalaxy.cpp
@@ -55,8 +51,6 @@ pybind11_add_module(${PROJECT_NAME} SHARED
         src/hugalaxy/tensor_utils.cpp
         )
 
-
-message("CMAKE_CURRENT_SOURCE_DIR  is ${CMAKE_CURRENT_SOURCE_DIR}")
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}

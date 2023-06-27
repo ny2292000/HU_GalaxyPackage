@@ -1,24 +1,7 @@
 cmake_minimum_required(VERSION 3.22.0)
 project(testCPPLibrary LANGUAGES CXX)
 
-set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
-
-
-message("VARIABLES AT HU GALAXY DIRECTORY")
-message("Torch include directories: ${TORCH_INCLUDE_DIRS}")
-message("Torch libraries: ${TORCH_LIBRARIES}")
-message("Pybind11 include directory: ${pybind11_INCLUDE_DIR}")
-message("Python include directories: ${Python_INCLUDE_DIRS}")
-message("Python NumPy include directories: ${Python_NumPy_INCLUDE_DIRS}")
-message("NLopt include directories: ${NLOPT_INCLUDE_DIRS}")
-message("NLopt library directories: ${NLOPT_LIBRARIES}")
-
 set(CMAKE_BUILD_TYPE Release)
-
-
-#set(CMAKE_STRIP "")
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CUDA_ARCHITECTURES 50 86)
 
@@ -60,18 +43,16 @@ endif()
 message("this is nlopt library dirs " ${NLOPT_LIBRARIES} )
 
 
-add_executable(${PROJECT_NAME} TestGalaxy.cpp)
 
-
-message("CMAKE_CURRENT_SOURCE_DIR  is ${CMAKE_CURRENT_SOURCE_DIR}")
-
-link_directories(${PROJECT_NAME} PRIVATE
-        /home/mp74207/CLionProjects/HU_GalaxyPackage/hugalaxy
+# Add source files
+add_library(${PROJECT_NAME}_lib SHARED
+        ../src/hugalaxy/hugalaxy.cpp
+        ../src/hugalaxy/galaxy.cpp
+        ../src/hugalaxy/tensor_utils.cpp
         )
 
-
-target_include_directories(${PROJECT_NAME} PRIVATE
-        /home/mp74207/CLionProjects/HU_GalaxyPackage/hugalaxy
+target_include_directories(${PROJECT_NAME}_lib PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
         ${TORCH_INCLUDE_DIRS}
         ${pybind11_INCLUDE_DIR}
         ${Python_INCLUDE_DIRS}
@@ -81,8 +62,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 
 # Link libraries
-target_link_libraries(${PROJECT_NAME} PRIVATE
-        hugalaxy
+target_link_libraries(${PROJECT_NAME}_lib PRIVATE
         ${TORCH_LIBRARIES}
         ${Python_LIBRARIES}
         ${Python_NumPy_LIBRARIES}
@@ -95,3 +75,40 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         c
         stdc++fs
         )
+
+
+
+
+
+#
+#
+#add_executable(${PROJECT_NAME} TestGalaxy.cpp)
+#
+#
+#
+#
+#target_include_directories(${PROJECT_NAME} PRIVATE
+#        ${PROJECT_NAME}_lib
+#        ${TORCH_INCLUDE_DIRS}
+#        ${pybind11_INCLUDE_DIR}
+#        ${Python_INCLUDE_DIRS}
+#        ${Python_NumPy_INCLUDE_DIRS}
+#        ${NLOPT_INCLUDE_DIRS}
+#        )
+#
+#
+## Link libraries
+#target_link_libraries(${PROJECT_NAME} PRIVATE
+#        ${PROJECT_NAME}_lib
+#        ${TORCH_LIBRARIES}
+#        ${Python_LIBRARIES}
+#        ${Python_NumPy_LIBRARIES}
+#        ${NLOPT_LIBRARIES}
+#        NLopt::nlopt
+#        pybind11::module
+#        pybind11::lto
+#        pybind11::embed
+#        m
+#        c
+#        stdc++fs
+#        )

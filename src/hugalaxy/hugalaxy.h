@@ -14,7 +14,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 #include <iostream>
-#include "Galaxy.h"
+#include "galaxy.h"
 
 namespace py = pybind11;
 
@@ -78,14 +78,14 @@ public:
     double get_rho_0() const;
     double get_rho_1() const;
     double get_h0() const;
-    const Galaxy& get_galaxy() const;
+    const galaxy& get_galaxy() const;
     py::array_t<double> get_r() const ;
     void set_r(const py::array_t<double>& arr) ;
     py::array_t<double> get_rotation_curve() const;
     void set_rotation_curve(const py::array_t<double>& arr) ;
 
 private:
-    Galaxy galaxy;
+    galaxy galaxy_;
 };
 
 #endif // GALAXYWRAPPER_H

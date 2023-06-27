@@ -18,11 +18,11 @@ std::vector<std::vector<double>> density(double rho_0, double alpha_0, double rh
                                          const std::vector<double>& r, const std::vector<double>& z);
 
 
-class Galaxy {
+class galaxy {
 public:
-    Galaxy(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
+    galaxy(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
            double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift, int GPU_ID, bool cuda, bool debug);
-    ~Galaxy();
+    ~galaxy();
 
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
     get_f_z(const std::vector<double> &x, bool debug);
@@ -31,7 +31,7 @@ public:
     std::vector<std::vector<double>> print_rotation_curve();
     std::vector<std::vector<double>>print_simulated_curve();
     std::vector<double> print_density_parameters();
-    std::vector<double> nelder_mead(const std::vector<double> &x0, Galaxy &myGalaxy, int max_iter=1000, double xtol_rel=1E-6);
+    std::vector<double> nelder_mead(const std::vector<double> &x0, galaxy &myGalaxy, int max_iter=1000, double xtol_rel=1E-6);
     void recalculate_density(const std::vector<std::vector<double>>& currentMasses);
     std::vector<std::vector<double>>  DrudePropagator(double redshift, double time_step, double eta, double temperature);
     double get_R_max() const { return R_max; };
@@ -70,7 +70,7 @@ public:
 };
 
 
-static double error_function(const std::vector<double> &x, Galaxy &myGalaxy);
+static double error_function(const std::vector<double> &x, galaxy &myGalaxy);
 
 
 #endif // GALAXY_H

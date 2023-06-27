@@ -1,5 +1,6 @@
 include CMakeLists.txt
-include hugalaxy/CMakeLists.txt
-include HU_GalaxyPackage/hugalaxy/*.so
-recursive-include hugalaxy *.cpp *.hpp  *.hpp  *.h CMakeLists.txt
+include src/hugalaxy/*.cpp
+include src/hugalaxy/*.h
+include src/hugalaxy/*.hpp
+include src/hugalaxy/*.so
 

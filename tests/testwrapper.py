@@ -1,7 +1,7 @@
 import numpy as np
-from hugalaxy import GalaxyWrapper, calculate_mass
+from hugalaxy import GalaxyWrapper, calculate_mass, plotRotationCurve
 
-m33_rotational_curve = [
+m33_rotational_curve = np.array( [
     [0.0, 0.0],
     [1508.7187, 38.674137],
     [2873.3889, 55.65067],
@@ -23,7 +23,7 @@ m33_rotational_curve = [
     [42266.87, 121.42091],
     [46300.227, 128.55017],
     [50212.285, 132.84966]
-]
+])
 
 M33_Distance = 3.2E6
 Radius_Universe_4D = 14.03E9
@@ -34,29 +34,18 @@ ntheta = 180
 nr_sampling = 103
 nz_sampling = 104
 R_max = 50000.0
-x0 =  [15.113599042501253, 0.0004635570932973033, 0.15781139618525852, 2.4720346733035425e-05, 158754.18927767663]
+x0 =  np.array([17.77398054090567, 0.0004746365353380392, 0.1489212156273614, 2.2261975386169744e-05, 141703.88829098945])
 rho_0, alpha_0, rho_1, alpha_1, h0 = x0
 GalaxyMass = 5E10
-pi = 3.141592653589793238
 
 M33 = GalaxyWrapper(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift, cuda=True)
 
 M33.read_galaxy_rotation_curve(m33_rotational_curve)
 v_sim = M33.simulate_rotation_curve()
 
-
+print(M33.print_density_parameters())
 myMass = calculate_mass(rho_0, alpha_0, h0)
 gasMass = calculate_mass(rho_1, alpha_1, h0)
 print( myMass, gasMass)
-debug = False
-cuda = false
-# Replace with the correct function call when available
-# rotational_velocity = calculate_rotational_velocity(redshift, M33.dv0, M33.r_sampling, r, z, M33.costheta, M33.sintheta, M33.rho, debug)
 
-f_z_radial, f_z_vertical = M33.get_f_z(x0, debug)
-
-print(f"Duration: {M33.duration}")
-print("f_z_radial:")
-print(np.array(f_z_radial))
-print("f_z_vertical:")
-print(np.array(f_z_vertical))
+plotRotationCurve((M33))

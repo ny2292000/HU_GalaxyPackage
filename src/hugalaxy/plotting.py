@@ -1,6 +1,5 @@
-from hugalaxy.HU_Galaxy_GalaxyWrapper import *
+from hugalaxy import calculate_mass
 
-__version__ = "0.0.1"  # Define the version of your package
 import matplotlib.pyplot as plt
 import numpy as np
 def plotRotationCurve(M33):

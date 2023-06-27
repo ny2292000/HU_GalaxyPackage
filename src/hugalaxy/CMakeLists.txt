@@ -1,30 +1,18 @@
 cmake_minimum_required(VERSION 3.22.0)
-project(HU_Galaxy_GalaxyWrapper LANGUAGES CXX)
-
-#set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-#set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
-set(CMAKE_BUILD_TYPE Release)
-
-
-message("VARIABLES AT HU GALAXY DIRECTORY")
-message("Torch include directories: ${TORCH_INCLUDE_DIRS}")
-message("Torch libraries: ${TORCH_LIBRARIES}")
-message("Pybind11 include directory: ${pybind11_INCLUDE_DIR}")
-message("Python include directories: ${Python_INCLUDE_DIRS}")
-message("Python NumPy include directories: ${Python_NumPy_INCLUDE_DIRS}")
-message("NLopt include directories: ${NLOPT_INCLUDE_DIRS}")
-message("NLopt library directories: ${NLOPT_LIBRARIES}")
-
-
-#set(CMAKE_STRIP "")
+project(hugalaxy LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CUDA_ARCHITECTURES 50 86)
+set(CMAKE_BUILD_TYPE Release)
+
+#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "/home/mp74207/CLionProjects/HU_GalaxyPackage/src/hugalaxy")
+#message("CMAKE_LIBRARY_OUTPUT_DIRECTORY output directories: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+set(CMAKE_INSTALL_PREFIX "/home/mp74207/CLionProjects/HU_GalaxyPackage/src/hugalaxy")
 
 set(Torch_DIR "/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.9/site-packages/torch/share/cmake/Torch")
 find_package(Torch REQUIRED)
-message("Torch includes" "${TORCH_INCLUDE_DIRS}")
-message("Torch libraries" "${TORCH_LIBRARIES}")
+message("Torch includes    = ${TORCH_INCLUDE_DIRS}")
+message("Torch libraries   = ${TORCH_LIBRARIES}")
 
 
 # Set the virtual environment path
@@ -59,27 +47,20 @@ endif()
 message("this is nlopt library dirs " ${NLOPT_LIBRARIES} )
 
 
-
-
-
-
-#if(NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
-#    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-#endif()
-message("CMAKE_LIBRARY_OUTPUT_DIRECTORY output directories: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
-
-
+message("createTest is ${createTest}")
 if(createTest)
+    message("creating share library for testCPPLibrary executable" )
     add_library(${PROJECT_NAME} SHARED
-            HU_Galaxy.cpp
-            Galaxy.cpp
+            hugalaxy.cpp
+            galaxy.cpp
             tensor_utils.cpp
             )
 else()
     # Add source files
+    message("creating pybind11_add_module" )
     pybind11_add_module(${PROJECT_NAME} SHARED
-            HU_Galaxy.cpp
-            Galaxy.cpp
+            hugalaxy.cpp
+            galaxy.cpp
             tensor_utils.cpp
             )
 endif()
@@ -95,7 +76,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${NLOPT_INCLUDE_DIRS}
         )
 
-
+set_target_properties(${PROJECT_NAME}  PROPERTIES LINKER_LANGUAGE CXX)
 # Link libraries
 target_link_libraries(${PROJECT_NAME} PRIVATE
         ${TORCH_LIBRARIES}
@@ -110,3 +91,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         c
         stdc++fs
         )
+
+# install the library to the specified directory
+message("CMAKE_INSTALL_PREFIX is ${CMAKE_INSTALL_PREFIX}")
+install(TARGETS ${PROJECT_NAME}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX})

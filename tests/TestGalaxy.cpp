@@ -8,7 +8,7 @@
 #include <vector>
 #include <array>
 #include "tensor_utils.h"
-#include "Galaxy.h"
+#include "galaxy.h"
 
 
 

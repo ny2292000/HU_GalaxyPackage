@@ -10,7 +10,7 @@ Big Pop Article https://www.preprints.org/manuscript/202201.0106/v1
 
 Here I created a map for the observable and unobservable Universe and located Earth on it: https://www.quora.com/According-to-the-Hypergeometrical-Universe-Theory-HU-where-is-our-universe-within-the-hyperspherical-hypersurface/answer/Marco-Pereira-1?ch=2&srid=3aDA
 
-Here is how I created the map of the Hyperspherical Universe from the knowledge obtained by the Planck Satellite: 3D galaxy density map of the current universe: https://www.youtube.com/watch?v=MLqkbCAzcJM
+Here is how I created the map of the Hyperspherical Universe from the knowledge obtained by the Planck Satellite: 3D galaxy_ density map of the current universe: https://www.youtube.com/watch?v=MLqkbCAzcJM
 
 and here is how I challenged Einstein's theory: https://www.quora.com/How-would-anyone-defend-general-relativity-from-Marco-Pereiras-HU-challenge/answer/Marco-Pereira-1
 

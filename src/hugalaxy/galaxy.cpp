@@ -9,7 +9,7 @@
 #include <utility>
 #include <iostream>
 #include <cuda_runtime.h>
-#include "Galaxy.h"
+#include "galaxy.h"
 #include "tensor_utils.h"
 
 const double Radius_4D = 14.01;
@@ -35,7 +35,7 @@ std::vector<std::vector<double>> density(double rho_0, double alpha_0, double rh
 }
 
 // Define the function to be minimized
-static double error_function(const std::vector<double> &x, Galaxy &myGalaxy) {
+static double error_function(const std::vector<double> &x, galaxy &myGalaxy) {
     // Calculate the rotation velocity using the current values of x
     double rho_0 = x[0];
     double alpha_0 = x[1];
@@ -46,7 +46,7 @@ static double error_function(const std::vector<double> &x, Galaxy &myGalaxy) {
     if (rho_0 <= 0.0 || alpha_0 <= 0.0 || rho_1 <= 0.0 || alpha_1 <= 0.0 || h0 <= 0.0) {
         return std::numeric_limits<double>::infinity();
     }
-    // Calculate the total mass of the galaxy
+    // Calculate the total mass of the galaxy_
     double Mtotal_si = calculate_mass(rho_0, alpha_0, h0);
     double error_mass = (myGalaxy.GalaxyMass - Mtotal_si) / myGalaxy.GalaxyMass;
     error_mass *= error_mass ;
@@ -74,7 +74,7 @@ static double error_function(const std::vector<double> &x, Galaxy &myGalaxy) {
 
 // Define the objective function wrapper
 auto objective_wrapper = [](const std::vector<double> &x, std::vector<double> &grad, void *data) {
-    auto *myGalaxy = static_cast<Galaxy *>(data);
+    auto *myGalaxy = static_cast<galaxy *>(data);
     return error_function(x, *myGalaxy);
 };
 
@@ -85,7 +85,7 @@ auto objective_wrapper = [](const std::vector<double> &x, std::vector<double> &g
 // #############################################################################
 // #############################################################################
 
-Galaxy::Galaxy(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
+galaxy::galaxy(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
                double R_max, int nr_init, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift, int GPU_ID, bool cuda, bool debug)
         : R_max(R_max), nr(nr_init), nz(nz), nr_sampling(nr_sampling), nz_sampling(nz_sampling),
           alpha_0(alpha_0), rho_0(rho_0), alpha_1(alpha_1), rho_1(rho_1), h0(h0), redshift(redshift), GPU_ID(GPU_ID), cuda(cuda),debug(debug),
@@ -115,10 +115,10 @@ Galaxy::Galaxy(double GalaxyMass, double rho_0, double alpha_0, double rho_1, do
 }
 
 
-Galaxy::~Galaxy() {};
+galaxy::~galaxy() {};
 
 
-std::vector<std::vector<double>>  Galaxy::DrudePropagator(double redshift, double time_step_years, double eta, double temperature) {
+std::vector<std::vector<double>>  galaxy::DrudePropagator(double redshift, double time_step_years, double eta, double temperature) {
     // Calculate the effective cross-section
     double time_of_cmb = 11E6;
     double density_at_cmb = 1E3; // hydrogen atoms per cubic centimeter
@@ -218,7 +218,7 @@ std::vector<std::vector<double>>  Galaxy::DrudePropagator(double redshift, doubl
 
 
 
-void Galaxy::recalculate_density(const std::vector<std::vector<double>>& currentMasses) {
+void galaxy::recalculate_density(const std::vector<std::vector<double>>& currentMasses) {
     for (int i = 0; i < nr; i++) {
         for (int j = 0; j < nz; j++) {
             rho[i][j] = currentMasses[i][j] / dv0[i];
@@ -227,14 +227,14 @@ void Galaxy::recalculate_density(const std::vector<std::vector<double>>& current
 };
 
 std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
-Galaxy::get_f_z(const std::vector<double> &x, bool debug) {
+galaxy::get_f_z(const std::vector<double> &x, bool debug) {
     // Calculate the rotation velocity using the current values of x
     double rho_0 = x[0];
     double alpha_0 = x[1];
     double rho_1 = x[2];
     double alpha_1 = x[3];
     double h0 = x[4];
-    // Calculate the total mass of the galaxy
+    // Calculate the total mass of the galaxy_
     std::vector<double> r_sampling = this->x_rotation_points;
     std::vector<double> z_sampling;
 //    std::vector<double> z_sampling = this->z;
@@ -253,7 +253,7 @@ Galaxy::get_f_z(const std::vector<double> &x, bool debug) {
     return f_z;
 }
 
-void Galaxy::read_galaxy_rotation_curve(std::vector<std::array<double, 2>> vin) {
+void galaxy::read_galaxy_rotation_curve(std::vector<std::array<double, 2>> vin) {
     n_rotation_points = vin.size();
     this->x_rotation_points.clear();
     this->v_rotation_points.clear();
@@ -268,7 +268,7 @@ void Galaxy::read_galaxy_rotation_curve(std::vector<std::array<double, 2>> vin) 
 
 // Define the Nelder-Mead optimizer
 std::vector<double>
-Galaxy::nelder_mead(const std::vector<double> &x0, Galaxy &myGalaxy, int max_iter, double xtol_rel) {
+galaxy::nelder_mead(const std::vector<double> &x0, galaxy &myGalaxy, int max_iter, double xtol_rel) {
     nlopt::opt opt(nlopt::LN_NELDERMEAD, x0.size());
     opt.set_min_objective(objective_wrapper, &myGalaxy);
     opt.set_xtol_rel(xtol_rel);
@@ -283,7 +283,7 @@ Galaxy::nelder_mead(const std::vector<double> &x0, Galaxy &myGalaxy, int max_ite
     return x;
 }
 
-std::vector<double> Galaxy::simulate_rotation_curve() {
+std::vector<double> galaxy::simulate_rotation_curve() {
     // Calculate density at all radii
     std::vector<double> x0{rho_0, alpha_0, rho_1, alpha_1, h0};
     int max_iter = 5000;
@@ -302,7 +302,7 @@ std::vector<double> Galaxy::simulate_rotation_curve() {
     return v_simulated_points;
 }
 
-std::vector<std::vector<double>> Galaxy::print_rotation_curve() {
+std::vector<std::vector<double>> galaxy::print_rotation_curve() {
     std::vector<std::vector<double>> rotation_curve;
     for (int i = 0; i < n_rotation_points; i++) {
         std::vector<double> point{x_rotation_points[i], v_rotation_points[i]};
@@ -311,7 +311,7 @@ std::vector<std::vector<double>> Galaxy::print_rotation_curve() {
     return rotation_curve;
 }
 
-std::vector<std::vector<double>> Galaxy::print_simulated_curve() {
+std::vector<std::vector<double>> galaxy::print_simulated_curve() {
     std::vector<std::vector<double>> simulated_curve;
     for (int i = 0; i < n_rotation_points; i++) {
         std::vector<double> point{x_rotation_points[i], v_simulated_points[i]};
@@ -320,7 +320,7 @@ std::vector<std::vector<double>> Galaxy::print_simulated_curve() {
     return simulated_curve;
 }
 
-std::vector<double> Galaxy::print_density_parameters() {
+std::vector<double> galaxy::print_density_parameters() {
     std::vector<double> density_params{rho_0, alpha_0, rho_1, alpha_1, h0};
     return density_params;
 }

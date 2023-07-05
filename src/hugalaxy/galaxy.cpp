@@ -295,6 +295,7 @@ std::vector<double> galaxy::move_galaxy(double new_redshift ) {
     double rescalingFactor = (1+new_redshift)/(1+redshift);
     r = creategrid(rho_0, alpha_0, rho_1, alpha_1, nr);
     for (int i=0; i<r.size(); i++){r[i]= r[i]/rescalingFactor;}
+    h0 = h0/rescalingFactor;
     // Update nr
     nr = r.size();
     int ntheta = sintheta.size();

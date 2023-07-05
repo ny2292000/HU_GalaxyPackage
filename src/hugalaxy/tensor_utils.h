@@ -13,6 +13,7 @@
 #include <future>
 #include <utility>
 #include "torch/torch.h"
+#include "galaxy.h"
 
 // Returns a vector of zeros with the given size
 std::vector<double> zeros_1(int size) ;
@@ -69,15 +70,7 @@ get_all_g(double redshift, const std::vector<double> &dv0, const std::vector<dou
           const std::vector<double> &r, const std::vector<double> &z, const std::vector<double> &costheta,
           const std::vector<double> &sintheta, const std::vector<std::vector<double>> &rho, bool debug) ;
 
-
-std::vector<double> calculate_rotational_velocity(double redshift, const std::vector<double> &dv0,
-                                                  std::vector<double> r_sampling,
-                                                  const std::vector<double> &r,
-                                                  const std::vector<double> &z,
-                                                  const std::vector<double> &costheta,
-                                                  const std::vector<double> &sintheta,
-                                                  const std::vector<std::vector<double>> &rho, bool debug, int GPU_ID, bool cuda) ;
-
+std::vector<double> calculate_rotational_velocity(const galaxy& galaxy, const std::vector<std::vector<double>> &rho);
 
 std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, double alpha_1, int n) ;
 

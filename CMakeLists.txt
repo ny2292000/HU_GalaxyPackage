@@ -1,79 +1,15 @@
 cmake_minimum_required(VERSION 3.22.0)
-project(hugalaxy LANGUAGES CXX)
+project(hugalaxy_project LANGUAGES CXX)
 
-set(CMAKE_BUILD_TYPE Release)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CUDA_ARCHITECTURES 50 86)
-
-set(Torch_DIR "/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.9/site-packages/torch/share/cmake/Torch")
-find_package(Torch REQUIRED)
-message("Torch includes" "${TORCH_INCLUDE_DIRS}")
-message("Torch libraries" "${TORCH_LIBRARIES}")
-
-
-# Set the virtual environment path
-set(VENV_PATH "${CMAKE_SOURCE_DIR}/venv")
-message(" this is the path to venv "  ${VENV_PATH})
-
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-message(" CMAKE_MODULE_PATH   is ${CMAKE_MODULE_PATH}  ")
-set(Pybind11_DIR '/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.9/site-packages/pybind11/share/cmake/pybind11')
-find_package(pybind11 CONFIG REQUIRED)
-message("this is pybind include dirs " ${pybind11_INCLUDE_DIR} )
-
-set(Python_EXECUTABLE "/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/bin/python")
-find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
-message("this is python include dirs " ${Python_INCLUDE_DIRS} )
-message("this is numpy include dirs " ${Python_NumPy_INCLUDE_DIRS} )
-
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto=4 -lnlopt ${TORCH_CXX_FLAGS}")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto=4 -lnlopt ${TORCH_C_FLAGS}")
-
-
-#/usr/share/cmake-3.22/Modules/FindPython/Support.cmake:3330
-set( CMAKE_MODULE_PATH  ${CMAKE_SOURCE_DIR}/cmake)
-include("/home/mp74207/CLionProjects/HU_GalaxyPackage/cmake/FindNLopt.cmake")
-find_package(NLopt CONFIG REQUIRED)
-if (${PC_NLOPT_FOUND})
-    message("found nlopt "  )
+# Check the environment variable CREATE_PACKAGE.
+# If it's not set or its value is not TRUE, the condition is evaluated to FALSE.
+message("CREATE_PACKAGE     $ENV{CREATE_PACKAGE} ")
+# Check if the environment variable CREATE_PACKAGE is not set or its value is not TRUE
+message("FINAL CREATE_PACKAGE     $ENV{CREATE_PACKAGE} ")
+if (NOT DEFINED ENV{CREATE_PACKAGE} OR NOT $ENV{CREATE_PACKAGE} STREQUAL "TRUE")
+    message("Create testCPP")
+    add_subdirectory("testCPP")
 else()
-    message("not found nlopt "  )
+    message("Create Python Package")
+    add_subdirectory("./src/hugalaxy")
 endif()
-message("this is nlopt library dirs " ${NLOPT_LIBRARIES} )
-
-
-
-# Add source files
-pybind11_add_module(${PROJECT_NAME} SHARED
-        src/hugalaxy/hugalaxy.cpp
-        src/hugalaxy/galaxy.cpp
-        src/hugalaxy/tensor_utils.cpp
-        )
-
-
-target_include_directories(${PROJECT_NAME} PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        ${TORCH_INCLUDE_DIRS}
-        ${pybind11_INCLUDE_DIR}
-        ${Python_INCLUDE_DIRS}
-        ${Python_NumPy_INCLUDE_DIRS}
-        ${NLOPT_INCLUDE_DIRS}
-        )
-
-
-# Link libraries
-target_link_libraries(${PROJECT_NAME} PRIVATE
-        ${TORCH_LIBRARIES}
-        ${Python_LIBRARIES}
-        ${Python_NumPy_LIBRARIES}
-        ${NLOPT_LIBRARIES}
-        NLopt::nlopt
-        pybind11::module
-        pybind11::lto
-        pybind11::embed
-        m
-        c
-        stdc++fs
-        )
-

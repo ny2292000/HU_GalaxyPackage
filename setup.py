@@ -5,7 +5,7 @@ import platform
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 
-
+env = os.environ.copy()
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=''):
         Extension.__init__(self, name, sources=[])
@@ -19,7 +19,8 @@ class CMakeBuild(build_ext):
     def build_extension(self, ext):
         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
-                      '-DPYTHON_EXECUTABLE=' + sys.executable]
+                      '-DPYTHON_EXECUTABLE=' + sys.executable,
+                      'DCREATE_PACKAGE=' + env['CREATE_PACKAGE'] ]
 
         cfg = 'Debug' if self.debug else 'Release'
         build_args = ['--config', cfg]
@@ -33,7 +34,6 @@ class CMakeBuild(build_ext):
             cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
             build_args += ['--', '-j2']
 
-        env = os.environ.copy()
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''),
                                                               self.distribution.get_version())
         if not os.path.exists(self.build_temp):
@@ -43,8 +43,13 @@ class CMakeBuild(build_ext):
 
 setup(
     name='hugalaxy',
+    author="Marco Pereira",
+    author_email="ny2292000@gmail.com",
+    maintainer="Marco Pereira",
+    maintainer_email="ny2292000@gmail.com",
+    url="https://www.github.com/ny2292000/HU_GalaxyPackage",
     version='0.0.1',
-    packages=['hugalaxy'],
+    packages=['hugalaxy', "hugalaxy.plotting"],
     package_dir={'hugalaxy': 'src/hugalaxy'},
     ext_modules=[CMakeExtension('hugalaxy/hugalaxy')],
     cmdclass=dict(build_ext=CMakeBuild),

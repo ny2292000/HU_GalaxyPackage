@@ -43,8 +43,7 @@ int main() {
 
 
     const double M33_Distance = 3.2E6;
-    const double Radius_Universe_4D = 14.03E9;
-    double redshift = M33_Distance / (Radius_Universe_4D - M33_Distance);
+    double redshift = M33_Distance / (Radius_4D - M33_Distance);
     const int nr = 300;
     const int nz = 100;
     const int ntheta = 180;
@@ -70,23 +69,32 @@ int main() {
     bool debug = false;
     const bool cuda= false;
     int GPU_ID = 0;
-    Galaxy M33(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0,
-               R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift, GPU_ID, cuda, debug);
+    double xtol_rel = 1E-6;
+    int max_iter = 5000;
+    galaxy M33(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0,
+               R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift, GPU_ID, cuda, debug, xtol_rel, max_iter );
     M33.read_galaxy_rotation_curve(m33_rotational_curve);
-    std::vector<std::vector<double>> f_z = zeros_2(M33.n_rotation_points, 2);
     std::vector<double> x0 = {rho_0, alpha_0, rho_1, alpha_1, h0};
-
     x0 = {1.844837e+01, 4.740177e-04, 1.457439e-01, 2.269586e-05, 1.360023e+05};
     M33.cuda = true;
-    auto xout = M33.nelder_mead(x0, M33,1000, 1E-3);
-    print_1D(xout);
-
-    // Drude Propagation
-//    double epoch = 100E6;
-//    redshift = Radius_Universe_4D/epoch -1;
-    double time_step = 10E6;
-    double eta =100.0;
-    double temperature =7.0;
-    std::vector<std::vector<double>> current_masses = M33.DrudePropagator(redshift, time_step, eta, temperature);
+    auto velo_1 = M33.simulate_rotation_curve();
+    print_1D(velo_1);
+    double new_redshift = 2.0;
+    auto velo_2 = M33.move_galaxy( new_redshift );
+    print_1D(velo_2);
     int a =1;
+
+
+
+
+//    // Drude Propagation
+//    double epoch = 100E6;
+//    redshift = Radius_4D/epoch -1;
+//    double time_step = 10E6;
+//    double eta =100.0;
+//    double temperature =7.0;
+//    double radius_of_epoch = Radius_4D/(1+redshift);
+//    double rho_at_epoch = density_at_cmb*pow(radius_of_cmb/radius_of_epoch,3);
+//    std::vector<std::vector<double>> current_masses = M33.DrudePropagator(redshift, time_step, eta, temperature);
+
 }

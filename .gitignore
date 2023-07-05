@@ -13,3 +13,5 @@ __pycache__/
 /deleteme/
 /myvenv/
 /.iypynb_checkpoints/
+/ManyLinux/
+/dist/

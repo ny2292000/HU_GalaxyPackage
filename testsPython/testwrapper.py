@@ -49,3 +49,4 @@ gasMass = calculate_mass(rho_1, alpha_1, h0)
 print( myMass, gasMass)
 
 plotRotationCurve((M33))
+a=1

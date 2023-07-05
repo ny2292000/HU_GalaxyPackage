@@ -29,7 +29,8 @@ py::array_t<double> makeNumpy(const std::vector<std::vector<double>>& result);
 class GalaxyWrapper {
 public:
     GalaxyWrapper(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
-                  double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift = 0.0, int GPU_ID=0, bool cuda=false, bool debug=false);
+                  double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift = 0.0, int GPU_ID=0,
+                  bool cuda=false, bool debug=false, double xtol_rel=1E-6, int max_iter=5000);
 
     py::array_t<double> DrudePropagator(double redshift, double time_step_years, double eta, double temperature);
 
@@ -37,16 +38,14 @@ public:
 
     void read_galaxy_rotation_curve(py::array_t<double, py::array::c_style | py::array::forcecast> vin);
 
-    void setCuda(bool value);
+    void set_cuda(bool value);
+    bool get_cuda  () const;
+    int get_GPU_ID() const;
+    void set_GPU_ID(int value);
 
-    py::bool_ getCuda  () const;
+    std::vector<double> move_galaxy(double new_redshift);
 
-    py::int_ getGPU_ID() const;
-
-    // Setter for cuda
-    void setGPU_ID(int value);
-
-    py::list print_rotation_curve();
+    py::array_t<double> print_rotation_curve() const;
 
     py::list print_simulated_curve();
 
@@ -65,7 +64,9 @@ public:
     void set_alpha_1(double alpha_1) ;
     void set_rho_0(double rho_0);
     void set_rho_1(double rho_1);
-    void set_h0(double h0) ;
+    void set_h0(double h0);
+    void set_xtol_rel(double_t value);
+    void set_max_iter(int value);
     // Getter member functions
     double get_redshift() const;
     double get_R_max() const;
@@ -78,11 +79,26 @@ public:
     double get_rho_0() const;
     double get_rho_1() const;
     double get_h0() const;
+    double_t get_xtol_rel() const;
+    int get_max_iter() const;
     const galaxy& get_galaxy() const;
     py::array_t<double> get_r() const ;
     void set_r(const py::array_t<double>& arr) ;
-    py::array_t<double> get_rotation_curve() const;
+    py::array_t<double> get_z() const ;
+    void set_z(const py::array_t<double>& arr) ;
+    py::array_t<double> get_dv0() const ;
+    void set_dv0(const py::array_t<double>& arr) ;
+    py::array_t<double> get_x_rotation_points() const;
+    void set_x_rotation_points(const py::array_t<double>& arr) ;
+    py::array_t<double> get_v_rotation_points() const;
+    void set_v_rotation_points(const py::array_t<double>& arr) ;
+    py::array_t<double> get_costheta() const ;
+    void set_costheta(const py::array_t<double>& arr) ;
+    py::array_t<double> get_sintheta() const ;
+    void set_sintheta(const py::array_t<double>& arr) ;
+
     void set_rotation_curve(const py::array_t<double>& arr) ;
+    py::array_t<double> get_rotation_curve() const ;
 
 private:
     galaxy galaxy_;

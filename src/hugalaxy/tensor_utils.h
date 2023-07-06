@@ -15,6 +15,8 @@
 #include "torch/torch.h"
 #include "galaxy.h"
 
+
+std::vector<std::array<double, 2>> move_rotation_curve(std::vector<std::array<double, 2>>& rotation_curve, double z1 = 0.0, double z2 = 20.0);
 // Returns a vector of zeros with the given size
 std::vector<double> zeros_1(int size) ;
 

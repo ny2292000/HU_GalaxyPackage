@@ -11,6 +11,7 @@
 #include <cuda_runtime.h>
 #include "galaxy.h"
 #include "tensor_utils.h"
+#include <c10/cuda/CUDACachingAllocator.h>
 
 
 std::vector<std::vector<double>> density(double rho_0, double alpha_0, double rho_1, double alpha_1,
@@ -48,7 +49,6 @@ static double error_function(const std::vector<double> &x, galaxy &myGalaxy) {
     double Mtotal_si = calculate_mass(rho_0, alpha_0, h0);
     double error_mass = (myGalaxy.GalaxyMass - Mtotal_si) / myGalaxy.GalaxyMass;
     error_mass *= error_mass ;
-    bool debug = false;
     std::vector<std::vector<double>> rho = density(rho_0, alpha_0, rho_1, alpha_1, myGalaxy.r, myGalaxy.z);
 
     std::vector<double> vsim = calculate_rotational_velocity(myGalaxy, rho);
@@ -57,8 +57,8 @@ static double error_function(const std::vector<double> &x, galaxy &myGalaxy) {
         double a = myGalaxy.v_rotation_points[i] - vsim[i];
         error += a*a;
     }
-//    std::cout << "Total Error = " << error  << "\n";
-    return error + error_mass/100;
+    std::cout << "Total Error = " << error  << "\n";
+    return error + error_mass*10;
 }
 
 // Define the objective function wrapper
@@ -273,6 +273,7 @@ galaxy::nelder_mead(const std::vector<double> &x0, galaxy &myGalaxy, int max_ite
         std::cerr << "nlopt failed: " << strerror(result) << std::endl;
     }
     std::cout << result << std::endl;
+    c10::cuda::CUDACachingAllocator::emptyCache();
     return x;
 }
 

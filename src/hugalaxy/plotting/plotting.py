@@ -15,3 +15,13 @@ def plotRotationCurve(M33):
     plt.xlim(0,np.max(m33_rotational_curve[:,0]))
     plt.ylim(0,np.max(m33_rotational_curve[:,1]))
     plt.show()
+
+
+def move_rotation_curve(rotation_curve, z1=0.0, z2=20.0):
+    rescaling_factor=(1+z2)/(1+z1)
+    result  = np.zeros(np.shape(rotation_curve))
+    result[:,0]=rotation_curve[:,0]/rescaling_factor
+    result[:,1]=rotation_curve[:,1]*rescaling_factor
+    return result
+
+__all__=["plotRotationCurve","move_rotation_curve"]

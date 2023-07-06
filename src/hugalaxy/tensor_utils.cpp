@@ -4,7 +4,20 @@
 #include <cmath>
 #include <future>
 #include <torch/torch.h>
+#include <c10/cuda/CUDACachingAllocator.h>
 #include "tensor_utils.h"
+
+
+std::vector<std::array<double, 2>> move_rotation_curve(std::vector<std::array<double, 2>>& rotation_curve, double z1, double z2) {
+    double rescaling_factor = (1 + z2) / (1 + z1);
+    std::vector<std::array<double, 2>> result(rotation_curve.size());
+
+    for (size_t i = 0; i < rotation_curve.size(); ++i) {
+        result[i][0]=rotation_curve[i][0]/rescaling_factor;
+        result[i][1]=rotation_curve[i][1]*rescaling_factor;
+    }
+    return result;
+}
 
 inline std::vector<std::vector<double>> tensor_to_vec_of_vec(const torch::Tensor& tensor){
     std::vector<std::vector<double>> vec_of_vec;
@@ -273,7 +286,7 @@ get_all_torch(double redshift,
 
     torch::Device device(torch::kCUDA, GPU_ID);
     auto options = torch::TensorOptions().dtype(torch::kFloat64).device(device);
-// Move data to GPU
+    // Move data to GPU
     torch::Tensor dv0 = move_data_to_gpu(dv0_in, device);
     torch::Tensor r_sampling = move_data_to_gpu(r_sampling_in, device);
     torch::Tensor z_sampling = move_data_to_gpu(z_sampling_in, device);
@@ -286,7 +299,22 @@ get_all_torch(double redshift,
     // Create G tensor
 
     auto G = torch::full({1}, 7.456866768350099e-46 * (1 + redshift), options);
-    return get_g_torch(r_sampling, z_sampling, G, dv0, r, z, costheta, sintheta, rho, debug);
+
+    // Get results from get_g_torch
+    auto result = get_g_torch(r_sampling, z_sampling, G, dv0, r, z, costheta, sintheta, rho, debug);
+
+    // Delete tensors and empty cache
+//    dv0.reset();
+//    r_sampling.reset();
+//    z_sampling.reset();
+//    r.reset();
+//    z.reset();
+//    costheta.reset();
+//    sintheta.reset();
+//    rho.reset();
+//    G.reset();
+//    c10::cuda::CUDACachingAllocator::emptyCache();
+    return result;
 }
 
 
@@ -379,43 +407,6 @@ get_all_g(double redshift, const std::vector<double> &dv0, const std::vector<dou
     return f_z_combined;
 }
 
-//std::vector<double> calculate_rotational_velocity(double redshift, const std::vector<double> &dv0,
-//                                                  std::vector<double> r_sampling,
-//                                                  const std::vector<double> &r,
-//                                                  const std::vector<double> &z,
-//                                                  const std::vector<double> &costheta,
-//                                                  const std::vector<double> &sintheta,
-//                                                  const std::vector<std::vector<double>> &rho, bool debug, int GPU_ID, bool cuda) {
-//    int nr_sampling = r_sampling.size();
-//    double km_lyr = 9460730472580.8; //uu.lyr.to(uu.km)
-//    // Allocate result vector
-//    std::vector<double> z_sampling = {0.0};
-//    std::vector<double> v_r(nr_sampling,0.0);
-//    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z;
-//    if(cuda){
-//        f_z = get_all_torch(redshift, dv0, r_sampling, z_sampling, r, z, costheta, sintheta, rho, GPU_ID, debug);
-//    }
-//    else {
-//        f_z = get_all_g(redshift, dv0, r_sampling, z_sampling, r, z, costheta, sintheta, rho, debug);
-//    }
-//
-//    // Calculate velocities
-//    double v_squared;
-//    for (int i = 0; i < nr_sampling; i++) {
-//        v_squared = f_z.first[i][0] * r_sampling[i] * km_lyr; // Access radial values from the pair (first element)
-//        v_r[i] = sqrt(v_squared); // 9460730777119.56 km
-//
-//        // Debugging output
-//        if (debug) {
-//            std::cout << "r_sampling[" << i << "]: " << r_sampling[i] << std::endl;
-//            std::cout << "f_z.first[" << i << "][0]: " << f_z.first[i][0] << std::endl;
-//            std::cout << "v_squared: " << v_squared << std::endl;
-//            std::cout << "v_r[" << i << "]: " << v_r[i] << std::endl;
-//        }
-//    }
-//    // Return result
-//    return v_r;
-//}
 
 std::vector<double> calculate_rotational_velocity(const galaxy& galaxy, const std::vector<std::vector<double>> &rho) {
     int nr_sampling = galaxy.x_rotation_points.size();

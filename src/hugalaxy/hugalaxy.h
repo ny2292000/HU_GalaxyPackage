@@ -43,7 +43,7 @@ public:
     int get_GPU_ID() const;
     void set_GPU_ID(int value);
 
-    std::vector<double> move_galaxy(double new_redshift);
+    std::vector<double> move_galaxy(bool recalc);
 
     py::array_t<double> print_rotation_curve() const;
 

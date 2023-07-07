@@ -102,8 +102,8 @@ void GalaxyWrapper::read_galaxy_rotation_curve(py::array_t<double, py::array::c_
     galaxy_.read_galaxy_rotation_curve(vec);
 }
 
-std::vector<double> GalaxyWrapper::move_galaxy(double new_redshift) {
-    auto result = galaxy_.move_galaxy(new_redshift);
+std::vector<double> GalaxyWrapper::move_galaxy(bool recalc) {
+    auto result = galaxy_.move_galaxy(recalc);
     return result;
 }
 
@@ -351,10 +351,8 @@ PYBIND11_MODULE(hugalaxy, m) {
             .def("DrudePropagator", &GalaxyWrapper::DrudePropagator, py::arg("redshift"), py::arg("time_step_years"), py::arg("eta"), py::arg("temperature"),
                  "Propagate the mass distribution in a galaxy_ using the Drude model")
             .def("get_galaxy", &GalaxyWrapper::get_galaxy)
-
-            .def("move_galaxy", &GalaxyWrapper::move_galaxy, py::arg("new_redshift"),
+            .def("move_galaxy", &GalaxyWrapper::move_galaxy, py::arg("recalc") = false,
                  "Move the galaxy to a new redshift, scaling and recalculating properties as necessary")
-
             .def_property("redshift", &GalaxyWrapper::get_redshift, &GalaxyWrapper::set_redshift)
             .def_property("R_max", &GalaxyWrapper::get_R_max, &GalaxyWrapper::set_R_max)
             .def_property("nz_sampling", &GalaxyWrapper::get_nz_sampling, &GalaxyWrapper::set_nz_sampling)

@@ -34,7 +34,7 @@ public:
     get_f_z(const std::vector<double> &x, bool debug);
     void read_galaxy_rotation_curve(std::vector<std::array<double, 2>> vin);
     std::vector<double> simulate_rotation_curve();
-    std::vector<double> move_galaxy(double new_redshift);
+    std::vector<double> move_galaxy(bool recalc=false);
     std::vector<std::vector<double>> print_rotation_curve();
     std::vector<std::vector<double>>print_simulated_curve();
     std::vector<double> print_density_parameters();

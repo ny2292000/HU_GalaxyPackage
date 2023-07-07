@@ -24,4 +24,39 @@ def move_rotation_curve(rotation_curve, z1=0.0, z2=20.0):
     result[:,1]=rotation_curve[:,1]*rescaling_factor
     return result
 
-__all__=["plotRotationCurve","move_rotation_curve"]
+
+
+def calculate_density_parameters(redshift):
+    # Fitting coefficients for log(rho_0) versus log(r4d):
+    # Slope: -2.9791370770349763
+    # Intercept: 4.663067724899548
+    #
+    # Fitting coefficients for log(alpha_0) versus log(r4d):
+    # Slope: -0.9962401859242176
+    # Intercept: -2.1843923428300345
+    #
+    # Fitting coefficients for log(rho_1) versus log(r4d):
+    # Slope: -3.0038710671577102
+    # Intercept: 2.6205959676388595
+    #
+    # Fitting coefficients for log(alpha_1) versus log(r4d):
+    # Slope: -1.0037795630256436
+    # Intercept: -3.509866645107434
+    #
+    # Fitting coefficients for log(h0) versus log(r4d):
+    # Slope: 0.9868817849104266
+    # Intercept: 4.015946542551611
+
+
+    r4d = 14.01 / (1 + redshift)
+    values = np.array([
+        r4d ** (-2.9791370770349763) * 10 ** 4.663067724899548,
+        r4d ** (-0.9962401859242176) * 10 ** (-2.1843923428300345),
+        r4d ** (-3.0038710671577102) * 10 ** 2.6205959676388595,
+        r4d ** (-1.0037795630256436) * 10 ** (-3.509866645107434),
+        r4d ** (0.9868817849104266) * 10 ** 4.015946542551611
+    ])
+    return values
+
+
+__all__=["plotRotationCurve","move_rotation_curve", "calculate_density_parameters"]

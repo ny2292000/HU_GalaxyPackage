@@ -57,7 +57,7 @@ static double error_function(const std::vector<double> &x, galaxy &myGalaxy) {
         double a = myGalaxy.v_rotation_points[i] - vsim[i];
         error += a*a;
     }
-    std::cout << "Total Error = " << error  << "\n";
+//    std::cout << "Total Error = " << error  << "\n";
     return error + error_mass*10;
 }
 
@@ -292,11 +292,8 @@ std::vector<double> galaxy::simulate_rotation_curve() {
     return v_simulated_points;
 }
 
-std::vector<double> galaxy::move_galaxy(double new_redshift ) {
-    double rescalingFactor = (1+new_redshift)/(1+redshift);
+std::vector<double> galaxy::move_galaxy(bool recalc) {
     r = creategrid(rho_0, alpha_0, rho_1, alpha_1, nr);
-    for (int i=0; i<r.size(); i++){r[i]= r[i]/rescalingFactor;}
-    h0 = h0/rescalingFactor;
     // Update nr
     nr = r.size();
     int ntheta = sintheta.size();
@@ -308,19 +305,23 @@ std::vector<double> galaxy::move_galaxy(double new_redshift ) {
     for (int i = 1; i < nr; i++) {
         dv0.push_back((r[i] - r[i - 1]) * (r[i] + r[i - 1]) /2* dz * dtheta);
     }
-    for (int i=0; i<x_rotation_points.size(); i++){x_rotation_points[i]= x_rotation_points[i]/rescalingFactor;}
-    for (int i=0; i<v_rotation_points.size(); i++){v_rotation_points[i]= v_rotation_points[i]*rescalingFactor;}
-    std::vector<double> x0{rho_0, alpha_0*rescalingFactor, rho_1, alpha_1*rescalingFactor, h0};
-    std::vector<double> xout = nelder_mead(x0, *this, max_iter, xtol_rel);
-    redshift = new_redshift;
-    rho_0 = xout[0];
-    alpha_0 = xout[1];
-    rho_1 = xout[2];
-    alpha_1 = xout[3];
-    h0 = xout[4];
-    rho = density(rho_0, alpha_0, rho_1, alpha_1, r, z);
-    // Calculate rotational velocity at all radii
-    return simulate_rotation_curve();
+    std::vector<double> x0{rho_0, alpha_0, rho_1, alpha_1, h0};
+    if(recalc){
+        std::vector<double> xout = nelder_mead(x0, *this, max_iter, xtol_rel);
+        rho_0 = xout[0];
+        alpha_0 = xout[1];
+        rho_1 = xout[2];
+        alpha_1 = xout[3];
+        h0 = xout[4];
+        rho = density(rho_0, alpha_0, rho_1, alpha_1, r, z);
+        v_simulated_points = calculate_rotational_velocity(*this, rho);
+        return xout;
+    }
+    else{
+        rho = density(rho_0, alpha_0, rho_1, alpha_1, r, z);
+        v_simulated_points = calculate_rotational_velocity(*this, rho);
+        return x0;
+    }
 }
 
 

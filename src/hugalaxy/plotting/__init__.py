@@ -1,2 +1,2 @@
-from .plotting import plotRotationCurve, move_rotation_curve
+from .plotting import plotRotationCurve, move_rotation_curve,calculate_density_parameters
 

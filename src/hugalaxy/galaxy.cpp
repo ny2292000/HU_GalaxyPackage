@@ -139,7 +139,7 @@ std::vector<std::vector<double>>  galaxy::DrudePropagator(double redshift, doubl
     // Get the double acceleration array
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z;
     if(cuda){
-        f_z = get_all_torch(redshift, dv0, x_rotation_points, z, r, z, costheta, sintheta, rho, GPU_ID, debug);
+        f_z = get_all_torch(redshift, dv0, r, z, r, z, costheta, sintheta, rho, GPU_ID, debug);
     }
     else {
         f_z = get_all_g(redshift, dv0, r, z, r, z, costheta, sintheta, rho, debug);

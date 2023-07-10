@@ -307,7 +307,7 @@ get_all_torch(double redshift,
               int GPU_ID,
               bool debug) {
 
-    int chunk_size=21;
+    int chunk_size=10;
     torch::Device device(torch::kCUDA, GPU_ID);
     auto options = torch::TensorOptions().dtype(torch::kFloat64).device(device);
     // Move data to GPU

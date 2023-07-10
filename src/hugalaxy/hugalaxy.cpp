@@ -103,7 +103,7 @@ void GalaxyWrapper::read_galaxy_rotation_curve(py::array_t<double, py::array::c_
 }
 
 std::vector<double> GalaxyWrapper::move_galaxy(bool recalc) {
-    auto result = galaxy_.move_galaxy(recalc);
+    auto result = galaxy_.move_galaxy(recalc, 0.0);
     return result;
 }
 

@@ -47,7 +47,6 @@ def calculate_density_parameters(redshift):
     # Slope: 0.9868817849104266
     # Intercept: 4.015946542551611
 
-
     r4d = 14.01 / (1 + redshift)
     values = np.array([
         r4d ** (-2.9791370770349763) * 10 ** 4.663067724899548,

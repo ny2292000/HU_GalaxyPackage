@@ -12,9 +12,27 @@
 #include <nlopt.hpp>
 #include <future>
 #include <utility>
-#include "torch/torch.h"
+#include <torch/torch.h>
 #include "galaxy.h"
 
+
+std::string get_device_util(at::Tensor tensor);
+void print_tensor_shape(const torch::Tensor& tensor);
+void print_tensor_dimensionality(const torch::Tensor& tensor);
+
+std::pair<torch::Tensor, torch::Tensor> compute_chunk(
+        const torch::Tensor& r_sampling,
+        const torch::Tensor& z_sampling,
+        const torch::Tensor& r_broadcasted,
+        const torch::Tensor& dv0_broadcasted,
+        const torch::Tensor& G_broadcasted,
+        const torch::Tensor& rho_broadcasted,
+        const torch::Tensor& sintheta_broadcasted,
+        const torch::Tensor& costheta_broadcasted,
+        const torch::Tensor& z_broadcasted,
+        bool debug);
+
+std::vector<double> calculate_density_parameters(double redshift);
 
 std::vector<std::array<double, 2>> move_rotation_curve(std::vector<std::array<double, 2>>& rotation_curve, double z1 = 0.0, double z2 = 20.0);
 // Returns a vector of zeros with the given size

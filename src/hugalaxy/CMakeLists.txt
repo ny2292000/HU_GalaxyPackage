@@ -3,6 +3,8 @@ project(hugalaxy LANGUAGES CXX)
 
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CUDA_ARCHITECTURES 50 86)
 
 
@@ -70,6 +72,7 @@ link_directories("/usr/lib/x86_64-linux-gnu/")
 link_directories("/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.9/site-packages/pybind11/share/cmake/pybind11/")
 
 target_include_directories(${PROJECT_NAME} PRIVATE
+        "/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.9/site-packages/torch/include/ATen/core/"
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${TORCH_INCLUDE_DIRS}
         ${pybind11_INCLUDE_DIR}

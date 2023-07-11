@@ -57,6 +57,7 @@ else()
 endif()
 message("this is nlopt library dirs " ${NLOPT_LIBRARIES} )
 
+include_directories(${PROJECT_SOURCE_DIR}/third_party)
 
 # Add source files
 message("creating pybind11_add_module" )

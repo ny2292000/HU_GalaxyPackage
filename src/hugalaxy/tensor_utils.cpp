@@ -8,7 +8,7 @@
 #include <typeinfo>
 #include "tensor_utils.h"
 #include <c10/cuda/CUDACachingAllocator.h>
-
+#include <taskflow/taskflow.hpp>
 
 std::string get_device_util(at::Tensor tensor) {
     if (tensor.device() == at::kCPU) {
@@ -307,7 +307,7 @@ get_all_torch(double redshift,
               int GPU_ID,
               bool debug) {
 
-    int chunk_size=10;
+
     torch::Device device(torch::kCUDA, GPU_ID);
     auto options = torch::TensorOptions().dtype(torch::kFloat64).device(device);
     // Move data to GPU
@@ -329,6 +329,7 @@ get_all_torch(double redshift,
     int r_size = r_sampling.size(0);
     int z_size = z_sampling.size(0);
 
+
     // Initialize the output tensors with the correct dimensions
     torch::Tensor radial_values_2d = torch::zeros({r_size, z_size});
     torch::Tensor vertical_values_2d = torch::zeros({r_size, z_size});
@@ -347,11 +348,14 @@ get_all_torch(double redshift,
     auto costheta_broadcasted = costheta.unsqueeze(0).unsqueeze(1).unsqueeze(2).unsqueeze(4);
     auto z_broadcasted = z.unsqueeze(0).unsqueeze(1).unsqueeze(2).unsqueeze(3);
 
+
+    int chunk_r_size=50;
+    int chunk_z_size=1;
     // Split r_sampling and z_sampling tensors into chunks and process each chunk separately
-    for (int i = 0; i < r_size; i += chunk_size) {
-        for (int j = 0; j < z_size; j += chunk_size) {
-            int r_end = std::min(i + chunk_size, r_size);
-            int z_end = std::min(j + chunk_size, z_size);
+    for (int i = 0; i < r_size; i += chunk_r_size) {
+        for (int j = 0; j < z_size; j += 1) {
+            int r_end = std::min(i + chunk_r_size, r_size);
+            int z_end = std::min(j + chunk_z_size, z_size);
 
             auto r_sampling_chunk = r_sampling.slice(0, i, r_end);
             auto z_sampling_chunk = z_sampling.slice(0, j, z_end);
@@ -487,21 +491,25 @@ get_all_g(double redshift, const std::vector<double> &dv0, const std::vector<dou
 }
 
 
-std::vector<double> calculate_rotational_velocity(const galaxy& galaxy, const std::vector<std::vector<double>> &rho) {
+std::vector<double> calculate_rotational_velocity(const galaxy& galaxy, const std::vector<std::vector<double>> &rho, const double height) {
     int nr_sampling = galaxy.x_rotation_points.size();
     double km_lyr = 9460730472580.8; //uu.lyr.to(uu.km)
     // Allocate result vector
-    std::vector<double> z_sampling = {0.0};
+    std::vector<double> z_sampling = {height};
     std::vector<double> v_r(nr_sampling,0.0);
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z;
 
     if(galaxy.cuda){
         f_z = get_all_torch(galaxy.redshift, galaxy.dv0, galaxy.x_rotation_points, z_sampling,
                             galaxy.r, galaxy.z, galaxy.costheta, galaxy.sintheta, rho, galaxy.GPU_ID, galaxy.debug);
+        print_2D(f_z.first);
+        print_2D((f_z.second));
     }
     else {
         f_z = get_all_g(galaxy.redshift, galaxy.dv0, galaxy.x_rotation_points, z_sampling,
                         galaxy.r, galaxy.z, galaxy.costheta, galaxy.sintheta, rho, galaxy.debug);
+        print_2D(f_z.first);
+        print_2D((f_z.second));
     }
 
     // Calculate velocities

@@ -45,6 +45,8 @@ public:
 
     std::vector<double> move_galaxy(bool recalc);
 
+    py::array_t<double>  move_galaxy_redshift (double redshift);
+
     py::array_t<double> print_rotation_curve() const;
 
     py::list print_simulated_curve();

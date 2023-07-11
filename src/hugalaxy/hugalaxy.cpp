@@ -11,7 +11,6 @@
 
 namespace py = pybind11;
 
-
 py::array_t<double> density_wrapper(double rho_0, double alpha_0, double rho_1, double alpha_1,
                                     const py::array_t<double>& r, const py::array_t<double>& z) {
     auto r_buf = r.unchecked<1>(); // Extract the underlying buffer of r as a 1D array
@@ -106,8 +105,6 @@ std::vector<double> GalaxyWrapper::move_galaxy(bool recalc) {
     auto result = galaxy_.move_galaxy(recalc, 0.0);
     return result;
 }
-
-
 
 py::list GalaxyWrapper::print_simulated_curve() {
     py::list simulated_curve;
@@ -303,6 +300,14 @@ void GalaxyWrapper::set_rotation_curve(const py::array_t<double>& arr) {
 }
 
 
+py::array_t<double> GalaxyWrapper::move_galaxy_redshift (double redshift) {
+    auto result = galaxy_.move_galaxy_redshift(redshift);
+    const double* data_ptr_x = result.data();
+    py::array_t<double> arrx({static_cast<ssize_t>(result.size())}, data_ptr_x);
+    return arrx;
+}
+
+
 
 // Setter member functions
 void GalaxyWrapper::set_redshift(double redshift) { galaxy_.redshift = redshift; }
@@ -368,9 +373,7 @@ PYBIND11_MODULE(hugalaxy, m) {
             .def_property("GPU_ID", &GalaxyWrapper::get_GPU_ID, &GalaxyWrapper::set_GPU_ID)
             .def_property("max_iter", &GalaxyWrapper::get_max_iter, &GalaxyWrapper::set_max_iter)
             .def_property("xtol_rel", &GalaxyWrapper::get_xtol_rel, &GalaxyWrapper::set_xtol_rel)
-
-
-
+            .def("move_galaxy_redshift", &GalaxyWrapper::move_galaxy_redshift, py::arg("redshift"), "Recalculate new density parameters and recreate grid")
             .def("read_galaxy_rotation_curve", &GalaxyWrapper::read_galaxy_rotation_curve)
             .def("get_f_z", &GalaxyWrapper::get_f_z, py::arg("x"), py::arg("debug") = false )
             .def("print_simulated_curve", &GalaxyWrapper::print_simulated_curve)
@@ -407,7 +410,6 @@ PYBIND11_MODULE(hugalaxy, m) {
         const galaxy& g = gWrapper.get_galaxy();
         return calculate_rotational_velocity(g, rho_vec);
     }, py::arg("galaxy"), py::arg("rho"));
-
 
     m.def("density_wrapper", &density_wrapper, py::arg("rho_0"), py::arg("alpha_0"), py::arg("rho_1"), py::arg("alpha_1"),
           py::arg("r"), py::arg("z"), "Calculate density using the given parameters");

@@ -90,7 +90,7 @@ get_all_g(double redshift, const std::vector<double> &dv0, const std::vector<dou
           const std::vector<double> &r, const std::vector<double> &z, const std::vector<double> &costheta,
           const std::vector<double> &sintheta, const std::vector<std::vector<double>> &rho, bool debug) ;
 
-std::vector<double> calculate_rotational_velocity(const galaxy& galaxy, const std::vector<std::vector<double>> &rho);
+std::vector<double> calculate_rotational_velocity(const galaxy& galaxy, const std::vector<std::vector<double>> &rho, const double height=0.0);
 
 std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, double alpha_1, int n) ;
 

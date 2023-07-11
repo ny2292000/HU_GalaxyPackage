@@ -55,8 +55,8 @@ py::array_t<double> makeNumpy(const std::vector<std::vector<double>>& result) {
 
 
 GalaxyWrapper::GalaxyWrapper(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
-              double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift, int GPU_ID, bool cuda, bool debug, double xtol_rel, int max_iter)
-        : galaxy_(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift, GPU_ID, cuda, debug, xtol_rel, max_iter) {};
+              double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift, int GPU_ID, bool cuda, bool taskflow, double xtol_rel, int max_iter)
+        : galaxy_(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift, GPU_ID, cuda, taskflow, xtol_rel, max_iter) {};
 
 py::array_t<double> GalaxyWrapper::DrudePropagator(double redshift, double time_step_years, double eta, double temperature) {
     auto result = galaxy_.DrudePropagator(redshift, time_step_years, eta, temperature);
@@ -65,8 +65,8 @@ py::array_t<double> GalaxyWrapper::DrudePropagator(double redshift, double time_
 }
 
 
-std::pair<py::array_t<double>, py::array_t<double>> GalaxyWrapper::get_f_z(const std::vector<double> &x, bool debug) {
-        auto f_z_pair = galaxy_.get_f_z(x, debug);
+std::pair<py::array_t<double>, py::array_t<double>> GalaxyWrapper::get_f_z(const std::vector<double> &x) {
+        auto f_z_pair = galaxy_.get_f_z(x);
 
         // Get the dimensions of the f_z_r and f_z_z arrays
         size_t rows = f_z_pair.first.size();
@@ -351,7 +351,7 @@ PYBIND11_MODULE(hugalaxy, m) {
     py::class_<GalaxyWrapper>(m, "GalaxyWrapper")
             .def(py::init<double, double, double, double, double, double, double, int, int, int, int, int, double,int, bool, bool, double, int>(),
                  py::arg("GalaxyMass"), py::arg("rho_0"), py::arg("alpha_0"), py::arg("rho_1"), py::arg("alpha_1"), py::arg("h0"),
-                 py::arg("R_max"), py::arg("nr"), py::arg("nz"), py::arg("nr_sampling"), py::arg("nz_sampling"), py::arg("ntheta"), py::arg("redshift") = 0.0, py::arg("GPU_ID") = 0, py::arg("cuda") = false, py::arg("debug") = false, py::arg("xtol_rel")=1E-6, py::arg("max_iter")=5000)
+                 py::arg("R_max"), py::arg("nr"), py::arg("nz"), py::arg("nr_sampling"), py::arg("nz_sampling"), py::arg("ntheta"), py::arg("redshift") = 0.0, py::arg("GPU_ID") = 0, py::arg("cuda") = false, py::arg("taskflow") = false, py::arg("xtol_rel")=1E-6, py::arg("max_iter")=5000)
 
             .def("DrudePropagator", &GalaxyWrapper::DrudePropagator, py::arg("redshift"), py::arg("time_step_years"), py::arg("eta"), py::arg("temperature"),
                  "Propagate the mass distribution in a galaxy_ using the Drude model")
@@ -375,7 +375,7 @@ PYBIND11_MODULE(hugalaxy, m) {
             .def_property("xtol_rel", &GalaxyWrapper::get_xtol_rel, &GalaxyWrapper::set_xtol_rel)
             .def("move_galaxy_redshift", &GalaxyWrapper::move_galaxy_redshift, py::arg("redshift"), "Recalculate new density parameters and recreate grid")
             .def("read_galaxy_rotation_curve", &GalaxyWrapper::read_galaxy_rotation_curve)
-            .def("get_f_z", &GalaxyWrapper::get_f_z, py::arg("x"), py::arg("debug") = false )
+            .def("get_f_z", &GalaxyWrapper::get_f_z, py::arg("x") )
             .def("print_simulated_curve", &GalaxyWrapper::print_simulated_curve)
             .def("simulate_rotation_curve", &GalaxyWrapper::simulate_rotation_curve)
             .def("print_density_parameters", &GalaxyWrapper::print_density_parameters)

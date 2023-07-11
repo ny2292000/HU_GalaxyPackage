@@ -87,18 +87,22 @@ int main() {
     double alpha_1 = x0[3];
     double h0 = x0[4];
 
-    bool debug = false;
-    const bool cuda= false;
+
+    bool cuda= true;
+    bool taskflow = false;
+
     int GPU_ID = 0;
     double xtol_rel = 1E-6;
     int max_iter = 5000;
     galaxy M33(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0,
-               R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift_birth, GPU_ID, cuda, debug, xtol_rel, max_iter );
+               R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift_birth, GPU_ID, cuda, taskflow, xtol_rel, max_iter );
     M33.read_galaxy_rotation_curve(new_rotation_curve);
     std::vector<std::vector<double>> rho = density(rho_0, alpha_0, rho_1, alpha_1, M33.r, M33.z);
 //    M33.cuda = false;
 //    calculate_rotational_velocity(M33, rho,1.0/alpha_0);
-    M33.cuda = true;
+
+    std::string compute_choice = getCudaString(cuda, taskflow);
+    std::cout << compute_choice << std::endl;
 //    calculate_rotational_velocity(M33, rho, 1.0/alpha_0);
 
     auto velo_1 = M33.simulate_rotation_curve();

@@ -77,11 +77,11 @@ auto objective_wrapper = [](const std::vector<double> &x, std::vector<double> &g
 // #############################################################################
 
 galaxy::galaxy(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
-               double R_max, int nr_init, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift, int GPU_ID,
-               bool cuda, bool debug, double xtol_rel, int max_iter)
-        : R_max(R_max), nr(nr_init), nz(nz), nr_sampling(nr_sampling), nz_sampling(nz_sampling),ntheta(ntheta),
-          alpha_0(alpha_0), rho_0(rho_0), alpha_1(alpha_1), rho_1(rho_1), h0(h0), redshift(redshift),original_redshift(redshift), GPU_ID(GPU_ID),
-          cuda(cuda),debug(debug), xtol_rel(xtol_rel), max_iter(max_iter),
+               double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift, int GPU_ID,
+               bool cuda, bool taskflow, double xtol_rel, int max_iter)
+        : R_max(R_max), nr(nr), nz(nz), nr_sampling(nr_sampling), nz_sampling(nz_sampling), ntheta(ntheta),
+          alpha_0(alpha_0), rho_0(rho_0), alpha_1(alpha_1), rho_1(rho_1), h0(h0), redshift(redshift), original_redshift(redshift), GPU_ID(GPU_ID),
+          cuda(cuda), taskflow_(taskflow), xtol_rel(xtol_rel), max_iter(max_iter),
           GalaxyMass(GalaxyMass), n_rotation_points(0) {
 
     r = creategrid(rho_0, alpha_0, rho_1, alpha_1, nr);
@@ -138,11 +138,18 @@ std::vector<std::vector<double>>  galaxy::DrudePropagator(double redshift, doubl
 
     // Get the double acceleration array
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z;
-    if(cuda){
-        f_z = get_all_torch(redshift, dv0, r, z, r, z, costheta, sintheta, rho, GPU_ID, debug);
+    std::string compute_choice = getCudaString(cuda, taskflow_);
+    if(compute_choice=="GPU_Torch"){
+        f_z = get_all_torch(redshift, dv0, x_rotation_points, z_sampling,
+                            r, z, costheta, sintheta, rho, GPU_ID);
     }
-    else {
-        f_z = get_all_g(redshift, dv0, r, z, r, z, costheta, sintheta, rho, debug);
+    else if (compute_choice=="CPU_TaskFlow") {
+        tf::Taskflow tf;
+        f_z = get_all_g_thread(tf, redshift, dv0, x_rotation_points, z_sampling,
+                               r, z, costheta, sintheta, rho);
+    } else {
+        f_z = get_all_g(redshift, dv0, x_rotation_points, z_sampling,
+                        r, z, costheta, sintheta, rho);
     }
     auto z_acceleration = f_z.second;
 
@@ -192,7 +199,7 @@ std::vector<std::vector<double>>  galaxy::DrudePropagator(double redshift, doubl
 
 
 std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
-galaxy::get_f_z(const std::vector<double> &x, bool debug) {
+galaxy::get_f_z(const std::vector<double> &x) {
     // Calculate the rotation velocity using the current values of x
     double rho_0 = x[0];
     double alpha_0 = x[1];
@@ -201,19 +208,21 @@ galaxy::get_f_z(const std::vector<double> &x, bool debug) {
     double h0 = x[4];
     // Calculate the total mass of the galaxy_
     std::vector<double> r_sampling = this->x_rotation_points;
-    std::vector<double> z_sampling;
-//    std::vector<double> z_sampling = this->z;
-    if (debug) {
-        z_sampling = {0.0};
-    } else {
-        z_sampling = {this->z};
-    }
+    std::vector<double> z_sampling = this->z;
+
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z;
-    if(cuda){
-        f_z = get_all_torch(redshift, dv0, r_sampling, z_sampling, r, z, costheta, sintheta, rho, GPU_ID, debug);
+    std::string compute_choice = getCudaString(cuda, taskflow_);
+    if(compute_choice=="GPU_Torch"){
+        f_z = get_all_torch(redshift, dv0, x_rotation_points, z_sampling,
+                            r, z, costheta, sintheta, rho, GPU_ID);
     }
-    else {
-        f_z = get_all_g(redshift, dv0, r_sampling, z_sampling, r, z, costheta, sintheta, rho, debug);
+    else if (compute_choice=="CPU_TaskFlow") {
+        tf::Taskflow tf;
+        f_z = get_all_g_thread(tf, redshift, dv0, x_rotation_points, z_sampling,
+                               r, z, costheta, sintheta, rho);
+    } else {
+        f_z = get_all_g(redshift, dv0, x_rotation_points, z_sampling,
+                        r, z, costheta, sintheta, rho);
     }
     return f_z;
 }

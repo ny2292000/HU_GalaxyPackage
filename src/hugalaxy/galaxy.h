@@ -27,11 +27,11 @@ class galaxy {
 public:
     galaxy(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
            double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift, int GPU_ID,
-           bool cuda=false, bool debug=false, double xtol_rel=1E-6, int max_iter=5000);
+           bool cuda= false, bool taskflow= false, double xtol_rel= 1E-6, int max_iter= 5000);
     ~galaxy();
 
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
-    get_f_z(const std::vector<double> &x, bool debug);
+    get_f_z(const std::vector<double> &x);
     void read_galaxy_rotation_curve(std::vector<std::array<double, 2>> vin);
     std::vector<double> simulate_rotation_curve();
     std::vector<double> move_galaxy(double redshift=0.0, bool recalc=false);
@@ -63,7 +63,7 @@ public:
     double original_redshift;
     int GPU_ID;
     bool cuda;
-    bool debug;
+    bool taskflow_;
     double GalaxyMass;
     int max_iter;
     double xtol_rel;

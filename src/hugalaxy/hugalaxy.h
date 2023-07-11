@@ -30,11 +30,11 @@ class GalaxyWrapper {
 public:
     GalaxyWrapper(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
                   double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift = 0.0, int GPU_ID=0,
-                  bool cuda=false, bool debug=false, double xtol_rel=1E-6, int max_iter=5000);
+                  bool cuda=false, bool taskflow=false, double xtol_rel=1E-6, int max_iter=5000);
 
     py::array_t<double> DrudePropagator(double redshift, double time_step_years, double eta, double temperature);
 
-    std::pair<py::array_t<double>, py::array_t<double>> get_f_z(const std::vector<double>&x, bool debug = false);
+    std::pair<py::array_t<double>, py::array_t<double>> get_f_z(const std::vector<double>&x);
 
     void read_galaxy_rotation_curve(py::array_t<double, py::array::c_style | py::array::forcecast> vin);
 

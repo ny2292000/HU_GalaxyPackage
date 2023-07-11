@@ -19,6 +19,7 @@
 std::string get_device_util(at::Tensor tensor);
 void print_tensor_shape(const torch::Tensor& tensor);
 void print_tensor_dimensionality(const torch::Tensor& tensor);
+std::string getCudaString(bool cuda, bool taskflow);
 
 std::pair<torch::Tensor, torch::Tensor> compute_chunk(
         const torch::Tensor& r_sampling,
@@ -29,8 +30,8 @@ std::pair<torch::Tensor, torch::Tensor> compute_chunk(
         const torch::Tensor& rho_broadcasted,
         const torch::Tensor& sintheta_broadcasted,
         const torch::Tensor& costheta_broadcasted,
-        const torch::Tensor& z_broadcasted,
-        bool debug);
+        const torch::Tensor& z_broadcasted
+        );
 
 std::vector<double> calculate_density_parameters(double redshift);
 
@@ -63,8 +64,8 @@ get_all_torch(double redshift,
               const std::vector<double> &costheta_in,
               const std::vector<double> &sintheta_in,
               const std::vector<std::vector<double>> &rho_in,
-              int GPU_ID,
-              bool debug);
+              int GPU_ID
+);
 
 std::pair<torch::Tensor, torch::Tensor> get_g_torch(
         double r_sampling_ii,
@@ -75,26 +76,26 @@ std::pair<torch::Tensor, torch::Tensor> get_g_torch(
         const torch::Tensor& z,
         const torch::Tensor& costheta,
         const torch::Tensor& sintheta,
-        const torch::Tensor& rho,
-        bool debug);
+        const torch::Tensor& rho
+);
 
 // # CPU functions
 std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
 get_all_g_thread(tf::Taskflow& pool, double redshift, const std::vector<double> &dv0, const std::vector<double> &r_sampling,
                  const std::vector<double> &z_sampling,
                  const std::vector<double> &r, const std::vector<double> &z, const std::vector<double> &costheta,
-                 const std::vector<double> &sintheta, const std::vector<std::vector<double>> &rho, bool debug);
+                 const std::vector<double> &sintheta, const std::vector<std::vector<double>> &rho);
 
 std::pair<double, double> get_g_cpu(double r_sampling_ii, double z_sampling_jj, double G,
                                     const std::vector<double> &dv0, const std::vector<double> &r,
                                     const std::vector<double> &z, const std::vector<double> &costheta,
-                                    const std::vector<double> &sintheta, const std::vector<std::vector<double>> &rho, bool debug) ;
+                                    const std::vector<double> &sintheta, const std::vector<std::vector<double>> &rho) ;
 
 std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
 get_all_g(double redshift, const std::vector<double> &dv0, const std::vector<double> &r_sampling,
           const std::vector<double> &z_sampling,
           const std::vector<double> &r, const std::vector<double> &z, const std::vector<double> &costheta,
-          const std::vector<double> &sintheta, const std::vector<std::vector<double>> &rho, bool debug) ;
+          const std::vector<double> &sintheta, const std::vector<std::vector<double>> &rho) ;
 
 std::vector<double> calculate_rotational_velocity(const galaxy& galaxy, const std::vector<std::vector<double>> &rho, const double height=0.0);
 

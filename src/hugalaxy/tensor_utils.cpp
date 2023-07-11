@@ -10,6 +10,18 @@
 #include <c10/cuda/CUDACachingAllocator.h>
 #include <taskflow/taskflow.hpp>
 #include <chrono>
+#include <string>
+
+std::string getCudaString(bool cuda, bool taskflow) {
+    if (cuda) {
+        return "GPU_Torch";
+    } else if(taskflow) {
+        return "CPU_TaskFlow";
+    } else{
+        return "CPU_Futures";
+    }
+}
+
 
 std::string get_device_util(at::Tensor tensor) {
     if (tensor.device() == at::kCPU) {
@@ -270,8 +282,8 @@ std::pair<torch::Tensor, torch::Tensor> compute_chunk(
         const torch::Tensor& rho_broadcasted,
         const torch::Tensor& sintheta_broadcasted,
         const torch::Tensor& costheta_broadcasted,
-        const torch::Tensor& z_broadcasted,
-        bool debug) {
+        const torch::Tensor& z_broadcasted
+        ) {
 
     auto r_sampling_broadcasted = r_sampling.unsqueeze(1).unsqueeze(2).unsqueeze(3).unsqueeze(4);
     auto z_sampling_broadcasted = z_sampling.unsqueeze(0).unsqueeze(2).unsqueeze(3).unsqueeze(4);
@@ -305,8 +317,8 @@ get_all_torch(double redshift,
               const std::vector<double> &costheta_in,
               const std::vector<double> &sintheta_in,
               const std::vector<std::vector<double>> &rho_in,
-              int GPU_ID,
-              bool debug) {
+              int GPU_ID
+) {
 
 
     torch::Device device(torch::kCUDA, GPU_ID);
@@ -363,7 +375,7 @@ get_all_torch(double redshift,
 
             auto radial_vertical_chunk = compute_chunk(
                     r_sampling_chunk, z_sampling_chunk, r_broadcasted, dv0_broadcasted, G_broadcasted,
-                    rho_broadcasted, sintheta_broadcasted, costheta_broadcasted, z_broadcasted, debug
+                    rho_broadcasted, sintheta_broadcasted, costheta_broadcasted, z_broadcasted
             );
 
             get_device_util(radial_values_2d);
@@ -409,7 +421,7 @@ get_all_torch(double redshift,
 std::pair<double, double> get_g_cpu(double r_sampling_ii, double z_sampling_jj, double G,
                                     const std::vector<double> &dv0, const std::vector<double> &r,
                                     const std::vector<double> &z, const std::vector<double> &costheta,
-                                    const std::vector<double> &sintheta, const std::vector<std::vector<double>> &rho, bool debug) {
+                                    const std::vector<double> &sintheta, const std::vector<std::vector<double>> &rho) {
     unsigned int nr = r.size();
     unsigned int nz = z.size();
     unsigned int ntheta = costheta.size();
@@ -442,7 +454,7 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
 get_all_g_thread(tf::Taskflow& tf, double redshift, const std::vector<double> &dv0, const std::vector<double> &r_sampling,
                  const std::vector<double> &z_sampling,
                  const std::vector<double> &r, const std::vector<double> &z, const std::vector<double> &costheta,
-                 const std::vector<double> &sintheta, const std::vector<std::vector<double>> &rho, bool debug) {
+                 const std::vector<double> &sintheta, const std::vector<std::vector<double>> &rho) {
     double G = 7.456866768350099e-46 * (1 + redshift);
 
     int nr_local = r_sampling.size();
@@ -456,7 +468,7 @@ get_all_g_thread(tf::Taskflow& tf, double redshift, const std::vector<double> &d
     for (unsigned int i = 0; i < nr_local; i++) {
         for (unsigned int j = 0; j < nz_local; j++) {
             tasks[i][j] = tf.emplace([&, i, j]() {
-                auto result_pair = get_g_cpu(r_sampling[i], z_sampling[j], G, dv0, r, z, costheta, sintheta, rho, debug);
+                auto result_pair = get_g_cpu(r_sampling[i], z_sampling[j], G, dv0, r, z, costheta, sintheta, rho);
                 f_z_radial[i][j] = result_pair.first;
                 f_z_vertical[i][j] = result_pair.second;
             });
@@ -474,7 +486,7 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
 get_all_g(double redshift, const std::vector<double> &dv0, const std::vector<double> &r_sampling,
           const std::vector<double> &z_sampling,
           const std::vector<double> &r, const std::vector<double> &z, const std::vector<double> &costheta,
-          const std::vector<double> &sintheta, const std::vector<std::vector<double>> &rho, bool debug) {
+          const std::vector<double> &sintheta, const std::vector<std::vector<double>> &rho) {
     double G = 7.456866768350099e-46 * (1 + redshift);
     std::vector<std::future<std::pair<double, double>>> futures;
     int nr_local = r_sampling.size();
@@ -487,7 +499,7 @@ get_all_g(double redshift, const std::vector<double> &dv0, const std::vector<dou
     for (unsigned int i = 0; i < nr_local; i++) {
         for (unsigned int j = 0; j < nz_local; j++) {
             futures.emplace_back(
-                    std::async(get_g_cpu, r_sampling[i], z_sampling[j], G, dv0, r, z, costheta, sintheta, rho, debug));
+                    std::async(get_g_cpu, r_sampling[i], z_sampling[j], G, dv0, r, z, costheta, sintheta, rho));
         }
     }
 
@@ -513,44 +525,24 @@ std::vector<double> calculate_rotational_velocity(const galaxy& galaxy, const st
     std::vector<double> z_sampling = {height};
     std::vector<double> v_r(nr_sampling,0.0);
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z;
-
-    if(galaxy.cuda){
-//        auto start = std::chrono::high_resolution_clock::now();
+    std::string compute_choice = getCudaString(galaxy.cuda, galaxy.taskflow_);
+    if(compute_choice=="GPU_Torch"){
         f_z = get_all_torch(galaxy.redshift, galaxy.dv0, galaxy.x_rotation_points, z_sampling,
-                            galaxy.r, galaxy.z, galaxy.costheta, galaxy.sintheta, rho, galaxy.GPU_ID, galaxy.debug);
-//        auto end = std::chrono::high_resolution_clock::now();
-//        std::chrono::duration<double> elapsed = end - start;
-//        std::cout << "Elapsed time: " << elapsed.count() << " seconds.\n";
+                            galaxy.r, galaxy.z, galaxy.costheta, galaxy.sintheta, rho, galaxy.GPU_ID);
     }
-    else {
+    else if (compute_choice=="CPU_TaskFlow") {
         tf::Taskflow tf;
-//        auto start1 = std::chrono::high_resolution_clock::now();
         f_z = get_all_g_thread(tf, galaxy.redshift, galaxy.dv0, galaxy.x_rotation_points, z_sampling,
-                        galaxy.r, galaxy.z, galaxy.costheta, galaxy.sintheta, rho, galaxy.debug);
-//        auto end1 = std::chrono::high_resolution_clock::now();
-//        std::chrono::duration<double> elapsed1 = end1 - start1;
-//        std::cout << "Elapsed time: " << elapsed1.count() << " seconds.\n";
-//        auto start1 = std::chrono::high_resolution_clock::now();
-//        f_z = get_all_g(galaxy.redshift, galaxy.dv0, galaxy.x_rotation_points, z_sampling,
-//                               galaxy.r, galaxy.z, galaxy.costheta, galaxy.sintheta, rho, galaxy.debug);
-//        auto end1 = std::chrono::high_resolution_clock::now();
-//        std::chrono::duration<double> elapsed1 = end1 - start1;
-//        std::cout << "Elapsed time: " << elapsed1.count() << " seconds.\n";
+                               galaxy.r, galaxy.z, galaxy.costheta, galaxy.sintheta, rho);
+    } else {
+        f_z = get_all_g(galaxy.redshift, galaxy.dv0, galaxy.x_rotation_points, z_sampling,
+                               galaxy.r, galaxy.z, galaxy.costheta, galaxy.sintheta, rho);
     }
-
     // Calculate velocities
     double v_squared;
     for (int i = 0; i < nr_sampling; i++) {
         v_squared = f_z.first[i][0] * galaxy.x_rotation_points[i] * km_lyr; // Access radial values from the pair (first element)
         v_r[i] = sqrt(v_squared); // 9460730777119.56 km
-
-        // Debugging output
-        if (galaxy.debug) {
-            std::cout << "r_sampling[" << i << "]: " << galaxy.x_rotation_points[i] << std::endl;
-            std::cout << "f_z.first[" << i << "][0]: " << f_z.first[i][0] << std::endl;
-            std::cout << "v_squared: " << v_squared << std::endl;
-            std::cout << "v_r[" << i << "]: " << v_r[i] << std::endl;
-        }
     }
     // Return result
     return v_r;

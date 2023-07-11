@@ -9,6 +9,7 @@
 #include "tensor_utils.h"
 #include <c10/cuda/CUDACachingAllocator.h>
 #include <taskflow/taskflow.hpp>
+#include <chrono>
 
 std::string get_device_util(at::Tensor tensor) {
     if (tensor.device() == at::kCPU) {
@@ -349,7 +350,7 @@ get_all_torch(double redshift,
     auto z_broadcasted = z.unsqueeze(0).unsqueeze(1).unsqueeze(2).unsqueeze(3);
 
 
-    int chunk_r_size=50;
+    int chunk_r_size=200;
     int chunk_z_size=1;
     // Split r_sampling and z_sampling tensors into chunks and process each chunk separately
     for (int i = 0; i < r_size; i += chunk_r_size) {
@@ -429,29 +430,43 @@ std::pair<double, double> get_g_cpu(double r_sampling_ii, double z_sampling_jj, 
                     thisradial_value = commonfactor * (r_sampling_ii - r[i] * sintheta[k]);
                     radial_value += thisradial_value;
                 }
-                thisvertical_value = commonfactor * (z[j] - z_sampling_jj);
+                thisvertical_value = commonfactor * (z_sampling_jj - z[j]);
                 vertical_value += thisvertical_value;
-                if (debug) {
-                    if (i==5 && j==5 && k == 5){
-                        printf("CPU \n");
-                        printf("The value of f_z is %e\n", thisradial_value);
-                        printf("The value of f_z is %e\n", thisvertical_value);
-                        printf("The value of distance is %fd\n", sqrt(d_1));
-                        printf("The value of r[i] is %fd\n", r[i]);
-                        printf("The value of z[j] is %fd\n", z[j]);
-                        printf("The value of costheta is %fd\n", costheta[k]);
-                        printf("The value of sintheta is %fd\n", sintheta[k]);
-                        printf("The value of dv0 is %fd\n", dv0[i]);
-                        printf("The value of rho is %e\n", rho[i][0]);
-                        printf("The value of rsampling is %fd\n", r_sampling_ii);
-                        printf("The value of zsampling is %fd\n", z_sampling_jj);
-                        printf("The value of G is %e\n", G);
-                    }
-                }
             }
         }
     }
     return std::make_pair(radial_value, vertical_value);
+}
+
+std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
+get_all_g_thread(tf::Taskflow& tf, double redshift, const std::vector<double> &dv0, const std::vector<double> &r_sampling,
+                 const std::vector<double> &z_sampling,
+                 const std::vector<double> &r, const std::vector<double> &z, const std::vector<double> &costheta,
+                 const std::vector<double> &sintheta, const std::vector<std::vector<double>> &rho, bool debug) {
+    double G = 7.456866768350099e-46 * (1 + redshift);
+
+    int nr_local = r_sampling.size();
+    int nz_local = z_sampling.size();
+
+    std::vector<std::vector<double>> f_z_radial(nr_local, std::vector<double>(nz_local, 0));
+    std::vector<std::vector<double>> f_z_vertical(nr_local, std::vector<double>(nz_local, 0));
+
+    std::vector<std::vector<tf::Task>> tasks(nr_local, std::vector<tf::Task>(nz_local));
+
+    for (unsigned int i = 0; i < nr_local; i++) {
+        for (unsigned int j = 0; j < nz_local; j++) {
+            tasks[i][j] = tf.emplace([&, i, j]() {
+                auto result_pair = get_g_cpu(r_sampling[i], z_sampling[j], G, dv0, r, z, costheta, sintheta, rho, debug);
+                f_z_radial[i][j] = result_pair.first;
+                f_z_vertical[i][j] = result_pair.second;
+            });
+        }
+    }
+
+    tf::Executor executor;
+    executor.run(tf).get();
+
+    return std::make_pair(f_z_radial, f_z_vertical);
 }
 
 
@@ -500,16 +515,27 @@ std::vector<double> calculate_rotational_velocity(const galaxy& galaxy, const st
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z;
 
     if(galaxy.cuda){
+//        auto start = std::chrono::high_resolution_clock::now();
         f_z = get_all_torch(galaxy.redshift, galaxy.dv0, galaxy.x_rotation_points, z_sampling,
                             galaxy.r, galaxy.z, galaxy.costheta, galaxy.sintheta, rho, galaxy.GPU_ID, galaxy.debug);
-        print_2D(f_z.first);
-        print_2D((f_z.second));
+//        auto end = std::chrono::high_resolution_clock::now();
+//        std::chrono::duration<double> elapsed = end - start;
+//        std::cout << "Elapsed time: " << elapsed.count() << " seconds.\n";
     }
     else {
-        f_z = get_all_g(galaxy.redshift, galaxy.dv0, galaxy.x_rotation_points, z_sampling,
+        tf::Taskflow tf;
+//        auto start1 = std::chrono::high_resolution_clock::now();
+        f_z = get_all_g_thread(tf, galaxy.redshift, galaxy.dv0, galaxy.x_rotation_points, z_sampling,
                         galaxy.r, galaxy.z, galaxy.costheta, galaxy.sintheta, rho, galaxy.debug);
-        print_2D(f_z.first);
-        print_2D((f_z.second));
+//        auto end1 = std::chrono::high_resolution_clock::now();
+//        std::chrono::duration<double> elapsed1 = end1 - start1;
+//        std::cout << "Elapsed time: " << elapsed1.count() << " seconds.\n";
+//        auto start1 = std::chrono::high_resolution_clock::now();
+//        f_z = get_all_g(galaxy.redshift, galaxy.dv0, galaxy.x_rotation_points, z_sampling,
+//                               galaxy.r, galaxy.z, galaxy.costheta, galaxy.sintheta, rho, galaxy.debug);
+//        auto end1 = std::chrono::high_resolution_clock::now();
+//        std::chrono::duration<double> elapsed1 = end1 - start1;
+//        std::cout << "Elapsed time: " << elapsed1.count() << " seconds.\n";
     }
 
     // Calculate velocities

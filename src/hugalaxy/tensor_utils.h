@@ -14,7 +14,7 @@
 #include <utility>
 #include <torch/torch.h>
 #include "galaxy.h"
-
+#include <taskflow/taskflow.hpp>
 
 std::string get_device_util(at::Tensor tensor);
 void print_tensor_shape(const torch::Tensor& tensor);
@@ -79,6 +79,12 @@ std::pair<torch::Tensor, torch::Tensor> get_g_torch(
         bool debug);
 
 // # CPU functions
+std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
+get_all_g_thread(tf::Taskflow& pool, double redshift, const std::vector<double> &dv0, const std::vector<double> &r_sampling,
+                 const std::vector<double> &z_sampling,
+                 const std::vector<double> &r, const std::vector<double> &z, const std::vector<double> &costheta,
+                 const std::vector<double> &sintheta, const std::vector<std::vector<double>> &rho, bool debug);
+
 std::pair<double, double> get_g_cpu(double r_sampling_ii, double z_sampling_jj, double G,
                                     const std::vector<double> &dv0, const std::vector<double> &r,
                                     const std::vector<double> &z, const std::vector<double> &costheta,

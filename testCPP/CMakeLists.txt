@@ -87,16 +87,7 @@ target_link_libraries(${PROJECT_NAME}_lib PRIVATE
         stdc++fs
         )
 
-
-
-
-
-
-
-add_executable(${PROJECT_NAME} TestGalaxy.cpp)
-
-
-
+add_executable(${PROJECT_NAME}   TestGalaxy.cpp )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${PROJECT_NAME}_lib

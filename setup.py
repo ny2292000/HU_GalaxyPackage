@@ -22,7 +22,8 @@ class CMakeBuild(build_ext):
                       '-DPYTHON_EXECUTABLE=' + sys.executable,
                       'DCREATE_PACKAGE=' + env['CREATE_PACKAGE'] ]
 
-        cfg = 'Debug' if self.debug else 'Release'
+        # cfg = 'Debug' if self.debug else 'Release'
+        cfg = 'Debug'  # Force debug mode
         build_args = ['--config', cfg]
 
         if platform.system() == "Windows":

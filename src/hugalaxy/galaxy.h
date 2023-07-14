@@ -19,27 +19,29 @@ const double Age_Universe = 14.01E9;
 
 
 
-std::vector<std::vector<double>> density(double rho_0, double alpha_0, double rho_1, double alpha_1,
-                                         const std::vector<double>& r, const std::vector<double>& z);
-
 
 class galaxy {
 public:
     galaxy(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
-           double R_max, int nr, int nz, int nr_sampling, int nz_sampling, int ntheta, double redshift, int GPU_ID,
+           double R_max, int nr, int nz, int ntheta, double redshift, int GPU_ID,
            bool cuda= false, bool taskflow= false, double xtol_rel= 1E-6, int max_iter= 5000);
     ~galaxy();
 
+
+
+    std::vector<std::vector<double>> density(double rho_0, double alpha_0, double rho_1, double alpha_1,
+                                             const std::vector<double>& r, const std::vector<double>& z) const;
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
     get_f_z(const std::vector<double> &x);
+    std::vector<double> calculate_rotational_velocity(const std::vector<std::vector<double>> &rho, const double height=0.0) const;
+    double calculate_mass(double rho, double alpha, double h);
+    std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, double alpha_1, int n);
     void read_galaxy_rotation_curve(std::vector<std::array<double, 2>> vin);
     std::vector<double> simulate_rotation_curve();
-    std::vector<double> move_galaxy(double redshift=0.0, bool recalc=false);
     std::vector<double> move_galaxy_redshift(double redshift);
     std::vector<std::vector<double>> print_rotation_curve();
-    std::vector<std::vector<double>>print_simulated_curve();
     std::vector<double> print_density_parameters();
-    std::vector<double> nelder_mead(const std::vector<double> &x0, galaxy &myGalaxy, int max_iter=1000, double xtol_rel=1E-6);
+    std::vector<double> nelder_mead(const std::vector<double> &x0, int max_iter=1000, double xtol_rel=1E-6);
     void recalculate_density();
     void recalculate_masses();
     void recalculate_dv0();
@@ -49,8 +51,6 @@ public:
     int nr;
     int nz;
     int ntheta;
-    int nr_sampling;
-    int nz_sampling;
     double R_max;
     double alpha_0;
     double rho_0;
@@ -60,7 +60,6 @@ public:
     double dz;
     double dtheta;
     double redshift;
-    double original_redshift;
     int GPU_ID;
     bool cuda;
     bool taskflow_;
@@ -70,8 +69,6 @@ public:
     std::vector<double> r;
     std::vector<double> dv0;
     std::vector<double> z;
-    std::vector<double> r_sampling;
-    std::vector<double> z_sampling;
     std::vector<double> theta;
     std::vector<double> costheta;
     std::vector<double> sintheta;

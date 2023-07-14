@@ -1,5 +1,15 @@
+# MODELING M33 GALAXY
+####################################################
+import matplotlib.pyplot as plt
 import numpy as np
-from hugalaxy import GalaxyWrapper, calculate_mass, plotRotationCurve
+import pandas as pd
+from plotting.plotting import plotRotationCurve, move_rotation_curve, calculate_density_parameters
+from hugalaxy import GalaxyWrapper
+import time
+time.sleep(30)  # Sleep for 30 seconds
+
+# Rest of your script...
+
 
 m33_rotational_curve = np.array( [
     [0.0, 0.0],
@@ -28,25 +38,35 @@ m33_rotational_curve = np.array( [
 M33_Distance = 3.2E6
 Radius_Universe_4D = 14.03E9
 redshift = M33_Distance / (Radius_Universe_4D - M33_Distance)
-nr = 300
-nz = 100
+nr = 120
+# NZ should always be ODD
+nz = 101
 ntheta = 180
-nr_sampling = 103
-nz_sampling = 104
 R_max = 50000.0
-x0 =  np.array([17.77398054090567, 0.0004746365353380392, 0.1489212156273614, 2.2261975386169744e-05, 141703.88829098945])
-rho_0, alpha_0, rho_1, alpha_1, h0 = x0
+
+rho_0, alpha_0, rho_1, alpha_1, h0 = calculate_density_parameters(redshift)
 GalaxyMass = 5E10
-
-M33 = GalaxyWrapper(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift, cuda=True)
-
+# Create The Galaxy
+M33 = GalaxyWrapper(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr,
+                    nz, ntheta, redshift,GPU_ID=0, cuda=True, taskflow=True)
+# Load the new rotation curve
 M33.read_galaxy_rotation_curve(m33_rotational_curve)
-v_sim = M33.simulate_rotation_curve()
+# Simulate the new curve
+M33.simulate_rotation_curve()
+# Plot it
+plotRotationCurve(M33)
+df = pd.DataFrame(columns=["rho_0","alpha_0", "rho_1", "alpha_1", "h0"])
 
-print(M33.print_density_parameters())
-myMass = calculate_mass(rho_0, alpha_0, h0)
-gasMass = calculate_mass(rho_1, alpha_1, h0)
-print( myMass, gasMass)
+# for redshift_birth in np.arange(0,35,1):
+#     r4d = 14/(1+redshift_birth)
+#     M33.redshift=redshift_birth
+#     M33.rho_0, M33.alpha_0, M33.rho_1, M33.alpha_1, M33.h0 = calculate_density_parameters(redshift_birth)
+#     new_rotation_curve = move_rotation_curve(m33_rotational_curve, redshift, redshift_birth )
+#     M33.read_galaxy_rotation_curve(new_rotation_curve)
+#     values = M33.move_galaxy(True)
+#     df.loc[redshift_birth] = values
+# r4d = 14/(1+df.index)
+# df["redshift_birth"]=df.index
+# df["r4d"]=r4d
 
-plotRotationCurve((M33))
 a=1

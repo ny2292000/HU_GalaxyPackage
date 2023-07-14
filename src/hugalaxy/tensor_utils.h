@@ -33,6 +33,45 @@ std::pair<torch::Tensor, torch::Tensor> compute_chunk(
         const torch::Tensor& z_broadcasted
         );
 
+std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
+get_all_torch_no_chunks(double redshift,
+                        const std::vector<double> &dv0_in,
+                        const std::vector<double> &r_sampling_in,
+                        const std::vector<double> &z_sampling_in,
+                        const std::vector<double> &r_in,
+                        const std::vector<double> &z_in,
+                        const std::vector<double> &costheta_in,
+                        const std::vector<double> &sintheta_in,
+                        const std::vector<std::vector<double>> &rho_in,
+                        int GPU_ID);
+
+
+std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
+get_all_torch_chunks(double redshift,
+                     const std::vector<double> &dv0_in,
+                     const std::vector<double> &r_sampling_in,
+                     const std::vector<double> &z_sampling_in,
+                     const std::vector<double> &r_in,
+                     const std::vector<double> &z_in,
+                     const std::vector<double> &costheta_in,
+                     const std::vector<double> &sintheta_in,
+                     const std::vector<std::vector<double>> &rho_in,
+                     int GPU_ID
+);
+
+std::pair<torch::Tensor, torch::Tensor> get_g_torch(
+        double r_sampling_ii,
+        double z_sampling_jj,
+        const torch::Tensor& G,
+        const torch::Tensor& dv0,
+        const torch::Tensor& r,
+        const torch::Tensor& z,
+        const torch::Tensor& costheta,
+        const torch::Tensor& sintheta,
+        const torch::Tensor& rho
+);
+
+
 std::vector<double> calculate_density_parameters(double redshift);
 
 std::vector<std::array<double, 2>> move_rotation_curve(std::vector<std::array<double, 2>>& rotation_curve, double z1 = 0.0, double z2 = 20.0);
@@ -54,31 +93,6 @@ std::vector<double> sinthetaFunc(const std::vector<double> &theta) ;
 
 std::vector<double> linspace(double start, double end, size_t points) ;
 
-std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
-get_all_torch(double redshift,
-              const std::vector<double> &dv0_in,
-              const std::vector<double> &r_sampling_in,
-              const std::vector<double> &z_sampling_in,
-              const std::vector<double> &r_in,
-              const std::vector<double> &z_in,
-              const std::vector<double> &costheta_in,
-              const std::vector<double> &sintheta_in,
-              const std::vector<std::vector<double>> &rho_in,
-              int GPU_ID
-);
-
-std::pair<torch::Tensor, torch::Tensor> get_g_torch(
-        double r_sampling_ii,
-        double z_sampling_jj,
-        const torch::Tensor& G,
-        const torch::Tensor& dv0,
-        const torch::Tensor& r,
-        const torch::Tensor& z,
-        const torch::Tensor& costheta,
-        const torch::Tensor& sintheta,
-        const torch::Tensor& rho
-);
-
 // # CPU functions
 std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
 get_all_g_thread(tf::Taskflow& pool, double redshift, const std::vector<double> &dv0, const std::vector<double> &r_sampling,
@@ -97,12 +111,7 @@ get_all_g(double redshift, const std::vector<double> &dv0, const std::vector<dou
           const std::vector<double> &r, const std::vector<double> &z, const std::vector<double> &costheta,
           const std::vector<double> &sintheta, const std::vector<std::vector<double>> &rho) ;
 
-std::vector<double> calculate_rotational_velocity(const galaxy& galaxy, const std::vector<std::vector<double>> &rho, const double height=0.0);
-
 std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, double alpha_1, int n) ;
 
-std::vector<double> create_subgrid(const std::vector<double>& original_grid, double scaling_factor);
-
-double calculate_mass(double rho, double alpha, double h);
 
 #endif // TENSOR_UTILS_H

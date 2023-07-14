@@ -66,73 +66,56 @@ int main() {
             {50212.285f, 132.84966f}
     };
     auto interpolated_data = interpolate(m33_rotational_curve, 100);
-    const int nr = 100;
-    const int nz = 100;
+    const int nr = 120;
+    const int nz = 101;
     const int ntheta = 180;
-    const int nr_sampling = 103;
-    const int nz_sampling = 104;
     const double R_max = 50000.0;
     const double GalaxyMass = 5E10;
-
     const double M33_Distance = 3.2E6;
     double redshift = M33_Distance / (Radius_4D - M33_Distance);
-    double redshift_birth = redshift;
-    std::vector<std::array<double,2>> new_rotation_curve = move_rotation_curve(interpolated_data, redshift, redshift_birth );
-    // redshift_birth = 34
-    std::vector<double> x0 = calculate_density_parameters(redshift_birth);
-    print_1D(x0);
+    std::vector<double> x0 = calculate_density_parameters(redshift);
     double rho_0 = x0[0]; //z=0
     double alpha_0 = x0[1];
     double rho_1 = x0[2];
     double alpha_1 = x0[3];
     double h0 = x0[4];
-
-
     bool cuda= true;
-    bool taskflow = false;
-
+    bool taskflow = true;
     int GPU_ID = 0;
     double xtol_rel = 1E-6;
     int max_iter = 5000;
-    galaxy M33(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0,
-               R_max, nr, nz, nr_sampling, nz_sampling, ntheta, redshift_birth, GPU_ID, cuda, taskflow, xtol_rel, max_iter );
-    M33.read_galaxy_rotation_curve(new_rotation_curve);
-    std::vector<std::vector<double>> rho = density(rho_0, alpha_0, rho_1, alpha_1, M33.r, M33.z);
-//    M33.cuda = false;
-//    calculate_rotational_velocity(M33, rho,1.0/alpha_0);
-
-    std::string compute_choice = getCudaString(cuda, taskflow);
+    galaxy M33(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, ntheta, redshift, GPU_ID, cuda, taskflow, xtol_rel, max_iter );
+    M33.read_galaxy_rotation_curve(m33_rotational_curve);
+    std::vector<std::vector<double>> rho = M33.density(rho_0, alpha_0, rho_1, alpha_1, M33.r, M33.z);
+    std::string compute_choice = getCudaString(M33.cuda, M33.taskflow_);
     std::cout << compute_choice << std::endl;
-//    calculate_rotational_velocity(M33, rho, 1.0/alpha_0);
-
+    auto vin = M33.calculate_rotational_velocity(rho);
     auto velo_1 = M33.simulate_rotation_curve();
+    print_1D(velo_1);
     std::vector<double> xout = M33.print_density_parameters();
     print_1D(xout);
     std::cout <<std::endl <<std::endl;
     std::cout << "Redshift is "  << M33.redshift << std::endl << std::endl;
-    std::cout << "Total Luminous Mass is "  << calculate_mass(xout[0], xout[1],xout[4]) << std::endl << std::endl;
-    std::cout << "Total Gas Mass is "  << calculate_mass(xout[2], xout[3],xout[4]) << std::endl << std::endl;
+    std::cout << "Total Luminous Mass is "  << M33.calculate_mass(xout[0], xout[1],xout[4]) << std::endl << std::endl;
+    std::cout << "Total Gas Mass is "  << M33.calculate_mass(xout[2], xout[3],xout[4]) << std::endl << std::endl;
     std::cout << "const double rho_0 =" << xout[0] <<  ";" << std::endl;
     std::cout << "const double alpha_0 =" << xout[1] <<  ";" <<std::endl;
     std::cout << "const double rho_1 =" << xout[2] <<  ";" <<std::endl;
     std::cout << "const double alpha_1 =" << xout[3] <<  ";" << std::endl;
     std::cout << "const double h0 =" << xout[4] <<  ";" << std::endl;
 
-
-
-
-
-    // Drude Propagation
-    double radius_of_epoch = 14.01E9/(1+M33.redshift);
-    double density_at_cmb= 1000;
-    double time_step = 10E6;
-    double eta =100.0;
-    double temperature =1.0;
-    double radius_of_cmb = 11E6;
-    double rho_at_epoch = density_at_cmb*pow(radius_of_cmb/radius_of_epoch,3);
-    auto start = std::chrono::high_resolution_clock::now();
-    std::vector<std::vector<double>> current_masses = M33.DrudePropagator(M33.redshift, time_step, eta, temperature);
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed = end - start;
-    std::cout << "Elapsed time: " << elapsed.count() << " seconds.\n";
+//
+//    // Drude Propagation
+//    double radius_of_epoch = 14.01E9/(1+M33.redshift);
+//    double density_at_cmb= 1000;
+//    double time_step = 10E6;
+//    double eta =100.0;
+//    double temperature =1.0;
+//    double radius_of_cmb = 11E6;
+//    double rho_at_epoch = density_at_cmb*pow(radius_of_cmb/radius_of_epoch,3);
+//    auto start = std::chrono::high_resolution_clock::now();
+//    std::vector<std::vector<double>> current_masses = M33.DrudePropagator(M33.redshift, time_step, eta, temperature);
+//    auto end = std::chrono::high_resolution_clock::now();
+//    std::chrono::duration<double> elapsed = end - start;
+//    std::cout << "Drude Elapsed time: " << elapsed.count() << " seconds.\n";
 }

@@ -14,7 +14,11 @@
 
 std::string getCudaString(bool cuda, bool taskflow) {
     if (cuda) {
-        return "GPU_Torch";
+        if(taskflow){
+            return "GPU_Torch_Chunks";
+        } else{
+            return "GPU_Torch_No_Chunks";
+        }
     } else if(taskflow) {
         return "CPU_TaskFlow";
     } else{
@@ -237,13 +241,6 @@ void print_tensor_dimensionality(const torch::Tensor& tensor){
 }
 
 
-std::vector<double> create_subgrid(const std::vector<double>& original_grid, double scaling_factor) {
-    std::vector<double> subgrid;
-    for (auto r : original_grid) {
-        subgrid.push_back(r*scaling_factor);
-    }
-    return subgrid;
-}
 
 std::vector<std::vector<double>> calculate_tau(double effective_cross_section, const std::vector<std::vector<double>>& local_density, double temperature) {
     // Constants
@@ -308,19 +305,17 @@ std::pair<torch::Tensor, torch::Tensor> compute_chunk(
 }
 
 std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
-get_all_torch(double redshift,
-              const std::vector<double> &dv0_in,
-              const std::vector<double> &r_sampling_in,
-              const std::vector<double> &z_sampling_in,
-              const std::vector<double> &r_in,
-              const std::vector<double> &z_in,
-              const std::vector<double> &costheta_in,
-              const std::vector<double> &sintheta_in,
-              const std::vector<std::vector<double>> &rho_in,
-              int GPU_ID
+get_all_torch_chunks(double redshift,
+                     const std::vector<double> &dv0_in,
+                     const std::vector<double> &r_sampling_in,
+                     const std::vector<double> &z_sampling_in,
+                     const std::vector<double> &r_in,
+                     const std::vector<double> &z_in,
+                     const std::vector<double> &costheta_in,
+                     const std::vector<double> &sintheta_in,
+                     const std::vector<std::vector<double>> &rho_in,
+                     int GPU_ID
 ) {
-
-
     torch::Device device(torch::kCUDA, GPU_ID);
     auto options = torch::TensorOptions().dtype(torch::kFloat64).device(device);
     // Move data to GPU
@@ -362,7 +357,7 @@ get_all_torch(double redshift,
     auto z_broadcasted = z.unsqueeze(0).unsqueeze(1).unsqueeze(2).unsqueeze(3);
 
 
-    int chunk_r_size=200;
+    int chunk_r_size = std::min( 60, r_size);
     int chunk_z_size=1;
     // Split r_sampling and z_sampling tensors into chunks and process each chunk separately
     for (int i = 0; i < r_size; i += chunk_r_size) {
@@ -415,6 +410,118 @@ get_all_torch(double redshift,
 }
 
 
+std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> get_g_torch(
+        const torch::Tensor& r_sampling,
+        const torch::Tensor& z_sampling,
+        const torch::Tensor& G,
+        const torch::Tensor& dv0,
+        const torch::Tensor& r,
+        const torch::Tensor& z,
+        const torch::Tensor& costheta,
+        const torch::Tensor& sintheta,
+        const torch::Tensor& rho
+        ) {
+
+    // Get the sizes for each dimension
+    int r_size = r_sampling.size(0);
+    int z_size = z_sampling.size(0);
+    int n_r = r.size(0);
+    int n_theta = sintheta.size(0);
+    int n_z = z.size(0);
+
+    // Reshape tensors for broadcasting
+    // tensor alignment r_sampling, z_sampling, r, theta, z = (0,1,2,3,4)
+    // Reshape r_sampling for broadcasting
+    auto r_sampling_broadcasted = r_sampling.unsqueeze(1).unsqueeze(2).unsqueeze(3).unsqueeze(4);
+    auto z_sampling_broadcasted = z_sampling.unsqueeze(0).unsqueeze(2).unsqueeze(3).unsqueeze(4);
+
+    auto r_broadcasted =     r.unsqueeze(0).unsqueeze(1).unsqueeze(3).unsqueeze(4);
+    auto dv0_broadcasted = dv0.unsqueeze(0).unsqueeze(1).unsqueeze(3).unsqueeze(4);
+    auto rho_broadcasted = rho.unsqueeze(0).unsqueeze(1).unsqueeze(3);
+    auto G_broadcasted = G.unsqueeze(1).unsqueeze(2).unsqueeze(3).unsqueeze(4);
+    auto sintheta_broadcasted = sintheta.unsqueeze(0).unsqueeze(1).unsqueeze(2).unsqueeze(4);
+    auto costheta_broadcasted = costheta.unsqueeze(0).unsqueeze(1).unsqueeze(2).unsqueeze(4);
+    auto z_broadcasted = z.unsqueeze(0).unsqueeze(1).unsqueeze(2).unsqueeze(3);
+
+    // Create masks for radial value calculation
+    auto mask = (r_broadcasted <= r_sampling_broadcasted).to(r_sampling_broadcasted.dtype());
+
+    // Initialize the output tensors with the correct dimensions
+    torch::Tensor radial_values_2d = torch::zeros({r_size, z_size});
+    torch::Tensor vertical_values_2d = torch::zeros({r_size, z_size});
+
+
+    // Calculate the common factor without the mask
+    // Calculate the distances
+    // Calculate the distances
+    auto d_3 = ( (z_sampling_broadcasted - z_broadcasted).pow(2) +
+                 (r_sampling_broadcasted - r_broadcasted * sintheta_broadcasted).pow(2) +
+                 (r_broadcasted * costheta_broadcasted).pow(2) ).pow(1.5);
+
+
+    // Calculate the common factor
+    auto commonfactor = G_broadcasted * rho_broadcasted * dv0_broadcasted/d_3;
+
+    // Perform the summation over the last three dimensions
+    vertical_values_2d = (commonfactor * (z_sampling_broadcasted - z_broadcasted)).sum({2,3,4});
+
+    // Apply the mask to commonfactor before the division
+    radial_values_2d = (commonfactor * mask * (r_sampling_broadcasted - r_broadcasted * sintheta_broadcasted)).sum({2,3,4});
+
+
+    // Convert the result to vector of vector of doubles
+    auto radial_values = tensor_to_vec_of_vec(radial_values_2d);
+    auto vertical_values = tensor_to_vec_of_vec(vertical_values_2d);
+
+    c10::cuda::CUDACachingAllocator::emptyCache();
+    return std::make_pair(radial_values, vertical_values);
+}
+
+std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
+get_all_torch_no_chunks(double redshift,
+              const std::vector<double> &dv0_in,
+              const std::vector<double> &r_sampling_in,
+              const std::vector<double> &z_sampling_in,
+              const std::vector<double> &r_in,
+              const std::vector<double> &z_in,
+              const std::vector<double> &costheta_in,
+              const std::vector<double> &sintheta_in,
+              const std::vector<std::vector<double>> &rho_in,
+              int GPU_ID
+              ) {
+    torch::Device device(torch::kCUDA, GPU_ID);
+    auto options = torch::TensorOptions().dtype(torch::kFloat64).device(device);
+    // Move data to GPU
+    torch::Tensor dv0 = move_data_to_gpu(dv0_in, device);
+    torch::Tensor r_sampling = move_data_to_gpu(r_sampling_in, device);
+    torch::Tensor z_sampling = move_data_to_gpu(z_sampling_in, device);
+    torch::Tensor r = move_data_to_gpu(r_in, device);
+    torch::Tensor z = move_data_to_gpu(z_in, device);
+    torch::Tensor costheta = move_data_to_gpu(costheta_in, device);
+    torch::Tensor sintheta = move_data_to_gpu(sintheta_in, device);
+    torch::Tensor rho = move_data_to_gpu2D(rho_in, device);
+
+    // Create G tensor
+
+    auto G = torch::full({1}, 7.456866768350099e-46 * (1 + redshift), options);
+
+    // Get results from get_g_torch
+    auto result = get_g_torch(r_sampling, z_sampling, G, dv0, r, z, costheta, sintheta, rho);
+
+    // Delete tensors and empty cache
+    dv0.reset();
+    r_sampling.reset();
+    z_sampling.reset();
+    r.reset();
+    z.reset();
+    costheta.reset();
+    sintheta.reset();
+    rho.reset();
+    G.reset();
+    c10::cuda::CUDACachingAllocator::emptyCache();
+    return result;
+}
+
 
 
 // # CPU functions
@@ -432,11 +539,9 @@ std::pair<double, double> get_g_cpu(double r_sampling_ii, double z_sampling_jj, 
     for (unsigned int i = 0; i < nr; i++) {
         for (unsigned int j = 0; j < nz; j++) {
             for (unsigned int k = 0; k < ntheta; k++) {
-                double d_2 = (z[j] - z_sampling_jj) * (z[j] - z_sampling_jj) +
+                double d_3 =pow( (z[j] - z_sampling_jj) * (z[j] - z_sampling_jj) +
                              (r_sampling_ii - r[i] * sintheta[k]) * (r_sampling_ii - r[i] * sintheta[k])+
-                             r[i] * r[i] * costheta[k] * costheta[k];
-                double d_1 = sqrt(d_2);
-                double d_3 = d_1 * d_1 * d_1;
+                             r[i] * r[i] * costheta[k] * costheta[k], 1.5);
                 double commonfactor  = G * rho[i][j] *  dv0[i]  / d_3;
                 if ( r[i] < r_sampling_ii) {
                     thisradial_value = commonfactor * (r_sampling_ii - r[i] * sintheta[k]);
@@ -518,70 +623,5 @@ get_all_g(double redshift, const std::vector<double> &dv0, const std::vector<dou
 }
 
 
-std::vector<double> calculate_rotational_velocity(const galaxy& galaxy, const std::vector<std::vector<double>> &rho, const double height) {
-    int nr_sampling = galaxy.x_rotation_points.size();
-    double km_lyr = 9460730472580.8; //uu.lyr.to(uu.km)
-    // Allocate result vector
-    std::vector<double> z_sampling = {height};
-    std::vector<double> v_r(nr_sampling,0.0);
-    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z;
-    std::string compute_choice = getCudaString(galaxy.cuda, galaxy.taskflow_);
-    if(compute_choice=="GPU_Torch"){
-        f_z = get_all_torch(galaxy.redshift, galaxy.dv0, galaxy.x_rotation_points, z_sampling,
-                            galaxy.r, galaxy.z, galaxy.costheta, galaxy.sintheta, rho, galaxy.GPU_ID);
-    }
-    else if (compute_choice=="CPU_TaskFlow") {
-        tf::Taskflow tf;
-        f_z = get_all_g_thread(tf, galaxy.redshift, galaxy.dv0, galaxy.x_rotation_points, z_sampling,
-                               galaxy.r, galaxy.z, galaxy.costheta, galaxy.sintheta, rho);
-    } else {
-        f_z = get_all_g(galaxy.redshift, galaxy.dv0, galaxy.x_rotation_points, z_sampling,
-                               galaxy.r, galaxy.z, galaxy.costheta, galaxy.sintheta, rho);
-    }
-    // Calculate velocities
-    double v_squared;
-    for (int i = 0; i < nr_sampling; i++) {
-        v_squared = f_z.first[i][0] * galaxy.x_rotation_points[i] * km_lyr; // Access radial values from the pair (first element)
-        v_r[i] = sqrt(v_squared); // 9460730777119.56 km
-    }
-    // Return result
-    return v_r;
-}
 
 
-
-double calculate_mass(double rho, double alpha, double h) {
-    double factor = 0.0007126927557971729; // factor takes care of moving from rho as atom/cc to kg/lyr^3, with alpha = 1/lyr and h0 = in lyr div sun_mass
-    double Mtotal_si = 2 * M_PI * h * rho /(alpha*alpha); //where h is in lyr and alpha is in 1/lyr
-    return Mtotal_si*factor;
-}
-
-std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, double alpha_1, int n) {
-    if (alpha_1 > alpha_0) {
-        double alpha_ = alpha_0;
-        double rho_ = rho_0;
-        alpha_0 = alpha_1;
-        rho_0 = rho_1;
-        alpha_1 = alpha_;
-        rho_1 = rho_;
-    }
-    int n_range = 4;
-    double r_max_1 = n_range / alpha_0;
-    double r_max_2 = n_range / alpha_1;
-    double M1 = calculate_mass(rho_0, alpha_0, 1.0);
-    double M2 = calculate_mass(rho_1, alpha_1, 1.0);
-    int n1 = M1 / (M1 + M2) * n;
-    int n2 = n - n1;
-    double r_min1 = 1.0;
-    double r_min2 = r_max_1 + 1.0;
-
-    // Define the grid of n points using a geometric sequence
-    std::vector<double> r(n1 + n2);
-    for (int i = 0; i < n1; i++) {
-        r[i] = r_min1 * std::pow(r_max_1 / r_min1, i / (double) (n1 - 1));
-    }
-    for (int i = n1; i < n; i++) {
-        r[i] = r_min2 * std::pow(r_max_2 / r_min2,(i-n1) / (double) (n - n1));
-    }
-    return r;
-}

@@ -40,32 +40,32 @@ std::string get_device_util(at::Tensor tensor) {
 
 
 std::vector<double> calculate_density_parameters(double redshift){
-    //# Fitting coefficients for log(rho_0) versus log(r4d):
-    //# Slope: -2.9791370770349763
-    //# Intercept: 4.663067724899548
-    //#
-    //    # Fitting coefficients for log(alpha_0) versus log(r4d):
-    //# Slope: -0.9962401859242176
-    //# Intercept: -2.1843923428300345
-    //#
-    //    # Fitting coefficients for log(rho_1) versus log(r4d):
-    //# Slope: -3.0038710671577102
-    //# Intercept: 2.6205959676388595
-    //#
-    //    # Fitting coefficients for log(alpha_1) versus log(r4d):
-    //# Slope: -1.0037795630256436
-    //# Intercept: -3.509866645107434
-    //#
-    //    # Fitting coefficients for log(h0) versus log(r4d):
-    //# Slope: 0.9868817849104266
-    //# Intercept: 4.015946542551611
+//    Fitting coefficients for log(rho_0) versus log(r4d):
+//    Slope: -2.958649379487641
+//    Intercept: 4.66200406232113
+//
+//    Fitting coefficients for log(alpha_0) versus log(r4d):
+//    Slope: -0.9895204320261537
+//    Intercept: -2.198902650547498
+//
+//    Fitting coefficients for log(rho_1) versus log(r4d):
+//    Slope: -3.0101301080291396
+//    Intercept: 2.567935487552146
+//
+//    Fitting coefficients for log(alpha_1) versus log(r4d):
+//    Slope: -1.0271431297841869
+//    Intercept: -3.572070693277129
+//
+//    Fitting coefficients for log(h0) versus log(r4d):
+//    Slope: 0.9780589482263441
+//    Intercept: 3.9804724134564493
     double r4d = 14.01 / (1 + redshift);
     std::vector<double> values{
-            pow(r4d, -2.9791370770349763) * pow(10, 4.663067724899548),
-            pow(r4d, -0.9962401859242176) * pow(10, -2.1843923428300345),
-            pow(r4d, -3.0038710671577102) * pow(10, 2.6205959676388595),
-            pow(r4d, -1.0037795630256436) * pow(10, -3.509866645107434),
-            pow(r4d, 0.9868817849104266) * pow(10, 4.015946542551611),
+            pow(r4d, -2.958649379487641) * pow(10, 4.663067724899548),
+            pow(r4d, -0.9895204320261537) * pow(10, -2.198902650547498),
+            pow(r4d, -3.0101301080291396) * pow(10, 2.567935487552146),
+            pow(r4d, -1.0271431297841869) * pow(10, -3.572070693277129),
+            pow(r4d, 0.9780589482263441) * pow(10, 3.9804724134564493),
     };
     return values;
 }

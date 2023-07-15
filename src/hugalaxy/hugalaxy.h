@@ -21,9 +21,9 @@ namespace py = pybind11;
 
 
 py::array_t<double> makeNumpy_2D(const std::vector<std::vector<double>>& result);
-
-
-
+py::array_t<double> makeNumpy_1D(const std::vector<double>& result);
+py::array_t<double> calculate_density_parameters_py(double redshift);
+py::array_t<double> move_rotation_curve_py(const py::array_t<double>& rotation_curve_py, double z1, double z2);
 
 class GalaxyWrapper {
 public:
@@ -33,13 +33,17 @@ public:
 
     py::array_t<double> DrudePropagator(double redshift, double time_step_years, double eta, double temperature);
 
-    std::pair<py::array_t<double>, py::array_t<double>> get_f_z(const std::vector<double>&x);
+    std::pair<py::array_t<double>, py::array_t<double>> get_f_z(const std::vector<std::vector<double>> &rho_, bool calc_vel,  const double height);
+
+    void set_rho_py(const py::array_t<double>& rho_py);
+    py::array_t<double> get_rho_py() const;
 
     py::array_t<double> get_v_simulated_points() const;
     void set_v_simulated_points(const py::array_t<double>& arr);
     void read_galaxy_rotation_curve(py::array_t<double, py::array::c_style | py::array::forcecast> vin);
     py::array_t<double> density_wrapper(double rho_0, double alpha_0, double rho_1, double alpha_1,
                                         const py::array_t<double>& r, const py::array_t<double>& z) const;
+    py::array_t<double> density_wrapper_internal();
     void set_cuda(bool value);
     bool get_cuda  () const;
     void set_taskflow(bool value);
@@ -54,6 +58,7 @@ public:
     py::array_t<double> print_rotation_curve() const;
 
     const py::array_t<double> calculate_rotational_velocity(py::array_t<double> rho_py, double height=0.0);
+    const py::array_t<double> calculate_rotational_velocity_internal ();
 
     py::list print_simulated_curve();
 
@@ -86,6 +91,7 @@ public:
     double_t get_xtol_rel() const;
     int get_max_iter() const;
     const galaxy& get_galaxy() const;
+    galaxy& get_galaxy();
     py::array_t<double> get_r() const ;
     void set_r(const py::array_t<double>& arr) ;
     py::array_t<double> get_z() const ;

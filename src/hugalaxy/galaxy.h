@@ -32,8 +32,9 @@ public:
     std::vector<std::vector<double>> density(double rho_0, double alpha_0, double rho_1, double alpha_1,
                                              const std::vector<double>& r, const std::vector<double>& z) const;
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
-    get_f_z(const std::vector<double> &x);
+    get_f_z(const std::vector<std::vector<double>> &rho_, bool calc_vel,  const double height) const;
     std::vector<double> calculate_rotational_velocity(const std::vector<std::vector<double>> &rho, const double height=0.0) const;
+    std::vector<double> calculate_rotational_velocity_internal() const;
     double calculate_mass(double rho, double alpha, double h);
     std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, double alpha_1, int n);
     void read_galaxy_rotation_curve(std::vector<std::array<double, 2>> vin);

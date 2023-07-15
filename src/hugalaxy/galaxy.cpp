@@ -42,7 +42,7 @@ static double error_function(const std::vector<double> &x, galaxy &myGalaxy) {
         double a = myGalaxy.v_rotation_points[i] - vsim[i];
         error += a*a;
     }
-    std::cout << "Total Error = " << error  << "\n";
+//    std::cout << "Total Error = " << error  << "\n";
     return error + error_mass*10;
 }
 
@@ -60,9 +60,9 @@ auto objective_wrapper = [](const std::vector<double> &x, std::vector<double> &g
 // #############################################################################
 
 galaxy::galaxy(double GalaxyMass, double rho_0, double alpha_0, double rho_1, double alpha_1, double h0,
-               double R_max, int nr, int nz, int ntheta, double redshift, int GPU_ID,
+               double R_max, int nr_init, int nz, int ntheta, double redshift, int GPU_ID,
                bool cuda, bool taskflow, double xtol_rel, int max_iter)
-        : R_max(R_max), nr(nr), nz(nz), ntheta(ntheta),
+        : R_max(R_max), nr(nr_init), nz(nz), ntheta(ntheta),
           alpha_0(alpha_0), rho_0(rho_0), alpha_1(alpha_1), rho_1(rho_1), h0(h0), redshift(redshift), GPU_ID(GPU_ID),
           cuda(cuda), taskflow_(taskflow), xtol_rel(xtol_rel), max_iter(max_iter),
           GalaxyMass(GalaxyMass), n_rotation_points(0) {
@@ -104,6 +104,7 @@ galaxy::nelder_mead(const std::vector<double> &x0, int max_iter, double xtol_rel
         std::cerr << "nlopt failed: " << strerror(result) << std::endl;
     }
     std::cout << result << std::endl;
+    std::cout << "Total Error = " << minf/(1+redshift)/(1+redshift) << "\n";
     return x;
 }
 
@@ -162,29 +163,44 @@ std::vector<double> galaxy::creategrid(double rho_0, double alpha_0, double rho_
     return r;
 }
 
-std::vector<double> galaxy::calculate_rotational_velocity(const std::vector<std::vector<double>> &rho, const double height) const {
-    int nr_sampling = x_rotation_points.size();
-    double km_lyr = 9460730472580.8; //uu.lyr.to(uu.km)
-    // Allocate result vector
-    std::vector<double> z_sampling = {height};
-    std::vector<double> v_r(nr_sampling,0.0);
+std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
+galaxy::get_f_z(const std::vector<std::vector<double>> &rho_, bool calc_vel,  const double height) const {
+    // Calculate the total mass of the galaxy_
+    std::vector<double> r_sampling = this->x_rotation_points;
+    std::vector<double> z_sampling;
+    if (calc_vel or height!=0.0) {
+        z_sampling = {height};
+    } else {
+        z_sampling = {this->z};
+    }
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z;
     std::string compute_choice = getCudaString(cuda, taskflow_);
     if(compute_choice=="GPU_Torch_Chunks"){
         f_z = get_all_torch_chunks(redshift, dv0, x_rotation_points, z_sampling,
-                                   r, z, costheta, sintheta, rho, GPU_ID);
+                                   r, z, costheta, sintheta, rho_, GPU_ID);
     } else if(compute_choice=="GPU_Torch_No_Chunks"){
         f_z = get_all_torch_no_chunks(redshift, dv0, x_rotation_points, z_sampling,
-                                      r, z, costheta, sintheta, rho, GPU_ID);
+                                      r, z, costheta, sintheta, rho_, GPU_ID);
     }
     else if (compute_choice=="CPU_TaskFlow") {
         tf::Taskflow tf;
         f_z = get_all_g_thread(tf, redshift, dv0, x_rotation_points, z_sampling,
-                               r, z, costheta, sintheta, rho);
+                               r, z, costheta, sintheta, rho_);
     } else {
         f_z = get_all_g(redshift, dv0, x_rotation_points, z_sampling,
-                        r, z, costheta, sintheta, rho);
+                        r, z, costheta, sintheta, rho_);
     }
+    return f_z;
+}
+
+
+
+std::vector<double> galaxy::calculate_rotational_velocity(const std::vector<std::vector<double>> &rho, const double height) const {
+    int nr_sampling = x_rotation_points.size();
+    double km_lyr = 9460730472580.8; //uu.lyr.to(uu.km)
+    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z = get_f_z(rho, true, height);
+    // Allocate result vector
+    std::vector<double> v_r(nr_sampling,0.0);
     // Calculate velocities
     double v_squared;
     for (int i = 0; i < nr_sampling; i++) {
@@ -194,6 +210,23 @@ std::vector<double> galaxy::calculate_rotational_velocity(const std::vector<std:
     // Return result
     return v_r;
 }
+
+std::vector<double> galaxy::calculate_rotational_velocity_internal() const {
+    int nr_sampling = x_rotation_points.size();
+    double km_lyr = 9460730472580.8; //uu.lyr.to(uu.km)
+    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z = get_f_z(rho, true,0.0);
+    // Allocate result vector
+    std::vector<double> v_r(nr_sampling,0.0);
+    // Calculate velocities
+    double v_squared;
+    for (int i = 0; i < nr_sampling; i++) {
+        v_squared = f_z.first[i][0] * x_rotation_points[i] * km_lyr; // Access radial values from the pair (first element)
+        v_r[i] = sqrt(v_squared); // 9460730777119.56 km
+    }
+    // Return result
+    return v_r;
+}
+
 
 std::vector<std::vector<double>>  galaxy::DrudePropagator(double redshift, double deltaTime, double eta, double temperature) {
     // Calculate the effective cross-section
@@ -288,38 +321,6 @@ std::vector<std::vector<double>>  galaxy::DrudePropagator(double redshift, doubl
 }
 
 
-std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
-galaxy::get_f_z(const std::vector<double> &x) {
-    // Calculate the rotation velocity using the current values of x
-    double rho_0 = x[0];
-    double alpha_0 = x[1];
-    double rho_1 = x[2];
-    double alpha_1 = x[3];
-    double h0 = x[4];
-    // Calculate the total mass of the galaxy_
-    std::vector<double> r_sampling = this->x_rotation_points;
-    std::vector<double> z_sampling = this->z;
-
-    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z;
-    std::string compute_choice = getCudaString(cuda, taskflow_);
-    if(compute_choice=="GPU_Torch_Chunks"){
-        f_z = get_all_torch_chunks(redshift, dv0, x_rotation_points, z_sampling,
-                                   r, z, costheta, sintheta, rho, GPU_ID);
-    } else if(compute_choice=="GPU_Torch_No_Chunks"){
-        f_z = get_all_torch_no_chunks(redshift, dv0, x_rotation_points, z_sampling,
-                                      r, z, costheta, sintheta, rho, GPU_ID);
-    }
-    else if (compute_choice=="CPU_TaskFlow") {
-        tf::Taskflow tf;
-        f_z = get_all_g_thread(tf, redshift, dv0, x_rotation_points, z_sampling,
-                               r, z, costheta, sintheta, rho);
-    } else {
-        f_z = get_all_g(redshift, dv0, x_rotation_points, z_sampling,
-                        r, z, costheta, sintheta, rho);
-    }
-    return f_z;
-}
-
 void galaxy::read_galaxy_rotation_curve(std::vector<std::array<double, 2>> vin) {
     n_rotation_points = vin.size();
     this->x_rotation_points.clear();
@@ -344,13 +345,13 @@ std::vector<double> galaxy::simulate_rotation_curve() {
     h0 = xout[4];
     rho = density(rho_0, alpha_0, rho_1, alpha_1, r, z);
     // Calculate rotational velocity at all radii
-    auto vin = calculate_rotational_velocity(rho);
+    auto vin = calculate_rotational_velocity_internal();
     n_rotation_points = x_rotation_points.size();
     v_simulated_points.clear();
     for (const auto &row: vin) {
         v_simulated_points.push_back(row); // Extract the first column (index 0)
     }
-    return v_simulated_points;
+    return xout;
 }
 
 std::vector<double> galaxy::move_galaxy_redshift(double redshift) {
@@ -367,6 +368,7 @@ std::vector<double> galaxy::move_galaxy_redshift(double redshift) {
     z = linspace(-h0 / 2.0, h0 / 2.0, nz);
     recalculate_dv0();
     rho = density(rho_0, alpha_0, rho_1, alpha_1, r, z);
+    v_simulated_points = calculate_rotational_velocity_internal();
     return x0;
 }
 

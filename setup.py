@@ -23,7 +23,7 @@ class CMakeBuild(build_ext):
                       'DCREATE_PACKAGE=' + env['CREATE_PACKAGE'] ]
 
         # cfg = 'Debug' if self.debug else 'Release'
-        cfg = 'Debug'  # Force debug mode
+        cfg = 'Release'  # Force debug mode
         build_args = ['--config', cfg]
 
         if platform.system() == "Windows":

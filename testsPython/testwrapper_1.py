@@ -1,10 +1,16 @@
 # MODELING M33 GALAXY
 ####################################################
-import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
-from hugalaxy.plotting import plotRotationCurve, move_rotation_curve, calculate_density_parameters
-from hugalaxy import GalaxyWrapper
+from hugalaxy.plotting import plotRotationCurve
+from hugalaxy import GalaxyWrapper, calculate_density_parameters, move_rotation_curve
+import time
+time.sleep(30)  # Sleep for 30 seconds
+
+# Rest of your script...
+
+####################################################
+# MODELING M33 GALAXY
+####################################################
 import time
 time.sleep(0)  # Sleep for 30 seconds
 
@@ -49,30 +55,7 @@ GalaxyMass = 5E10
 # Create The Galaxy
 M33 = GalaxyWrapper(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr,
                     nz, ntheta, redshift,GPU_ID=0, cuda=True, taskflow=True)
-# Load the new rotation curve
-# M33.read_galaxy_rotation_curve(m33_rotational_curve)
-# Simulate the new curve
-# M33.simulate_rotation_curve()
-# Plot it
-# Fit Data
-df = pd.DataFrame(columns=["rho_0","alpha_0", "rho_1", "alpha_1", "h0"])
-
-for redshift_birth in [*np.arange(0,20,1),*np.arange(20,140,20)]:
-    start_time = time.time()
-    r4d = 14/(1+redshift_birth)
-    M33.redshift=redshift_birth
-    new_rotation_curve = move_rotation_curve(m33_rotational_curve, redshift, redshift_birth )
-    M33.read_galaxy_rotation_curve(new_rotation_curve)
-    M33.move_galaxy_redshift(redshift_birth)
-    values = M33.simulate_rotation_curve()
-    df.loc[redshift_birth] = values
-    print(redshift_birth)
-# Calculate elapsed time
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    print("Elapsed time: ", elapsed_time)
-r4d = 14/(1+df.index)
-df["redshift_birth"]=df.index
-df["r4d"]=r4d
-df.to_excel("df.xlsx")
-a=1
+M33.read_galaxy_rotation_curve(m33_rotational_curve)
+M33.rho = M33.density_wrapper_internal()
+M33.v_simulated_points = M33.calculate_rotation_velocity_internal()
+plotRotationCurve(M33)

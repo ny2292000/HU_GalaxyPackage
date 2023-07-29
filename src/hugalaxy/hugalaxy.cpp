@@ -80,17 +80,19 @@ GalaxyWrapper::GalaxyWrapper(double GalaxyMass, double rho_0, double alpha_0, do
 py::list GalaxyWrapper::DrudePropagator(py::array_t<double>& redshifts, double time_step, double eta, double temperature) {
     py::buffer_info buf_info = redshifts.request();
     double* ptr = static_cast<double*>(buf_info.ptr);
-
+    galaxy_.recalculate_masses();
+    galaxy_.recalculate_density();
     py::list numpy_arrays;
     for (size_t i = 0; i < buf_info.size; i++) {
         double redshift = ptr[i];
         std::vector<std::vector<double>> current_masses = galaxy_.DrudePropagator(redshift, time_step, eta, temperature);
-        py::array_t<double> numpy_array = makeNumpy_2D(current_masses);
-        numpy_arrays.append(numpy_array);
+        py::array_t<double> numpy_array_masses = makeNumpy_2D(current_masses);
+        py::array_t<double> numpy_array_r = makeNumpy_1D(galaxy_.r);
+        py::array_t<double> numpy_array_dv0 = makeNumpy_1D(galaxy_.dv0);
+        numpy_arrays.append(std::make_tuple(numpy_array_masses, numpy_array_r, numpy_array_dv0));
     }
     return numpy_arrays;
 }
-
 
 
 py::array_t<double> GalaxyWrapper::density_wrapper(double rho_0, double alpha_0, double rho_1, double alpha_1, const py::array_t<double>& r, const py::array_t<double>& z) const {

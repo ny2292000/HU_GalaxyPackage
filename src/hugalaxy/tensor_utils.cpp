@@ -82,6 +82,7 @@ std::vector<std::array<double, 2>> move_rotation_curve(std::vector<std::array<do
     return result;
 }
 
+
 inline std::vector<std::vector<double>> tensor_to_vec_of_vec(const torch::Tensor& tensor){
     std::vector<std::vector<double>> vec_of_vec;
 

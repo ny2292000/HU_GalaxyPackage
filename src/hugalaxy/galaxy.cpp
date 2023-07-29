@@ -252,7 +252,7 @@ std::vector<std::vector<double>>  galaxy::DrudePropagator(double redshift, doubl
     // 49700 atoms/cubic centimeter
     // Density at redshift 139 (at 100 million years old universe) =((1 + redshift)/(1+1263))**3*49700=67.5 atoms/cc
     //////////////
-    recalculate_masses();
+    move_galaxy_redshift(redshift);
     // Half of the vertical points
     int half_nz = nz / 2;
 
@@ -355,8 +355,8 @@ std::vector<double> galaxy::simulate_rotation_curve() {
     return xout;
 }
 
-void galaxy::move_galaxy_redshift(double redshift) {
-    std::vector<double> x0 = calculate_density_parameters(redshift);
+void galaxy::move_galaxy_redshift(double redshift_) {
+    std::vector<double> x0 = calculate_density_parameters(redshift_);
     rho_0 = x0[0]; //z=0
     alpha_0 = x0[1];
     rho_1 = x0[2];
@@ -370,6 +370,7 @@ void galaxy::move_galaxy_redshift(double redshift) {
     }
     ntheta = sintheta.size();
     z = linspace(-h0 / 2.0, h0 / 2.0, nz);
+    redshift=redshift_;
     recalculate_dv0();
     recalculate_density();
 }

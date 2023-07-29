@@ -289,6 +289,15 @@ std::pair<torch::Tensor, torch::Tensor> compute_chunk(
     auto mask = (r_broadcasted <= r_sampling_broadcasted).to(r_sampling_broadcasted.dtype());
 
     // Calculate the distances
+//    print_tensor_shape(z_sampling_broadcasted);
+//    print_tensor_shape(z_broadcasted);
+//    print_tensor_shape(r_sampling_broadcasted);
+//    print_tensor_shape(r_broadcasted);
+//    print_tensor_shape(sintheta_broadcasted);
+//    print_tensor_shape(costheta_broadcasted);
+//    print_tensor_shape(rho_broadcasted);
+//    print_tensor_shape(G_broadcasted);
+
     auto d_3 = ( (z_sampling_broadcasted - z_broadcasted).pow(2) +
                  (r_sampling_broadcasted - r_broadcasted * sintheta_broadcasted).pow(2) +
                  (r_broadcasted * costheta_broadcasted).pow(2) ).pow(1.5);
@@ -300,6 +309,11 @@ std::pair<torch::Tensor, torch::Tensor> compute_chunk(
     auto vertical_values_2d = (commonfactor * (z_sampling_broadcasted - z_broadcasted)).sum({2,3,4});
     // Apply the mask to commonfactor before the division
     auto radial_values_2d = (commonfactor * mask * (r_sampling_broadcasted - r_broadcasted * sintheta_broadcasted)).sum({2,3,4}) ;
+
+    // Force immediate deletion of intermediate tensors
+    d_3 = torch::Tensor();
+    commonfactor = torch::Tensor();
+
     torch::Device device_cpu(torch::kCPU);
     return std::make_pair(radial_values_2d.to(device_cpu), vertical_values_2d.to(device_cpu));
 }
@@ -329,14 +343,12 @@ get_all_torch_chunks(double redshift,
     torch::Tensor rho = move_data_to_gpu2D(rho_in, device);
 
     // Create G tensor
-
     auto G = torch::full({1}, 7.456866768350099e-46 * (1 + redshift), options);
 
     // Get results from get_g_torch
     // Get the sizes for each dimension
     int r_size = r_sampling.size(0);
     int z_size = z_sampling.size(0);
-
 
     // Initialize the output tensors with the correct dimensions
     torch::Tensor radial_values_2d = torch::zeros({r_size, z_size});
@@ -357,7 +369,8 @@ get_all_torch_chunks(double redshift,
     auto z_broadcasted = z.unsqueeze(0).unsqueeze(1).unsqueeze(2).unsqueeze(3);
 
 
-    int chunk_r_size = std::min( 60, r_size);
+
+    int chunk_r_size = std::min( 80, r_size);
     int chunk_z_size=1;
     // Split r_sampling and z_sampling tensors into chunks and process each chunk separately
     for (int i = 0; i < r_size; i += chunk_r_size) {
@@ -365,16 +378,16 @@ get_all_torch_chunks(double redshift,
             int r_end = std::min(i + chunk_r_size, r_size);
             int z_end = std::min(j + chunk_z_size, z_size);
 
-            auto r_sampling_chunk = r_sampling.slice(0, i, r_end);
-            auto z_sampling_chunk = z_sampling.slice(0, j, z_end);
+            auto r_sampling_chunk = r_sampling.slice(0, i, r_end).clone();
+            auto z_sampling_chunk = z_sampling.slice(0, j, z_end).clone();
 
             auto radial_vertical_chunk = compute_chunk(
                     r_sampling_chunk, z_sampling_chunk, r_broadcasted, dv0_broadcasted, G_broadcasted,
                     rho_broadcasted, sintheta_broadcasted, costheta_broadcasted, z_broadcasted
             );
 
-            get_device_util(radial_values_2d);
-            get_device_util(radial_vertical_chunk.first);
+//            std::cout << get_device_util(radial_vertical_chunk.first) << std::endl; //cpu
+//            std::cout << get_device_util(radial_vertical_chunk.second) << std::endl; //cpu
 
             try {
                 // code that might throw an exception
@@ -387,25 +400,71 @@ get_all_torch_chunks(double redshift,
                 // catch-all handler: can catch any exception not caught by earlier handlers
                 std::cerr << "Caught unknown exception" << std::endl;
             }
+
+            // Force immediate deletion of chunk tensors
+            r_sampling_chunk = torch::Tensor();
+            z_sampling_chunk = torch::Tensor();
+            radial_vertical_chunk.first = torch::Tensor();
+            radial_vertical_chunk.second = torch::Tensor();
         }
     }
+
     // Convert the result to vector of vector of doubles
     auto radial_values = tensor_to_vec_of_vec(radial_values_2d);
     auto vertical_values = tensor_to_vec_of_vec(vertical_values_2d);
 
 
 
+//    std::cout << get_device_util(dv0 ) << std::endl;
+//    std::cout << get_device_util(r_sampling ) << std::endl;
+//    std::cout << get_device_util(z_sampling ) << std::endl;
+//    std::cout << get_device_util(r ) << std::endl;
+//    std::cout << get_device_util(z ) << std::endl;
+//    std::cout << get_device_util(costheta ) << std::endl;
+//    std::cout << get_device_util(sintheta ) << std::endl;
+//    std::cout << get_device_util(rho ) << std::endl;
+//    std::cout << get_device_util(G ) << std::endl;
+//    std::cout << get_device_util(r_broadcasted ) << std::endl;
+//    std::cout << get_device_util(dv0_broadcasted ) << std::endl;
+//    std::cout << get_device_util(rho_broadcasted ) << std::endl;
+//    std::cout << get_device_util(G_broadcasted ) << std::endl;
+//    std::cout << get_device_util(sintheta_broadcasted ) << std::endl;
+//    std::cout << get_device_util(costheta_broadcasted ) << std::endl;
+//    std::cout << get_device_util(z_broadcasted ) << std::endl;
+//    std::cout << get_device_util(radial_values_2d ) << std::endl; //cpu
+//    std::cout << get_device_util(vertical_values_2d ) << std::endl; //cpu
+
+
+
+    // Delete tensors
+    dv0 = torch::Tensor();
+    r_sampling = torch::Tensor();
+    z_sampling = torch::Tensor();
+    r = torch::Tensor();
+    z = torch::Tensor();
+    costheta = torch::Tensor();
+    sintheta = torch::Tensor();
+    rho = torch::Tensor();
+    G = torch::Tensor();
+    r_broadcasted = torch::Tensor();
+    dv0_broadcasted = torch::Tensor();
+    rho_broadcasted = torch::Tensor();
+    G_broadcasted = torch::Tensor();
+    sintheta_broadcasted = torch::Tensor();
+    costheta_broadcasted = torch::Tensor();
+    z_broadcasted = torch::Tensor();
+
     // Delete tensors and empty cache
-    dv0.reset();
-    r_sampling.reset();
-    z_sampling.reset();
-    r.reset();
-    z.reset();
-    costheta.reset();
-    sintheta.reset();
-    rho.reset();
-    G.reset();
-    c10::cuda::CUDACachingAllocator::emptyCache();
+//    dv0.reset();
+//    r_sampling.reset();
+//    z_sampling.reset();
+//    r.reset();
+//    z.reset();
+//    costheta.reset();
+//    sintheta.reset();
+//    rho.reset();
+//    G.reset();
+//    c10::cuda::CUDACachingAllocator::emptyCache();
     return std::make_pair(radial_values, vertical_values);
 }
 

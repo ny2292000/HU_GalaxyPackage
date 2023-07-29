@@ -12,12 +12,12 @@ set(CMAKE_CUDA_ARCHITECTURES 50 86)
 #message("CMAKE_LIBRARY_OUTPUT_DIRECTORY output directories: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 #set(CMAKE_INSTALL_PREFIX "/home/mp74207/CLionProjects/HU_GalaxyPackage/src/hugalaxy")
 
-set(CUDA_HOME "/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.9/site-packages/nvidia/cuda_runtime")
+set(CUDA_HOME "/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.11/site-packages/nvidia/cuda_runtime")
 set(ENV{CUDA_HOME} ${CUDA_HOME})
 set(ENV{LD_LIBRARY_PATH} "${CUDA_HOME}:/usr/lib/x86_64-linux-gnu/:$ENV{LD_LIBRARY_PATH}")
 
 
-set(Torch_DIR "/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.9/site-packages/torch/share/cmake/Torch")
+set(Torch_DIR "/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.11/site-packages/torch/share/cmake/Torch")
 message("Torch_DIR  is  ${Torch_DIR} "   )
 message("  CMAKE_SOURCE_DIR is   ${CMAKE_SOURCE_DIR}           ")
 find_package(Torch REQUIRED)
@@ -31,12 +31,12 @@ message(" this is the path to venv "  ${VENV_PATH})
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 message(" CMAKE_MODULE_PATH   is ${CMAKE_MODULE_PATH}  ")
-set(pybind11_DIR "/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.9/site-packages/pybind11/share/cmake/pybind11/")
+set(pybind11_DIR "/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.11/site-packages/pybind11/share/cmake/pybind11/")
 find_package(pybind11 CONFIG REQUIRED)
 message("this is pybind include dirs  ${pybind11_INCLUDE_DIR}")
 
 set(Python_EXECUTABLE "/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/bin/python")
-set(Python_INCLUDE_DIRS "/usr/include/python3.9/include")
+set(Python_INCLUDE_DIRS "/usr/include/python3.11/include")
 find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
 message("this is python include dirs " ${Python_INCLUDE_DIRS} )
 message("this is numpy include dirs " ${Python_NumPy_INCLUDE_DIRS} )
@@ -69,10 +69,10 @@ pybind11_add_module(${PROJECT_NAME} SHARED
 message("CMAKE_CURRENT_SOURCE_DIR  is ${CMAKE_CURRENT_SOURCE_DIR}")
 
 link_directories("/usr/lib/x86_64-linux-gnu/")
-link_directories("/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.9/site-packages/pybind11/share/cmake/pybind11/")
+link_directories("/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.11/site-packages/pybind11/share/cmake/pybind11/")
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-        "/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.9/site-packages/torch/include/ATen/core/"
+        "/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.11/site-packages/torch/include/ATen/core/"
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${TORCH_INCLUDE_DIRS}
         ${pybind11_INCLUDE_DIR}

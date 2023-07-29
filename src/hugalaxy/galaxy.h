@@ -39,7 +39,7 @@ public:
     std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, double alpha_1, int n);
     void read_galaxy_rotation_curve(std::vector<std::array<double, 2>> vin);
     std::vector<double> simulate_rotation_curve();
-    std::vector<double> move_galaxy_redshift(double redshift);
+    void move_galaxy_redshift(double redshift);
     std::vector<std::vector<double>> print_rotation_curve();
     std::vector<double> print_density_parameters();
     std::vector<double> nelder_mead(const std::vector<double> &x0, int max_iter=1000, double xtol_rel=1E-6);

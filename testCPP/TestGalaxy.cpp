@@ -8,9 +8,6 @@
 #include <vector>
 #include <array>
 #include "../src/hugalaxy/tensor_utils.h"
-#include "../src/hugalaxy/galaxy.h"
-#include "../src/hugalaxy/tensor_utils.h"
-
 
 std::vector<std::array<double, 2>> interpolate(const std::vector<std::array<double, 2>>& input, size_t num_points) {
     std::vector<std::array<double, 2>> output(num_points);
@@ -66,14 +63,19 @@ int main() {
             {50212.285f, 132.84966f}
     };
     auto interpolated_data = interpolate(m33_rotational_curve, 100);
-    const int nr = 120;
+    const int nr = 240;
     const int nz = 101;
     const int ntheta = 180;
     const double R_max = 50000.0;
     const double GalaxyMass = 5E10;
     const double M33_Distance = 3.2E6;
+    // CURRENT M33
     double redshift = M33_Distance / (Radius_4D - M33_Distance);
-    std::vector<double> x0 = calculate_density_parameters(redshift);
+    // TARGET BIRTH OF M33 Z=10
+//    double redshift_birth = 10.0;
+    double redshift_birth = redshift;
+    std::vector<std::array<double,2>> new_m33_rotational_curve = move_rotation_curve(m33_rotational_curve, redshift, redshift_birth);
+    std::vector<double> x0 = calculate_density_parameters(redshift_birth);
     double rho_0 = x0[0]; //z=0
     double alpha_0 = x0[1];
     double rho_1 = x0[2];
@@ -84,13 +86,18 @@ int main() {
     int GPU_ID = 0;
     double xtol_rel = 1E-6;
     int max_iter = 5000;
-    galaxy M33(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, ntheta, redshift, GPU_ID, cuda, taskflow, xtol_rel, max_iter );
-    M33.read_galaxy_rotation_curve(m33_rotational_curve);
+// TARGET BIRTH OF M33 Z=10
+    galaxy M33(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, ntheta, redshift_birth, GPU_ID, cuda, taskflow, xtol_rel, max_iter );
+    M33.read_galaxy_rotation_curve(new_m33_rotational_curve);
     std::vector<std::vector<double>> rho = M33.density(rho_0, alpha_0, rho_1, alpha_1, M33.r, M33.z);
     std::string compute_choice = getCudaString(M33.cuda, M33.taskflow_);
     std::cout << compute_choice << std::endl;
     auto vin = M33.calculate_rotational_velocity(rho);
+    auto start0 = std::chrono::high_resolution_clock::now();
     auto velo_1 = M33.simulate_rotation_curve();
+    auto end0 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed0 = end0 - start0;
+    std::cout << "Simulate Elapsed time: " << elapsed0.count() << " seconds.\n";
     print_1D(velo_1);
     std::vector<double> xout = M33.print_density_parameters();
     print_1D(xout);
@@ -104,18 +111,18 @@ int main() {
     std::cout << "const double alpha_1 =" << xout[3] <<  ";" << std::endl;
     std::cout << "const double h0 =" << xout[4] <<  ";" << std::endl;
 
-//
-//    // Drude Propagation
-//    double radius_of_epoch = 14.01E9/(1+M33.redshift);
-//    double density_at_cmb= 1000;
-//    double time_step = 10E6;
-//    double eta =100.0;
-//    double temperature =1.0;
-//    double radius_of_cmb = 11E6;
-//    double rho_at_epoch = density_at_cmb*pow(radius_of_cmb/radius_of_epoch,3);
-//    auto start = std::chrono::high_resolution_clock::now();
-//    std::vector<std::vector<double>> current_masses = M33.DrudePropagator(M33.redshift, time_step, eta, temperature);
-//    auto end = std::chrono::high_resolution_clock::now();
-//    std::chrono::duration<double> elapsed = end - start;
-//    std::cout << "Drude Elapsed time: " << elapsed.count() << " seconds.\n";
+
+    // Drude Propagation
+    double radius_of_epoch = 14.01E9/(1+M33.redshift);
+    double density_at_cmb= 1000;
+    double time_step = 10E6;
+    double eta =100.0;
+    double temperature =1.0;
+    double radius_of_cmb = 11E6;
+    double rho_at_epoch = density_at_cmb*pow(radius_of_cmb/radius_of_epoch,3);
+    auto start = std::chrono::high_resolution_clock::now();
+    std::vector<std::vector<double>> current_masses = M33.DrudePropagator(M33.redshift, time_step, eta, temperature);
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
+    std::cout << "Drude Elapsed time: " << elapsed.count() << " seconds.\n";
 }

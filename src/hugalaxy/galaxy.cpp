@@ -42,8 +42,8 @@ static double error_function(const std::vector<double> &x, galaxy &myGalaxy) {
         double a = myGalaxy.v_rotation_points[i] - vsim[i];
         error += a*a;
     }
-//    std::cout << "Total Error = " << error  << "\n";
-    return error + error_mass*10;
+    std::cout << "Total Error = " << error  << "\n";
+    return error + error_mass*50;
 }
 
 // Define the objective function wrapper
@@ -190,6 +190,7 @@ galaxy::get_f_z(const std::vector<std::vector<double>> &rho_, bool calc_vel,  co
         f_z = get_all_g(redshift, dv0, x_rotation_points, z_sampling,
                         r, z, costheta, sintheta, rho_);
     }
+    c10::cuda::CUDACachingAllocator::emptyCache();
     return f_z;
 }
 
@@ -232,7 +233,7 @@ std::vector<std::vector<double>>  galaxy::DrudePropagator(double redshift, doubl
     // Calculate the effective cross-section
 //    double radius_of_cmb = 11E6; // 11 million light-years
 //    double density_at_cmb = 1E3; // hydrogen atoms per cubic centimeter
-    move_galaxy_redshift(redshift);
+//    move_galaxy_redshift(redshift);
     double time_step_seconds = deltaTime * 365 * 3600 * 24;
     double lyr_to_m = 9.46073047258E+15;
     double H_cross_section = 3.53E-20;  //m^2
@@ -354,7 +355,7 @@ std::vector<double> galaxy::simulate_rotation_curve() {
     return xout;
 }
 
-std::vector<double> galaxy::move_galaxy_redshift(double redshift) {
+void galaxy::move_galaxy_redshift(double redshift) {
     std::vector<double> x0 = calculate_density_parameters(redshift);
     rho_0 = x0[0]; //z=0
     alpha_0 = x0[1];
@@ -363,13 +364,14 @@ std::vector<double> galaxy::move_galaxy_redshift(double redshift) {
     h0 = x0[4];
     r = creategrid(rho_0, alpha_0, rho_1, alpha_1, nr);
     // Update nr
-    nr = r.size();
+    if (nr!=r.size()){
+        nr = r.size();
+        std::cout << "number of radial points changed" <<std::endl;
+    }
     ntheta = sintheta.size();
     z = linspace(-h0 / 2.0, h0 / 2.0, nz);
     recalculate_dv0();
-    rho = density(rho_0, alpha_0, rho_1, alpha_1, r, z);
-    v_simulated_points = calculate_rotational_velocity_internal();
-    return x0;
+    recalculate_density();
 }
 
 

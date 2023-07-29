@@ -31,7 +31,7 @@ public:
                   double R_max, int nr, int nz, int ntheta, double redshift = 0.0, int GPU_ID=0,
                   bool cuda=false, bool taskflow=false, double xtol_rel=1E-6, int max_iter=5000);
 
-    py::array_t<double> DrudePropagator(double redshift, double time_step_years, double eta, double temperature);
+    py::list DrudePropagator(py::array_t<double>& redshifts, double time_step_years, double eta, double temperature);
 
     std::pair<py::array_t<double>, py::array_t<double>> get_f_z(const std::vector<std::vector<double>> &rho_, bool calc_vel,  const double height);
 
@@ -53,7 +53,7 @@ public:
 
     std::vector<double> move_galaxy(bool recalc);
     double calculate_mass(double rho, double alpha, double h);
-    py::array_t<double>  move_galaxy_redshift (double redshift);
+    void  move_galaxy_redshift (double redshift);
 
     py::array_t<double> print_rotation_curve() const;
 

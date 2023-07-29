@@ -76,11 +76,21 @@ GalaxyWrapper::GalaxyWrapper(double GalaxyMass, double rho_0, double alpha_0, do
               double R_max, int nr, int nz, int ntheta, double redshift, int GPU_ID, bool cuda, bool taskflow, double xtol_rel, int max_iter)
         : galaxy_(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, ntheta, redshift, GPU_ID, cuda, taskflow, xtol_rel, max_iter) {};
 
-py::array_t<double> GalaxyWrapper::DrudePropagator(double redshift, double time_step_years, double eta, double temperature) {
-    auto result = galaxy_.DrudePropagator(redshift, time_step_years, eta, temperature);
-    // Convert the 2D vector into a NumPy array using func
-    return makeNumpy_2D(result);
+
+py::list GalaxyWrapper::DrudePropagator(py::array_t<double>& redshifts, double time_step, double eta, double temperature) {
+    py::buffer_info buf_info = redshifts.request();
+    double* ptr = static_cast<double*>(buf_info.ptr);
+
+    py::list numpy_arrays;
+    for (size_t i = 0; i < buf_info.size; i++) {
+        double redshift = ptr[i];
+        std::vector<std::vector<double>> current_masses = galaxy_.DrudePropagator(redshift, time_step, eta, temperature);
+        py::array_t<double> numpy_array = makeNumpy_2D(current_masses);
+        numpy_arrays.append(numpy_array);
+    }
+    return numpy_arrays;
 }
+
 
 
 py::array_t<double> GalaxyWrapper::density_wrapper(double rho_0, double alpha_0, double rho_1, double alpha_1, const py::array_t<double>& r, const py::array_t<double>& z) const {
@@ -330,11 +340,8 @@ void GalaxyWrapper::set_rotation_curve(const py::array_t<double>& arr) {
 }
 
 
-py::array_t<double> GalaxyWrapper::move_galaxy_redshift (double redshift) {
-    auto result = galaxy_.move_galaxy_redshift(redshift);
-    const double* data_ptr_x = result.data();
-    py::array_t<double> arrx({static_cast<ssize_t>(result.size())}, data_ptr_x);
-    return arrx;
+void GalaxyWrapper::move_galaxy_redshift (double redshift) {
+    galaxy_.move_galaxy_redshift(redshift);
 }
 
 const py::array_t<double> GalaxyWrapper::calculate_rotational_velocity (py::array_t<double> rho_py, double height)  {
@@ -434,7 +441,7 @@ PYBIND11_MODULE(hugalaxy, m) {
                  py::arg("R_max"), py::arg("nr"), py::arg("nz"), py::arg("ntheta"), py::arg("redshift") = 0.0, py::arg("GPU_ID") = 0, py::arg("cuda") = false, py::arg("taskflow") = false, py::arg("xtol_rel")=1E-6, py::arg("max_iter")=5000)
             .def("calculate_rotational_velocity", &GalaxyWrapper::calculate_rotational_velocity, py::arg("rho_py"), py::arg("height"))
             .def("calculate_rotation_velocity_internal", &GalaxyWrapper::calculate_rotational_velocity_internal)
-            .def("DrudePropagator", &GalaxyWrapper::DrudePropagator, py::arg("redshift"), py::arg("time_step_years"), py::arg("eta"), py::arg("temperature"),
+            .def("DrudePropagator", &GalaxyWrapper::DrudePropagator, py::arg("redshifts"), py::arg("time_step_years"), py::arg("eta"), py::arg("temperature"),
                  "Propagate the mass distribution in a galaxy_ using the Drude model")
             .def("get_galaxy", static_cast<const galaxy& (GalaxyWrapper::*)() const>(&GalaxyWrapper::get_galaxy))
             .def("get_galaxy_mutable", static_cast<galaxy& (GalaxyWrapper::*)()>(&GalaxyWrapper::get_galaxy))

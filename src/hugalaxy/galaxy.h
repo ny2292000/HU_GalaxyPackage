@@ -45,6 +45,7 @@ public:
     std::vector<double> nelder_mead(const std::vector<double> &x0, int max_iter=1000, double xtol_rel=1E-6);
     void recalculate_density();
     void recalculate_masses();
+    double calculate_total_mass();
     void recalculate_dv0();
     std::vector<std::vector<double>>  DrudePropagator(double redshift, double deltaTime, double eta, double temperature);
     double get_R_max() const { return R_max; };
@@ -80,6 +81,8 @@ public:
     std::vector<double> v_simulated_points;
     std::vector<std::vector<double>> current_masses;
     std::vector<std::vector<double>> rho;
+
+    void density_internal();
 };
 
 

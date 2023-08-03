@@ -81,19 +81,21 @@ py::list GalaxyWrapper::DrudePropagator(py::array_t<double>& redshifts, double t
     py::buffer_info buf_info = redshifts.request();
     double* ptr = static_cast<double*>(buf_info.ptr);
     galaxy_.recalculate_masses();
-    galaxy_.recalculate_density();
+    double initial_total_mass = calculate_total_mass(); // Calculate initial total mass
+    std::cout << "Initial Mass: " << initial_total_mass << std::endl;
     py::list numpy_arrays;
     for (size_t i = 0; i < buf_info.size; i++) {
         double redshift = ptr[i];
+        galaxy_.move_galaxy_redshift(redshift);
         std::vector<std::vector<double>> current_masses = galaxy_.DrudePropagator(redshift, time_step, eta, temperature);
         py::array_t<double> numpy_array_masses = makeNumpy_2D(current_masses);
         py::array_t<double> numpy_array_r = makeNumpy_1D(galaxy_.r);
         py::array_t<double> numpy_array_dv0 = makeNumpy_1D(galaxy_.dv0);
-        numpy_arrays.append(std::make_tuple(numpy_array_masses, numpy_array_r, numpy_array_dv0));
+        py::array_t<double> numpy_array_z = makeNumpy_1D(galaxy_.z);
+        numpy_arrays.append(std::make_tuple(numpy_array_masses, numpy_array_r, numpy_array_dv0, numpy_array_z));
     }
     return numpy_arrays;
 }
-
 
 py::array_t<double> GalaxyWrapper::density_wrapper(double rho_0, double alpha_0, double rho_1, double alpha_1, const py::array_t<double>& r, const py::array_t<double>& z) const {
     // Convert py::array_t to std::vector
@@ -434,6 +436,10 @@ int GalaxyWrapper::get_GPU_ID() const {return galaxy_.GPU_ID;}
 double GalaxyWrapper::get_xtol_rel() const {return galaxy_.xtol_rel;}
 int GalaxyWrapper::get_max_iter() const {return galaxy_.max_iter;}
 
+double GalaxyWrapper::calculate_total_mass() {
+    double totalmass = galaxy_.calculate_total_mass();
+    return totalmass;
+}
 
 
 PYBIND11_MODULE(hugalaxy, m) {
@@ -448,6 +454,7 @@ PYBIND11_MODULE(hugalaxy, m) {
             .def("get_galaxy", static_cast<const galaxy& (GalaxyWrapper::*)() const>(&GalaxyWrapper::get_galaxy))
             .def("get_galaxy_mutable", static_cast<galaxy& (GalaxyWrapper::*)()>(&GalaxyWrapper::get_galaxy))
             .def("calculate_mass", &GalaxyWrapper::calculate_mass, py::arg("rho"), py::arg("alpha"), py::arg("h0"), "A function to calculate the mass of the galaxy_")
+            .def("calculate_total_mass", &GalaxyWrapper::calculate_total_mass, "A function to calculate the total mass of the galaxy_")
             .def_property("redshift", &GalaxyWrapper::get_redshift, &GalaxyWrapper::set_redshift)
             .def_property("R_max", &GalaxyWrapper::get_R_max, &GalaxyWrapper::set_R_max)
             .def_property("nz", &GalaxyWrapper::get_nz, &GalaxyWrapper::set_nz)

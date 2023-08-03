@@ -50,7 +50,7 @@ public:
     bool get_taskflow  () const;
     int get_GPU_ID() const;
     void set_GPU_ID(int value);
-
+    double calculate_total_mass();
     std::vector<double> move_galaxy(bool recalc);
     double calculate_mass(double rho, double alpha, double h);
     void  move_galaxy_redshift (double redshift);

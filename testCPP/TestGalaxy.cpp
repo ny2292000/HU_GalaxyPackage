@@ -72,8 +72,8 @@ int main() {
     // CURRENT M33
     double redshift = M33_Distance / (Radius_4D - M33_Distance);
     // TARGET BIRTH OF M33 Z=10
-//    double redshift_birth = 10.0;
-    double redshift_birth = redshift;
+    double redshift_birth = 10.0;
+//    double redshift_birth = redshift;
     std::vector<std::array<double,2>> new_m33_rotational_curve = move_rotation_curve(m33_rotational_curve, redshift, redshift_birth);
     std::vector<double> x0 = calculate_density_parameters(redshift_birth);
     double rho_0 = x0[0]; //z=0
@@ -116,12 +116,21 @@ int main() {
     double radius_of_epoch = 14.01E9/(1+M33.redshift);
     double density_at_cmb= 1000;
     double time_step = 10E6;
-    double eta =100.0;
+    double eta =1E-3;
     double temperature =1.0;
     double radius_of_cmb = 11E6;
     double rho_at_epoch = density_at_cmb*pow(radius_of_cmb/radius_of_epoch,3);
     auto start = std::chrono::high_resolution_clock::now();
+    M33.move_galaxy_redshift(redshift);
+//    for(int i=0; i<M33.rho.size(); i++) {  // for the first column
+//        std::cout << M33.rho[i][0] << " ";
+//    }
+//    std::cout << std::endl;
+//    std::cout << M33.rho[0].size() << std::endl;
+//    std::cout << M33.rho.size() << std::endl;
+    std::cout << "Total Mass before "  <<   M33.calculate_total_mass() << std::endl;
     std::vector<std::vector<double>> current_masses = M33.DrudePropagator(M33.redshift, time_step, eta, temperature);
+    std::cout << "Total Mass after "  <<   M33.calculate_total_mass() << std::endl;
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end - start;
     std::cout << "Drude Elapsed time: " << elapsed.count() << " seconds.\n";

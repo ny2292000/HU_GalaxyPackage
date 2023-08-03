@@ -79,6 +79,7 @@ galaxy::galaxy(double GalaxyMass, double rho_0, double alpha_0, double rho_1, do
     rho = zeros_2(nr,nz);
     dz = h0 / nz;
     dtheta = 2* M_PI/ntheta;
+    dv0 = std::vector<double>();
     recalculate_dv0();
     // Initialize empty vectors for f_z, x_rotation_points, and v_rotation_points
     x_rotation_points = std::vector<double>();
@@ -228,19 +229,31 @@ std::vector<double> galaxy::calculate_rotational_velocity_internal() const {
     return v_r;
 }
 
+double galaxy::calculate_total_mass() {
+    double total_mass = 0;
+    for (size_t i = 0; i < nr; i++) {
+        for (size_t j = 0; j < nz; j++) {
+            total_mass += current_masses[i][j];
+        }
+    }
+    return total_mass/1.9884099E40;  // total mass in 1E10 Solar Masses
+}
+
+
 
 std::vector<std::vector<double>>  galaxy::DrudePropagator(double redshift, double deltaTime, double eta, double temperature) {
     // Calculate the effective cross-section
-//    double radius_of_cmb = 11E6; // 11 million light-years
-//    double density_at_cmb = 1E3; // hydrogen atoms per cubic centimeter
-//    move_galaxy_redshift(redshift);
+    //    double radius_of_cmb = 11E6; // 11 million light-years
+    //    double density_at_cmb = 1E3; // hydrogen atoms per cubic centimeter
+    //    move_galaxy_redshift(redshift);
+    double initial_total_mass = calculate_total_mass();
     double time_step_seconds = deltaTime * 365 * 3600 * 24;
     double lyr_to_m = 9.46073047258E+15;
     double H_cross_section = 3.53E-20;  //m^2
     double effective_cross_section = eta * H_cross_section;
-//    double radius_of_epoch = Radius_4D/(1+redshift);
-//    double rho_at_epoch = density_at_cmb*pow(radius_of_cmb/radius_of_epoch,3);
-//    //////////////
+    //    double radius_of_epoch = Radius_4D/(1+redshift);
+    //    double rho_at_epoch = density_at_cmb*pow(radius_of_cmb/radius_of_epoch,3);
+    //    //////////////
     // redshift 13 means 4D radius of 1 billion light years or 1 billion years after the Universe Creation.
     // The current distance ladder tells you 332 million years.
     // https://www.astro.ucla.edu/~wright/CosmoCalc.html
@@ -252,7 +265,6 @@ std::vector<std::vector<double>>  galaxy::DrudePropagator(double redshift, doubl
     // 49700 atoms/cubic centimeter
     // Density at redshift 139 (at 100 million years old universe) =((1 + redshift)/(1+1263))**3*49700=67.5 atoms/cc
     //////////////
-    move_galaxy_redshift(redshift);
     // Half of the vertical points
     int half_nz = nz / 2;
 
@@ -278,7 +290,13 @@ std::vector<std::vector<double>>  galaxy::DrudePropagator(double redshift, doubl
     auto z_acceleration = f_z.second;
 
     std::vector<std::vector<double>> tau = calculate_tau(effective_cross_section, rho, temperature);
-
+    for (size_t i = 0; i < tau[0].size(); i++) {
+        for (size_t j = 0; j < tau.size(); j++) {   // <-- change "i++" to "j++" here
+            if (tau[i][j] > time_step_seconds) {
+                tau[i][j] = time_step_seconds;
+            }
+        }
+    }
     // Loop through radial points
     for (size_t i = 0; i < nr; i++) {
         double volume_cross_section = dv0[i]/dz;
@@ -288,17 +306,19 @@ std::vector<std::vector<double>>  galaxy::DrudePropagator(double redshift, doubl
 
 
             // Calculate drift velocity and mass drift
-            double drift_velocity = tau[i][j] * local_acceleration;
+            double drift_velocity = - tau[i][j] * local_acceleration;
             double mass_drift = drift_velocity /lyr_to_m * time_step_seconds * volume_cross_section * rho[i][j];
 
             // Update mass in the current volume
-            if(current_masses[i][j]<mass_drift){
-                mass_drift= current_masses[i][j];
-                current_masses[i][j] = 0.0;
+            if(current_masses[i][j-1]< mass_drift){
+                mass_drift= current_masses[i][j-1];
+                current_masses[i][j-1] = 0.0;
+                current_masses[i][j] += mass_drift;
             } else{
-                current_masses[i][j] -= mass_drift;
+                current_masses[i][j] += mass_drift;
+                current_masses[i][j-1] -= mass_drift;
             }
-            current_masses[i][j-1] += mass_drift;
+
         }
 
         // Handle mass gain at z=0 (from both sides of the disk)
@@ -315,9 +335,11 @@ std::vector<std::vector<double>>  galaxy::DrudePropagator(double redshift, doubl
             current_masses[i][j] = current_masses[i][nz - j];
         }
     }
+    double final_total_mass = calculate_total_mass(); // Calculate final total mass
+    if (std::abs(initial_total_mass/final_total_mass-1.0) > 1e-6) {
+        std::cout << "Warning: mass not conserved! Initial: " << initial_total_mass << ", Final: " << final_total_mass << std::endl;
+    }
 
-    // Recalculate density from updated mass
-    recalculate_density();
     return current_masses;
 }
 
@@ -370,9 +392,14 @@ void galaxy::move_galaxy_redshift(double redshift_) {
     }
     ntheta = sintheta.size();
     z = linspace(-h0 / 2.0, h0 / 2.0, nz);
-    redshift=redshift_;
     recalculate_dv0();
-    recalculate_density();
+    density_internal();
+    double M0= calculate_mass(rho_0, alpha_0, h0)/1E10;
+    double M1= calculate_mass(rho_1, alpha_1, h0)/1E10;
+    recalculate_masses();
+    double M_total = calculate_total_mass();
+    std::cout << "M0 = " << M0 << std::endl  <<  "M1 = " << M1 << std::endl;
+    std::cout << "Total SummedUp Mass  "  << M_total << std::endl;
 }
 
 
@@ -418,5 +445,9 @@ void galaxy::recalculate_dv0() {
     for (int i = 1; i < nr; i++) {
         dv0.push_back((r[i] - r[i - 1]) * (r[i] + r[i - 1]) /2* dz * dtheta);
     }
+}
+
+void galaxy::density_internal() {
+    rho = density(rho_0, alpha_0, rho_1, alpha_1, r, z);
 }
 

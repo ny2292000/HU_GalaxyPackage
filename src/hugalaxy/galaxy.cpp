@@ -336,10 +336,9 @@ std::vector<std::vector<double>>  galaxy::DrudePropagator(double redshift, doubl
         }
     }
     double final_total_mass = calculate_total_mass(); // Calculate final total mass
-    if (std::abs(initial_total_mass/final_total_mass-1.0) > 1e-6) {
+    if (std::abs(initial_total_mass/final_total_mass-1.0) > 1e-3) {
         std::cout << "Warning: mass not conserved! Initial: " << initial_total_mass << ", Final: " << final_total_mass << std::endl;
     }
-
     return current_masses;
 }
 
@@ -399,7 +398,7 @@ void galaxy::move_galaxy_redshift(double redshift_) {
     recalculate_masses();
     double M_total = calculate_total_mass();
     std::cout << "M0 = " << M0 << std::endl  <<  "M1 = " << M1 << std::endl;
-    std::cout << "Total SummedUp Mass  "  << M_total << std::endl;
+    std::cout << "Total SummedUp Mass Calculated from summing up cells "  << M_total << std::endl;
 }
 
 

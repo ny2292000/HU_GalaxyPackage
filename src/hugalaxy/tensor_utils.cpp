@@ -388,7 +388,7 @@ get_all_torch_chunks(double redshift,
     double total_memory_bytes = (8.0 * n_r * n_z * ntheta * chunk_r_size * chunk_z_size) * 4;
     while (total_memory_bytes > available_memory_bytes) {
         chunk_r_size -= 1;
-        std::cout << chunk_r_size << std::endl;
+//        std::cout << chunk_r_size << std::endl;
         total_memory_bytes = (8.0 * n_r * n_z * ntheta * chunk_r_size * chunk_z_size) * 4; // times 2 for two tensors
     }
 

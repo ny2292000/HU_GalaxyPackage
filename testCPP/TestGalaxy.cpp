@@ -63,7 +63,7 @@ int main() {
             {50212.285f, 132.84966f}
     };
     auto interpolated_data = interpolate(m33_rotational_curve, 100);
-    const int nr = 240;
+    const int nr = 400;
     const int nz = 101;
     const int ntheta = 180;
     const double R_max = 50000.0;

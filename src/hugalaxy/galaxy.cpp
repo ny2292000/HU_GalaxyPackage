@@ -143,7 +143,7 @@ std::vector<double> galaxy::creategrid(double rho_0, double alpha_0, double rho_
         alpha_1 = alpha_;
         rho_1 = rho_;
     }
-    int n_range = 4;
+    int n_range = 5;
     double r_max_1 = n_range / alpha_0;
     double r_max_2 = n_range / alpha_1;
     double M1 = calculate_mass(rho_0, alpha_0, 1.0);
@@ -236,7 +236,7 @@ double galaxy::calculate_total_mass() {
             total_mass += current_masses[i][j];
         }
     }
-    return total_mass/1.9884099E40;  // total mass in 1E10 Solar Masses
+    return total_mass/1.9884099E40*ntheta;  // total mass in 1E10 Solar Masses
 }
 
 
@@ -430,9 +430,13 @@ void galaxy::recalculate_density() {
 };
 
 void galaxy::recalculate_masses() {
-    for (int i=0; i<nr; i++){
-        for (int j=0; j<nz; j++){
-            current_masses[i][j] = rho[i][j] * dv0[i];
+    for (int j=0; j<nz; j++){
+        current_masses[0][j] = rho[0][j] * dv0[0];
+    }
+    for (int j=0; j<nz; j++){
+        for (int i=1; i<nr; i++){
+            double avg_rho =(rho[i-1][j]+rho[i][j])/2.0;
+            current_masses[i][j] = avg_rho * dv0[i];
         }
     }
 }

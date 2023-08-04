@@ -316,7 +316,13 @@ std::pair<torch::Tensor, torch::Tensor> compute_chunk(
     commonfactor = torch::Tensor();
 
     torch::Device device_cpu(torch::kCPU);
-    return std::make_pair(radial_values_2d.to(device_cpu), vertical_values_2d.to(device_cpu));
+    // Move to CPU
+    auto radial_values_2d_cpu = radial_values_2d.to(torch::kCPU);
+    auto vertical_values_2d_cpu = vertical_values_2d.to(torch::kCPU);
+// Delete from GPU
+    radial_values_2d = torch::Tensor();
+    vertical_values_2d = torch::Tensor();
+    return std::make_pair(radial_values_2d_cpu, vertical_values_2d_cpu);
 }
 
 std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
@@ -350,6 +356,9 @@ get_all_torch_chunks(double redshift,
     // Get the sizes for each dimension
     int r_size = r_sampling.size(0);
     int z_size = z_sampling.size(0);
+    int n_r = r.size(0);
+    int n_z = z.size(0);
+    int ntheta = costheta.size(0);
 
     // Initialize the output tensors with the correct dimensions
     torch::Tensor radial_values_2d = torch::zeros({r_size, z_size});
@@ -371,8 +380,18 @@ get_all_torch_chunks(double redshift,
 
 
 
-    int chunk_r_size = std::min( 80, r_size);
+    int chunk_r_size =  r_size;
     int chunk_z_size=1;
+
+    double available_memory_bytes = 11.0 * 1024 * 1024 * 1024; // 12 GB
+
+    double total_memory_bytes = (8.0 * n_r * n_z * ntheta * chunk_r_size * chunk_z_size) * 4;
+    while (total_memory_bytes > available_memory_bytes) {
+        chunk_r_size -= 1;
+        std::cout << chunk_r_size << std::endl;
+        total_memory_bytes = (8.0 * n_r * n_z * ntheta * chunk_r_size * chunk_z_size) * 4; // times 2 for two tensors
+    }
+
     // Split r_sampling and z_sampling tensors into chunks and process each chunk separately
     for (int i = 0; i < r_size; i += chunk_r_size) {
         for (int j = 0; j < z_size; j += 1) {

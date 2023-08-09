@@ -3,19 +3,10 @@
 import numpy as np
 from hugalaxy.plotting import plotRotationCurve
 from hugalaxy import GalaxyWrapper, calculate_density_parameters, move_rotation_curve
-import time
-time.sleep(30)  # Sleep for 30 seconds
-
-# Rest of your script...
 
 ####################################################
 # MODELING M33 GALAXY
 ####################################################
-import time
-time.sleep(0)  # Sleep for 30 seconds
-
-# Rest of your script...
-
 
 m33_rotational_curve = np.array( [
     [0.0, 0.0],
@@ -59,3 +50,9 @@ M33.read_galaxy_rotation_curve(m33_rotational_curve)
 M33.rho = M33.density_wrapper_internal()
 M33.v_simulated_points = M33.calculate_rotation_velocity_internal()
 plotRotationCurve(M33)
+
+import numpy as np
+import xarray as xr
+
+data = np.load("../data/myarray.npy")
+data = xr.DataArray(data, dims=("epoch", "radius", "elevation"))

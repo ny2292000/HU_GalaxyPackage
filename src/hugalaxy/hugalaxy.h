@@ -24,6 +24,7 @@ py::array_t<double> makeNumpy_2D(const std::vector<std::vector<double>>& result)
 py::array_t<double> makeNumpy_1D(const std::vector<double>& result);
 py::array_t<double> calculate_density_parameters_py(double redshift);
 py::array_t<double> move_rotation_curve_py(const py::array_t<double>& rotation_curve_py, double z1, double z2);
+std::vector<double> to_std_vector(const pybind11::array_t<double>& input);
 
 class GalaxyWrapper {
 public:
@@ -31,7 +32,10 @@ public:
                   double R_max, int nr, int nz, int ntheta, double redshift = 0.0, int GPU_ID=0,
                   bool cuda=false, bool taskflow=false, double xtol_rel=1E-6, int max_iter=5000);
 
-    py::list DrudePropagator(py::array_t<double>& redshifts, double time_step_years, double eta, double temperature);
+    py::list DrudePropagator(py::array_t<double>& redshifts, double deltaTime, double eta, double temperature);
+
+    void DrudeGalaxyFormation(py::array_t<double> &epochs, py::array_t<double> &redshifts, double eta,
+                              double temperature, const py::str &filename);
 
     std::pair<py::array_t<double>, py::array_t<double>> get_f_z(const std::vector<std::vector<double>> &rho_, bool calc_vel,  const double height);
 

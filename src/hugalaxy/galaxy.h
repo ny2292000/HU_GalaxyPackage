@@ -15,9 +15,6 @@
 #include <torch/torch.h>
 
 const double Radius_4D = 14.01E9;
-const double Age_Universe = 14.01E9;
-
-
 
 
 class galaxy {
@@ -27,7 +24,10 @@ public:
            bool cuda= false, bool taskflow= false, double xtol_rel= 1E-6, int max_iter= 5000);
     ~galaxy();
 
-
+    void DrudeGalaxyFormation(std::vector<double> epochs,  std::vector<double> redshifts,
+                               double eta,
+                               double temperature,
+                               std::string filename);
 
     std::vector<std::vector<double>> density(double rho_0, double alpha_0, double rho_1, double alpha_1,
                                              const std::vector<double>& r, const std::vector<double>& z) const;
@@ -50,8 +50,8 @@ public:
     std::vector<std::vector<double>>  DrudePropagator(double redshift, double deltaTime, double eta, double temperature);
     double get_R_max() const { return R_max; };
     void set_R_max(double value) { R_max = value; };
-    int nr;
-    int nz;
+    long unsigned nr;
+    long unsigned nz;
     int ntheta;
     double R_max;
     double alpha_0;

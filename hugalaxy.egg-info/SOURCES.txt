@@ -9,6 +9,8 @@ hugalaxy.egg-info/dependency_links.txt
 hugalaxy.egg-info/not-zip-safe
 hugalaxy.egg-info/top_level.txt
 src/hugalaxy/__init__.py
+src/hugalaxy/cnpy.cpp
+src/hugalaxy/cnpy.h
 src/hugalaxy/galaxy.cpp
 src/hugalaxy/galaxy.h
 src/hugalaxy/hugalaxy.cpp

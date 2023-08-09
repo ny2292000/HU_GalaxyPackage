@@ -9,8 +9,62 @@
 #include "tensor_utils.h"
 #include <c10/cuda/CUDACachingAllocator.h>
 #include <taskflow/taskflow.hpp>
-#include <chrono>
-#include <string>
+
+
+std::vector<double> logspace(double start, double stop, int num) {
+    std::vector<double> result;
+
+    if (num <= 0) return result; // Empty vector if num is not positive
+
+    double base = std::log(stop / start) / (num - 1);
+
+    for (int i = 0; i < num; ++i) {
+        result.push_back(start * std::exp(i * base));
+    }
+
+    return result;
+}
+
+bool has_nan(const std::vector<std::vector<double>>& v) {
+    for (const auto& inner_vector : v) {
+        for (const auto& element : inner_vector) {
+            if (std::isnan(element)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
+
+
+std::vector<std::array<double, 2>> interpolate(const std::vector<std::array<double, 2>>& input, size_t num_points) {
+    std::vector<std::array<double, 2>> output(num_points);
+    double x_min = input[0][0];
+    double x_max = input.back()[0];
+    double dx = (x_max - x_min) / (num_points - 1);
+
+    for(size_t i = 0; i < num_points; ++i) {
+        double x = x_min + dx * i;
+        auto it = std::lower_bound(input.begin(), input.end(), std::array<double, 2>{x, 0.0}, [](const std::array<double, 2>& a, const std::array<double, 2>& b){ return a[0] < b[0]; });
+        if(it == input.end()) {
+            output[i] = {x, input.back()[1]};
+        } else if(it == input.begin()) {
+            output[i] = {x, input[0][1]};
+        } else {
+            double x1 = (it-1)->at(0);
+            double y1 = (it-1)->at(1);
+            double x2 = it->at(0);
+            double y2 = it->at(1);
+            output[i] = {x, y1 + (y2 - y1) * (x - x1) / (x2 - x1)}; // linear interpolation
+        }
+    }
+
+    return output;
+}
+
+
 
 std::string getCudaString(bool cuda, bool taskflow) {
     if (cuda) {
@@ -256,7 +310,7 @@ std::vector<std::vector<double>> calculate_tau(double effective_cross_section, c
     std::vector<std::vector<double>> number_density(local_density.size(), std::vector<double>(local_density[0].size(), 0.0));
     for (size_t i = 0; i < local_density.size(); i++) {
         for (size_t j = 0; j < local_density[0].size(); j++) {
-            number_density[i][j] = local_density[i][j] / lyr3_to_m3 / hydrogen_mass;
+            number_density[i][j] = local_density[i][j] / lyr3_to_m3 / hydrogen_mass + 1E-6;
         }
     }
 

@@ -9,8 +9,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "/home/mp74207/CLionProjects/HU_GalaxyPackage
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "/home/mp74207/CLionProjects/HU_GalaxyPackage/bin" )
 set(CUDA_HOME "/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.11/site-packages/nvidia/cuda_runtime")
 set(ENV{CUDA_HOME} ${CUDA_HOME})
-set(ENV{LD_LIBRARY_PATH} "${CUDA_HOME}:/usr/lib/x86_64-linux-gnu/:$ENV{LD_LIBRARY_PATH}")
-
+set(ENV{LD_LIBRARY_PATH} "${CUDA_HOME}:/usr/lib/x86_64-linux-gnu/:/usr/local/lib/:$ENV{LD_LIBRARY_PATH}")
 
 set(Torch_DIR "/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.11/site-packages/torch/share/cmake/Torch")
 message("Torch_DIR  is  ${Torch_DIR} "   )
@@ -31,7 +30,7 @@ find_package(pybind11 CONFIG REQUIRED)
 message("this is pybind include dirs  ${pybind11_INCLUDE_DIR}")
 
 set(Python_EXECUTABLE "/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/bin/python")
-set(Python_INCLUDE_DIRS "/usr/include/python3.11/include")
+set(Python_INCLUDE_DIRS "/usr/include/python3.11")
 find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
 message("this is python include dirs " ${Python_INCLUDE_DIRS} )
 message("this is numpy include dirs " ${Python_NumPy_INCLUDE_DIRS} )
@@ -52,6 +51,15 @@ else()
 endif()
 message("this is nlopt library dirs " ${NLOPT_LIBRARIES} )
 
+################################################################
+find_package(ZLIB REQUIRED)
+if (ZLIB_FOUND)
+    message("zlib include dir " ${ZLIB_INCLUDE_DIRS} )
+    message("zlib library dir " ${ZLIB_LIBRARIES} )
+endif()
+################################################################
+
+# Link libraries
 link_directories("/usr/lib/x86_64-linux-gnu/")
 link_directories("/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.11/site-packages/pybind11/share/cmake/pybind11/")
 include_directories(/usr/include/python3.11)
@@ -62,16 +70,19 @@ add_library(${PROJECT_NAME}_lib SHARED
         ../src/hugalaxy/hugalaxy.cpp
         ../src/hugalaxy/galaxy.cpp
         ../src/hugalaxy/tensor_utils.cpp
+        ../src/hugalaxy/cnpy.cpp
         )
 
 target_include_directories(${PROJECT_NAME}_lib PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        ${TORCH_INCLUDE_DIRS}
-        ${pybind11_INCLUDE_DIR}
         ${Python_INCLUDE_DIRS}
         ${Python_NumPy_INCLUDE_DIRS}
+        ${TORCH_INCLUDE_DIRS}
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src/hugalaxy
+        ${pybind11_INCLUDE_DIR}
         ${NLOPT_INCLUDE_DIRS}
-        )
+        ${ZLIB_INCLUDE_DIRS}
+)
 
 
 # Link libraries
@@ -80,6 +91,7 @@ target_link_libraries(${PROJECT_NAME}_lib PRIVATE
         ${Python_LIBRARIES}
         ${Python_NumPy_LIBRARIES}
         ${NLOPT_LIBRARIES}
+        ${ZLIB_LIBRARIES}
         pybind11::module
         pybind11::lto
         pybind11::embed
@@ -92,21 +104,25 @@ add_executable(${PROJECT_NAME}   TestGalaxy.cpp )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${PROJECT_NAME}_lib
+        ${CMAKE_CURRENT_SOURCE_DIR}
         ${TORCH_INCLUDE_DIRS}
         ${pybind11_INCLUDE_DIR}
         ${Python_INCLUDE_DIRS}
         ${Python_NumPy_INCLUDE_DIRS}
         ${NLOPT_INCLUDE_DIRS}
+        ${ZLIB_INCLUDE_DIRS}
         )
 
 
 # Link libraries
 target_link_libraries(${PROJECT_NAME} PRIVATE
         ${PROJECT_NAME}_lib
+        ${CMAKE_CURRENT_SOURCE_DIR}
         ${TORCH_LIBRARIES}
         ${Python_LIBRARIES}
         ${Python_NumPy_LIBRARIES}
         ${NLOPT_LIBRARIES}
+        ${ZLIB_LIBRARIES}
         pybind11::module
         pybind11::lto
         pybind11::embed

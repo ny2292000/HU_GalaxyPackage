@@ -14,7 +14,7 @@ set(CMAKE_CUDA_ARCHITECTURES 50 86)
 
 set(CUDA_HOME "/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.11/site-packages/nvidia/cuda_runtime")
 set(ENV{CUDA_HOME} ${CUDA_HOME})
-set(ENV{LD_LIBRARY_PATH} "${CUDA_HOME}:/usr/lib/x86_64-linux-gnu/:$ENV{LD_LIBRARY_PATH}")
+set(ENV{LD_LIBRARY_PATH} "${CUDA_HOME}:/usr/lib/x86_64-linux-gnu/:/usr/local/lib/:$ENV{LD_LIBRARY_PATH}")
 
 
 set(Torch_DIR "/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.11/site-packages/torch/share/cmake/Torch")
@@ -47,6 +47,36 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto=4 -lnlopt ${TORCH_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
 
+################################################################
+set(CNPY_DIR "/usr/local/")
+
+# find the path to the CNPY library and headers
+find_path(CNPY_INCLUDE_DIR NAMES cnpy.h PATHS /usr/local/include)
+find_library(CNPY_LIBRARY NAMES cnpy PATHS /usr/local/lib)
+
+# if they are found, add the directories to the include and link directories
+message("Testing CNPY")
+if(CNPY_INCLUDE_DIR AND CNPY_LIBRARY)
+    include_directories(${CNPY_INCLUDE_DIR})
+    link_directories(${CNPY_LIBRARY})
+else()
+    message(FATAL_ERROR "Cannot find CNPY library")
+endif()
+message("cnpy include dir " ${CNPY_INCLUDE_DIR} )
+message("cnpy library dir " ${CNPY_LIBRARY} )
+
+find_package(ZLIB REQUIRED)
+include_directories(${ZLIB_INCLUDE_DIRS})
+if (ZLIB_FOUND)
+    message("zlib include dir " ${ZLIB_INCLUDE_DIRS} )
+    message("zlib library dir " ${ZLIB_LIBRARIES} )
+endif()
+#add_library(cnpy SHARED "cnpy.cpp")
+#target_include_directories(${ZLIB_INCLUDE_DIRS})
+#target_link_libraries(cnpy ${ZLIB_LIBRARIES})
+################################################################
+
+
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include("${CMAKE_SOURCE_DIR}/cmake/FindNLopt.cmake")
 find_package(NLopt CONFIG REQUIRED)
@@ -64,14 +94,18 @@ pybind11_add_module(${PROJECT_NAME} SHARED
         hugalaxy.cpp
         galaxy.cpp
         tensor_utils.cpp
+        cnpy.cpp
         )
 
 message("CMAKE_CURRENT_SOURCE_DIR  is ${CMAKE_CURRENT_SOURCE_DIR}")
 
+# Link libraries
+include_directories("/usr/include/python3.11/")
 link_directories("/usr/lib/x86_64-linux-gnu/")
 link_directories("/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.11/site-packages/pybind11/share/cmake/pybind11/")
 
 target_include_directories(${PROJECT_NAME} PRIVATE
+        "/usr/include/python3.11/"
         "/home/mp74207/CLionProjects/HU_GalaxyPackage/venv/lib/python3.11/site-packages/torch/include/ATen/core/"
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${TORCH_INCLUDE_DIRS}
@@ -79,10 +113,12 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${Python_INCLUDE_DIRS}
         ${Python_NumPy_INCLUDE_DIRS}
         ${NLOPT_INCLUDE_DIRS}
-        )
+        ${ZLIB_INCLUDE_DIRS}
+)
 
 set_target_properties(${PROJECT_NAME}  PROPERTIES LINKER_LANGUAGE CXX)
-# Link libraries
+
+
 target_link_libraries(${PROJECT_NAME} PRIVATE
         ${TORCH_LIBRARIES}
         ${Python_LIBRARIES}

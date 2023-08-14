@@ -113,13 +113,19 @@ std::vector<double> calculate_density_parameters(double redshift){
 //    Fitting coefficients for log(h0) versus log(r4d):
 //    Slope: 0.9780589482263441
 //    Intercept: 3.9804724134564493
-    double r4d = 14.01 / (1 + redshift);
+    double r4d = 1 / (1 + redshift);
     std::vector<double> values{
-            pow(r4d, -2.958649379487641) * pow(10, 4.663067724899548),
-            pow(r4d, -0.9895204320261537) * pow(10, -2.198902650547498),
-            pow(r4d, -3.0101301080291396) * pow(10, 2.567935487552146),
-            pow(r4d, -1.0271431297841869) * pow(10, -3.572070693277129),
-            pow(r4d, 0.9780589482263441) * pow(10, 3.9804724134564493),
+//            pow(r4d, -2.9438845606949298) * 10.102708507336727,
+//            pow(r4d, -0.9591355997183575) * 0.00036652348928414505,
+//            pow(r4d, -2.8081721846475487) * 0.18453605105707863,
+//            pow(r4d, -0.7229538634491799) * 3.432419089184575e-05,
+//            pow(r4d, 1.0252075729451395) * 148647.66101686007,
+//
+            pow(r4d, -3.000000000000001) * 10.748808195190971,
+            pow(r4d, -1.0000000000000004) * 0.0003828200322686644,
+            pow(r4d, -2.9999999999999996) * 0.20985872041386153,
+            pow(r4d, -0.9999999999999968) * 3.4931539070167785e-05,
+            pow(r4d, 0.9999999999999983) * 152301.7081641162,
     };
     return values;
 }
@@ -370,13 +376,16 @@ std::pair<torch::Tensor, torch::Tensor> compute_chunk(
     commonfactor = torch::Tensor();
 
     torch::Device device_cpu(torch::kCPU);
-    // Move to CPU
-    auto radial_values_2d_cpu = radial_values_2d.to(torch::kCPU);
-    auto vertical_values_2d_cpu = vertical_values_2d.to(torch::kCPU);
-// Delete from GPU
-    radial_values_2d = torch::Tensor();
-    vertical_values_2d = torch::Tensor();
-    return std::make_pair(radial_values_2d_cpu, vertical_values_2d_cpu);
+
+    return std::make_pair(radial_values_2d.to(device_cpu), vertical_values_2d.to(device_cpu));
+//
+//    // Move to CPU
+//    auto radial_values_2d_cpu = radial_values_2d.to(torch::kCPU);
+//    auto vertical_values_2d_cpu = vertical_values_2d.to(torch::kCPU);
+//// Delete from GPU
+//    radial_values_2d = torch::Tensor();
+//    vertical_values_2d = torch::Tensor();
+//    return std::make_pair(radial_values_2d_cpu, vertical_values_2d_cpu);
 }
 
 std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>

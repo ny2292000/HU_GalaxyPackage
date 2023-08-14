@@ -16,3 +16,5 @@ __pycache__/
 /ManyLinux/
 /dist/
 /notebooks/data/
+/hugalaxy.egg-info/
+/notebooks/.ipynb_checkpoints/

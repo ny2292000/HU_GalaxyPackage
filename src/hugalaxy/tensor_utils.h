@@ -21,9 +21,6 @@
 #include "cnpy.h"
 
 
-
-std::vector<double> logspace(double start, double stop, int num);
-
 // Overload for 1D
 template<typename T>
 void save_npy(const std::string& filename, const std::vector<T>& arr) {
@@ -42,6 +39,7 @@ void save_npy(const std::string& filename, const std::vector<std::vector<T>>& ar
     cnpy::npy_save(filename, &flat_array[0], {rows, cols}, "w");
 }
 
+
 // Overload for 3D
 template<typename T>
 void save_npy(const std::string& filename, const std::vector<std::vector<std::vector<T>>>& arr) {
@@ -57,13 +55,15 @@ void save_npy(const std::string& filename, const std::vector<std::vector<std::ve
     cnpy::npy_save(filename, &flat_array[0], {depth, rows, cols}, "w");
 }
 
-
+std::vector<double> logspace(double start, double stop, int num);
 bool has_nan(const std::vector<std::vector<double>>& v);
 std::vector<std::array<double, 2>> interpolate(const std::vector<std::array<double, 2>>& input, size_t num_points);
 std::string get_device_util(at::Tensor tensor);
 void print_tensor_shape(const torch::Tensor& tensor);
 void print_tensor_dimensionality(const torch::Tensor& tensor);
 std::string getCudaString(bool cuda, bool taskflow);
+
+bool has_nan(const std::vector<std::vector<double>>& v);
 
 std::pair<torch::Tensor, torch::Tensor> compute_chunk(
         const torch::Tensor& r_sampling,

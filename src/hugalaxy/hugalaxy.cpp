@@ -8,6 +8,7 @@
 #include <iostream>
 #include "hugalaxy.h"
 #include "tensor_utils.h"
+#include <pybind11/stl.h>  // For automatic conversion of STL data structures
 
 namespace py = pybind11;
 
@@ -136,6 +137,7 @@ py::array_t<double> GalaxyWrapper::density_wrapper_internal()  {
     return result;
 }
 
+
 std::pair<py::array_t<double>, py::array_t<double>> GalaxyWrapper::get_f_z(const std::vector<std::vector<double>> &rho_, bool calc_vel,  const double height) {
         auto f_z_pair = galaxy_.get_f_z(rho_, calc_vel, height);
 
@@ -177,7 +179,19 @@ double GalaxyWrapper::calculate_mass(double rho, double alpha, double h) {
     return result;
 }
 
+double GalaxyWrapper::calculate_mass_gaussian(double rho, double alpha, double h) {
+    auto result = galaxy_.calculate_mass_gaussian(rho, alpha, h);
+    return result;
+}
 
+
+void GalaxyWrapper::recalculate_masses(){
+    galaxy_.recalculate_masses();
+}
+
+void GalaxyWrapper::recalculate_density(){
+    galaxy_.recalculate_density();
+}
 
 py::list GalaxyWrapper::print_density_parameters() {
     py::list density_params;
@@ -386,7 +400,7 @@ const py::array_t<double> GalaxyWrapper::calculate_rotational_velocity (py::arra
     }
 
 // access the galaxy instance from the wrapper
-    const galaxy& g = get_galaxy();
+    galaxy& g = get_galaxy();
     std::vector<double> v_r = g.calculate_rotational_velocity(rho_vec, height);
     return makeNumpy_1D(v_r);
 }
@@ -394,7 +408,7 @@ const py::array_t<double> GalaxyWrapper::calculate_rotational_velocity (py::arra
 
 const py::array_t<double> GalaxyWrapper::calculate_rotational_velocity_internal ()  {
 // access the galaxy instance from the wrapper
-    const galaxy& g = get_galaxy();
+    galaxy& g = get_galaxy();
     std::vector<double> v_r = g.calculate_rotational_velocity(g.rho);
     return makeNumpy_1D(v_r);
 }
@@ -462,6 +476,29 @@ double GalaxyWrapper::calculate_total_mass() {
 }
 
 
+py::array_t<double> GalaxyWrapper::calibrate_df(py::array_t<double> vin, double redshift) {
+    if (vin.ndim() != 2) {
+        throw std::runtime_error("Number of dimensions for vin must be two");
+    }
+
+    // convert 2d numpy array to 2d vector
+    py::buffer_info info = vin.request();
+    auto ptr = static_cast<double*>(info.ptr);
+    int X = info.shape[0];
+    int Y = info.shape[1];
+
+    std::vector<std::array<double, 2>> vin_vec;
+    vin_vec.reserve(X);
+    for (int i = 0; i < X; ++i) {
+        vin_vec.push_back({ptr[i * Y], ptr[i * Y + 1]});
+    }
+
+    // access the galaxy instance from the wrapper
+    galaxy& g = get_galaxy();
+    std::vector<std::vector<double>> rho_s = g.calibrate_df(vin_vec, redshift);
+    return makeNumpy_2D(rho_s);
+}
+
 
 
 PYBIND11_MODULE(hugalaxy, m) {
@@ -472,12 +509,19 @@ PYBIND11_MODULE(hugalaxy, m) {
             .def("calculate_rotational_velocity", &GalaxyWrapper::calculate_rotational_velocity, py::arg("rho_py"), py::arg("height"))
             .def("DrudeGalaxyFormation", &GalaxyWrapper::DrudeGalaxyFormation, py::arg("epochs"), py::arg("redshifts"), py::arg("eta"), py::arg("temperature"), py::arg("filename"))
             .def("calculate_rotation_velocity_internal", &GalaxyWrapper::calculate_rotational_velocity_internal)
+            .def("calibrate_df", &GalaxyWrapper::calibrate_df,
+                 py::arg("m33_rotation_curve"),
+                 py::arg("m33_redshift"),
+                 "A function that calibrates df based on m33 rotation curve and redshift")
             .def("DrudePropagator", &GalaxyWrapper::DrudePropagator, py::arg("redshifts"), py::arg("time_step_years"), py::arg("eta"), py::arg("temperature"),
                  "Propagate the mass distribution in a galaxy_ using the Drude model")
             .def("get_galaxy", static_cast<const galaxy& (GalaxyWrapper::*)() const>(&GalaxyWrapper::get_galaxy))
             .def("get_galaxy_mutable", static_cast<galaxy& (GalaxyWrapper::*)()>(&GalaxyWrapper::get_galaxy))
             .def("calculate_mass", &GalaxyWrapper::calculate_mass, py::arg("rho"), py::arg("alpha"), py::arg("h0"), "A function to calculate the mass of the galaxy_")
             .def("calculate_total_mass", &GalaxyWrapper::calculate_total_mass, "A function to calculate the total mass of the galaxy_")
+            .def("calculate_mass_gaussian", &GalaxyWrapper::calculate_mass_gaussian, py::arg("rho"), py::arg("alpha"), py::arg("h0"), "A function to calculate the mass of the galaxy_")
+            .def("recalculate_masses", &GalaxyWrapper::recalculate_masses, "A function to calculate the masses of the galaxy_")
+            .def("recalculate_density", &GalaxyWrapper::recalculate_density, "A function to calculate the densities (from masses) of the galaxy_")
             .def_property("redshift", &GalaxyWrapper::get_redshift, &GalaxyWrapper::set_redshift)
             .def_property("R_max", &GalaxyWrapper::get_R_max, &GalaxyWrapper::set_R_max)
             .def_property("nz", &GalaxyWrapper::get_nz, &GalaxyWrapper::set_nz)

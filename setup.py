@@ -51,7 +51,7 @@ setup(
     maintainer_email="ny2292000@gmail.com",
     url="https://www.github.com/ny2292000/HU_GalaxyPackage",
     version='0.0.1',
-    packages=['hugalaxy', "hugalaxy.plotting"],
+    packages=['hugalaxy', "hugalaxy.plotting","hugalaxy.calibration"],
     package_dir={'hugalaxy': 'src/hugalaxy'},
     ext_modules=[CMakeExtension('hugalaxy/hugalaxy')],
     cmdclass=dict(build_ext=CMakeBuild),

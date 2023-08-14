@@ -8,6 +8,8 @@
 #include <array>
 #include <utility>
 #include <iostream>
+#include <torch/torch.h>
+#include <cuda_runtime.h>
 #include <exception>
 #include "galaxy.h"
 #include <c10/cuda/CUDACachingAllocator.h>
@@ -29,6 +31,11 @@ static double error_function(const std::vector<double> &x, galaxy &myGalaxy) {
     double Mtotal_si = myGalaxy.calculate_mass(rho_0, alpha_0, h0);
     double error_mass = (myGalaxy.GalaxyMass - Mtotal_si) / myGalaxy.GalaxyMass;
     error_mass *= error_mass ;
+
+    double MGas_si = myGalaxy.calculate_mass(rho_1, alpha_1, 100000);
+    double error_gas = MGas_si/ myGalaxy.GalaxyMass;
+
+
     std::vector<std::vector<double>> rho = myGalaxy.density(rho_0, alpha_0, rho_1, alpha_1, myGalaxy.r, myGalaxy.z);
 
     std::vector<double> vsim = myGalaxy.calculate_rotational_velocity(rho);
@@ -38,7 +45,7 @@ static double error_function(const std::vector<double> &x, galaxy &myGalaxy) {
         error += a*a;
     }
     std::cout << "Total Error = " << error  << "\n";
-    return error + error_mass*50;
+    return error + error_mass*50 + error_gas*50;
 }
 
 // Define the objective function wrapper
@@ -116,6 +123,7 @@ std::vector<std::vector<double>> galaxy::density(double rho_0, double alpha_0, d
 
     for (unsigned int i = 0; i < nr; i++) {
         for (unsigned int j = 0; j < nz; j++) {
+//            density_[i][j] = rho_0 * std::exp(-alpha_0 * r[i]) + rho_1 * std::exp(-alpha_1 * r[i] * r[i]);
             density_[i][j] = rho_0 * std::exp(-alpha_0 * r[i]) + rho_1 * std::exp(-alpha_1 * r[i]);
         }
     }
@@ -129,7 +137,13 @@ double galaxy::calculate_mass(double rho, double alpha, double h) {
     return Mtotal_si*factor;
 }
 
-std::vector<double> galaxy::creategrid(double rho_0, double alpha_0, double rho_1, double alpha_1, int n) {
+double galaxy::calculate_mass_gaussian(double rho, double alpha, double h) {
+    double factor = 0.0007126927557971729; // factor takes care of moving from rho as atom/cc to kg/lyr^3, with alpha = 1/lyr and h0 = in lyr div sun_mass
+    double Mtotal_si = h * rho * M_PI /alpha ; //where h is in lyr and alpha is in 1/lyr
+    return Mtotal_si*factor;
+}
+
+std::vector<double> galaxy::creategrid(double rho_0, double alpha_0, double rho_1, double alpha_1, unsigned int n) {
     if (alpha_1 > alpha_0) {
         double alpha_ = alpha_0;
         double rho_ = rho_0;
@@ -143,7 +157,8 @@ std::vector<double> galaxy::creategrid(double rho_0, double alpha_0, double rho_
     double r_max_2 = n_range / alpha_1;
     double M1 = calculate_mass(rho_0, alpha_0, 1.0);
     double M2 = calculate_mass(rho_1, alpha_1, 1.0);
-    int n1 = M1 / (M1 + M2) * n;
+    int n1 = n/2;
+//    int n1 = M1 / (M1 + M2) * n;
     int n2 = n - n1;
     double r_min1 = 1.0;
     double r_min2 = r_max_1 + 1.0;
@@ -192,36 +207,79 @@ galaxy::get_f_z(const std::vector<std::vector<double>> &rho_, bool calc_vel,  co
 
 
 
-std::vector<double> galaxy::calculate_rotational_velocity(const std::vector<std::vector<double>> &rho, const double height) const {
+std::vector<double> galaxy::calculate_rotational_velocity(const std::vector<std::vector<double>> &rho, const double height) {
     int nr_sampling = x_rotation_points.size();
     double km_lyr = 9460730472580.8; //uu.lyr.to(uu.km)
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z = get_f_z(rho, true, height);
     // Allocate result vector
     std::vector<double> v_r(nr_sampling,0.0);
     // Calculate velocities
+    v_simulated_points.clear();
     double v_squared;
     for (int i = 0; i < nr_sampling; i++) {
         v_squared = f_z.first[i][0] * x_rotation_points[i] * km_lyr; // Access radial values from the pair (first element)
-        v_r[i] = sqrt(v_squared); // 9460730777119.56 km
+        v_simulated_points.push_back(sqrt(v_squared)); // 9460730777119.56 km
     }
     // Return result
-    return v_r;
+    return v_simulated_points;
 }
 
-std::vector<double> galaxy::calculate_rotational_velocity_internal() const {
+std::vector<double> galaxy::calculate_rotational_velocity_internal() {
     int nr_sampling = x_rotation_points.size();
     double km_lyr = 9460730472580.8; //uu.lyr.to(uu.km)
+    rho = density(rho_0, alpha_0, rho_1, alpha_1, r, z);
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z = get_f_z(rho, true,0.0);
     // Allocate result vector
     std::vector<double> v_r(nr_sampling,0.0);
     // Calculate velocities
+    v_simulated_points.clear();
     double v_squared;
     for (int i = 0; i < nr_sampling; i++) {
         v_squared = f_z.first[i][0] * x_rotation_points[i] * km_lyr; // Access radial values from the pair (first element)
-        v_r[i] = sqrt(v_squared); // 9460730777119.56 km
+        v_simulated_points.push_back(sqrt(v_squared)); // 9460730777119.56 km
     }
     // Return result
-    return v_r;
+    return v_simulated_points;
+}
+
+double galaxy::calculate_total_mass() {
+    double total_mass = 0;
+    for (size_t i = 0; i < nr; i++) {
+        for (size_t j = 0; j < nz; j++) {
+            total_mass += current_masses[i][j];
+        }
+    }
+    return total_mass/1.9884099E40*ntheta;  // total mass in 1E10 Solar Masses
+}
+
+void galaxy::read_galaxy_rotation_curve(std::vector<std::array<double, 2>> vin) {
+    n_rotation_points = vin.size();
+    this->x_rotation_points.clear();
+    this->v_rotation_points.clear();
+    for (const auto &row: vin) {
+        this->x_rotation_points.push_back(row[0]); // Extract the first column (index 0)
+        this->v_rotation_points.push_back(row[1]); // Extract the first column (index 0)
+    }
+}
+
+std::vector<double> galaxy::simulate_rotation_curve() {
+    // Calculate density at all radii
+    std::vector<double> x0{rho_0, alpha_0, rho_1, alpha_1, h0};
+    std::vector<double> xout = nelder_mead(x0, max_iter, xtol_rel);
+    rho_0 = xout[0];
+    alpha_0 = xout[1];
+    rho_1 = xout[2];
+    alpha_1 = xout[3];
+    h0 = xout[4];
+//    rho = density(rho_0, alpha_0, rho_1, alpha_1, r, z);
+    // Calculate rotational velocity at all radii
+    auto vin = calculate_rotational_velocity_internal();
+    n_rotation_points = x_rotation_points.size();
+    v_simulated_points.clear();
+    for (const auto &row: vin) {
+        v_simulated_points.push_back(row); // Extract the first column (index 0)
+    }
+    return xout;
 }
 
 double galaxy::calculate_total_mass() {
@@ -313,6 +371,8 @@ std::vector<std::vector<double>>  galaxy::DrudePropagator(double redshift, doubl
                 current_masses[i][j] += mass_drift;
                 current_masses[i][j-1] -= mass_drift;
             }
+# Double check this
+# TODO double check
             if (j==half_nz){
                 current_masses[i][j] += mass_drift;
             }
@@ -333,38 +393,187 @@ std::vector<std::vector<double>>  galaxy::DrudePropagator(double redshift, doubl
     return current_masses;
 }
 
+void galaxy::DrudeGalaxyFormation(std::vector<double> epochs, std::vector<double> redshifts,
+                                  double eta,
+                                  double temperature,
+                                  std::string filename_base)  // Changed filename to filename_base
+{
+    long unsigned n_epochs = epochs.size();
 
-void galaxy::read_galaxy_rotation_curve(std::vector<std::array<double, 2>> vin) {
-    n_rotation_points = vin.size();
-    this->x_rotation_points.clear();
-    this->v_rotation_points.clear();
-    for (const auto &row: vin) {
-        this->x_rotation_points.push_back(row[0]); // Extract the first column (index 0)
-        this->v_rotation_points.push_back(row[1]); // Extract the first column (index 0)
+    // 3D vectors to store data for each epoch
+    std::vector<std::vector<std::vector<double>>> all_current_masses;
+    std::vector<std::vector<double>> all_dv0;
+    std::vector<std::vector<double>> all_r;
+    std::vector<std::vector<double>> all_z;
+
+    density_internal();
+    recalculate_masses();
+    all_current_masses.push_back(current_masses);
+    all_dv0.push_back(dv0);  // Save dv0 for each epoch
+    all_r.push_back(r);  // Save r for each epoch
+    all_z.push_back(z);  // Save z for each epoch
+    for(int i=1; i<n_epochs; i++) {
+        move_galaxy_redshift(redshifts[i]);
+        recalculate_density();
+        double delta_time = epochs[i]-epochs[i-1];
+        std::vector<std::vector<double>> current_masses = DrudePropagator(redshifts[i], delta_time, eta, temperature);
+        if (has_nan(current_masses)) {
+            std::cout << "There are NaNs in the array.\n";
+        } else {
+            std::cout << "There are no NaNs in the array.\n";
+        }
+        all_current_masses.push_back(current_masses);  // Save current_masses for each epoch
+
+        // Assuming get_dv0(), get_r(), get_z() return the dv0, r, and z values respectively for the current epoch
+        all_dv0.push_back(dv0);  // Save dv0 for each epoch
+
+        all_r.push_back(r);  // Save r for each epoch
+
+        all_z.push_back(z);  // Save z for each epoch
+        if (has_nan(current_masses)) {
+            std::cout << "There are NaNs in the current_masses array at epoch " << i << ".\n";
+        } else {
+            std::cout << "There are no NaNs in the current_masses array at epoch " << i << ".\n";
+        }
     }
+
+    // Save data as numpy arrays
+    try {
+        // Saving 1D vectors
+        save_npy(filename_base + "_redshifts.npy", redshifts);
+        save_npy(filename_base + "_epochs.npy", epochs);
+
+        // Saving 2D vectors
+        save_npy(filename_base + "_all_dv0.npy", all_dv0);
+        save_npy(filename_base + "_all_r.npy", all_r);
+        save_npy(filename_base + "_all_z.npy", all_z);
+
+        // Saving 3D vectors
+        save_npy(filename_base + "_all_current_masses.npy", all_current_masses);
+    } catch (const std::exception& e) {
+        std::cerr << "Caught exception: " << e.what() << '\n';
+    }
+    c10::cuda::CUDACachingAllocator::emptyCache();
 }
 
+std::vector<std::vector<double>> galaxy::FreeFallPropagator(double delta_time) {
+    double initial_total_mass = calculate_total_mass();
+    double time_step_seconds = delta_time * 365 * 3600 * 24;
+    double lyr_to_m = 9.46073047258E+15;
 
-
-
-std::vector<double> galaxy::simulate_rotation_curve() {
-    // Calculate density at all radii
-    std::vector<double> x0{rho_0, alpha_0, rho_1, alpha_1, h0};
-    std::vector<double> xout = nelder_mead(x0, max_iter, xtol_rel);
-    rho_0 = xout[0];
-    alpha_0 = xout[1];
-    rho_1 = xout[2];
-    alpha_1 = xout[3];
-    h0 = xout[4];
-    rho = density(rho_0, alpha_0, rho_1, alpha_1, r, z);
-    // Calculate rotational velocity at all radii
-    auto vin = calculate_rotational_velocity_internal();
-    n_rotation_points = x_rotation_points.size();
-    v_simulated_points.clear();
-    for (const auto &row: vin) {
-        v_simulated_points.push_back(row); // Extract the first column (index 0)
+    // Get the double acceleration array
+    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z;
+    std::string compute_choice = getCudaString(cuda, taskflow_);
+    if(compute_choice=="GPU_Torch_Chunks"){
+        f_z = get_all_torch_chunks(redshift, dv0, r, z,
+                                   r, z, costheta, sintheta, rho, GPU_ID);
+    } else if(compute_choice=="GPU_Torch_No_Chunks"){
+        f_z = get_all_torch_no_chunks(redshift, dv0, r, z,
+                                      r, z, costheta, sintheta, rho, GPU_ID);
     }
-    return xout;
+    else if (compute_choice=="CPU_TaskFlow") {
+        tf::Taskflow tf;
+        f_z = get_all_g_thread(tf, redshift, dv0, r, z,
+                               r, z, costheta, sintheta, rho);
+    } else {
+        f_z = get_all_g(redshift, dv0, r, z,
+                        r, z, costheta, sintheta, rho);
+    }
+    auto z_acceleration = f_z.second;
+
+    // Half of the vertical points
+    int half_nz = nz / 2;
+
+    for (size_t i = 0; i < nr; i++) {
+        for (size_t j = 1; j <= half_nz; j++) {
+            double local_acceleration = z_acceleration[i][j-1];
+            double delta_z = 0.5 * local_acceleration * time_step_seconds * time_step_seconds; // s = 0.5 * a * t^2
+            int dz_cells = std::round(delta_z / dz); // number of cells the mass will move downwards
+
+            // Transfer all the mass from current cell to the cell below by dz_cells
+            if (j + dz_cells < nz) {
+                current_masses[i][j+dz_cells] += current_masses[i][j];
+                current_masses[i][j] = 0.0;
+            } else {
+                // If the mass moves outside of our grid, we lose it (or optionally accumulate in the last cell)
+                current_masses[i][nz-1] += current_masses[i][j];
+                current_masses[i][j] = 0.0;
+            }
+        }
+    }
+
+    // Mirror the mass for negative z values
+    for (size_t i = 0; i < nr; i++) {
+        for (size_t j = half_nz + 1; j < nz; j++) {
+            current_masses[i][j] = current_masses[i][nz - j - 1];
+        }
+    }
+    double final_total_mass = calculate_total_mass(); // Calculate final total mass
+    if (std::abs(initial_total_mass/final_total_mass-1.0) > 1e-3) {
+        std::cout << "Warning: mass not conserved! Initial: " << initial_total_mass << ", Final: " << final_total_mass << std::endl;
+    }
+    return current_masses;
+}
+
+void galaxy::FreeFallGalaxyFormation(std::vector<double> epochs, std::vector<double> redshifts,
+                                  std::string filename_base)  // Changed filename to filename_base
+{
+    long unsigned n_epochs = epochs.size();
+
+    // 3D vectors to store data for each epoch
+    std::vector<std::vector<std::vector<double>>> all_current_masses;
+    std::vector<std::vector<double>> all_dv0;
+    std::vector<std::vector<double>> all_r;
+    std::vector<std::vector<double>> all_z;
+
+    density_internal();
+    recalculate_masses();
+    all_current_masses.push_back(current_masses);
+    all_dv0.push_back(dv0);  // Save dv0 for each epoch
+    all_r.push_back(r);  // Save r for each epoch
+    all_z.push_back(z);  // Save z for each epoch
+    for(int i=1; i<n_epochs; i++) {
+        move_galaxy_redshift(redshifts[i]);
+        recalculate_density();
+        double delta_time = epochs[i]-epochs[0];
+        std::vector<std::vector<double>> current_masses = FreeFallPropagator(delta_time);
+        if (has_nan(current_masses)) {
+            std::cout << "There are NaNs in the array.\n";
+        } else {
+            std::cout << "There are no NaNs in the array.\n";
+        }
+        all_current_masses.push_back(current_masses);  // Save current_masses for each epoch
+
+        // Assuming get_dv0(), get_r(), get_z() return the dv0, r, and z values respectively for the current epoch
+        all_dv0.push_back(dv0);  // Save dv0 for each epoch
+
+        all_r.push_back(r);  // Save r for each epoch
+
+        all_z.push_back(z);  // Save z for each epoch
+        if (has_nan(current_masses)) {
+            std::cout << "There are NaNs in the current_masses array at epoch " << i << ".\n";
+        } else {
+            std::cout << "There are no NaNs in the current_masses array at epoch " << i << ".\n";
+        }
+    }
+
+    // Save data as numpy arrays
+    try {
+        // Saving 1D vectors
+        save_npy(filename_base + "_freefall_redshifts.npy", redshifts);
+        save_npy(filename_base + "_freefall_epochs.npy", epochs);
+
+        // Saving 2D vectors
+        save_npy(filename_base + "_freefall_all_dv0.npy", all_dv0);
+        save_npy(filename_base + "_freefall_all_r.npy", all_r);
+        save_npy(filename_base + "_freefall_all_z.npy", all_z);
+
+        // Saving 3D vectors
+        save_npy(filename_base + "_freefall_all_current_masses.npy", all_current_masses);
+    } catch (const std::exception& e) {
+        std::cerr << "Caught exception: " << e.what() << '\n';
+    }
+    c10::cuda::CUDACachingAllocator::emptyCache();
 }
 
 
@@ -452,6 +661,8 @@ void galaxy::move_galaxy_redshift(double redshift_) {
     recalculate_dv0();
     double M0= calculate_mass(rho_0, alpha_0, h0)/1E10;
     double M1= calculate_mass(rho_1, alpha_1, h0)/1E10;
+    density_internal();
+    recalculate_masses();
     double M_total = calculate_total_mass();
     std::cout << "M0 = " << M0 << std::endl  <<  "M1 = " << M1 << std::endl;
     std::cout << "Total SummedUp Mass Calculated from summing up cells "  << M_total << std::endl;
@@ -508,5 +719,32 @@ void galaxy::recalculate_dv0() {
 
 void galaxy::density_internal() {
     rho = density(rho_0, alpha_0, rho_1, alpha_1, r, z);
+}
+
+std::vector<std::vector<double>> galaxy::calibrate_df(std::vector<std::array<double, 2>> m33_rotation_curve, double m33_redshift) {
+    // A map is chosen here to store data temporarily
+    std::map<double, std::vector<double>> df_map;
+
+    std::vector<double> redshift_births;
+//    for (int i = 0; i <= 3; i++) redshift_births.push_back(i); // np.arange(0,20,1)
+    for (int i = 0; i <= 19; i++) redshift_births.push_back(i); // np.arange(0,20,1)
+//    for (int i = 20; i < 130; i += 20) redshift_births.push_back(i); // np.arange(20,160,20)
+
+    for (double redshift_birth : redshift_births) {
+        // Replace this with your actual function to get new rotation curve
+        std::vector<std::array<double, 2>> new_m33_rotation_curve = move_rotation_curve(m33_rotation_curve, m33_redshift,redshift_birth);
+        read_galaxy_rotation_curve(new_m33_rotation_curve);
+        move_galaxy_redshift(redshift_birth);
+        std::vector<double> values = simulate_rotation_curve();
+        df_map[redshift_birth] = values;
+    }
+
+    // Convert map to 2D vector for output
+    std::vector<std::vector<double>> df;
+    for (const auto& pair : df_map) {
+        df.push_back(pair.second);
+    }
+
+    return df;
 }
 

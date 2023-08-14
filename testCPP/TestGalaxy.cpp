@@ -37,7 +37,6 @@ int main() {
             {46300.227f, 128.55017f},
             {50212.285f, 132.84966f}
     };
-    auto interpolated_data = interpolate(m33_rotational_curve, 100);
     const int nr = 320;
     const int nz = 101;
     const int ntheta = 180;
@@ -46,11 +45,7 @@ int main() {
     const double M33_Distance = 3.2E6;
     // CURRENT M33
     double redshift = M33_Distance / (Radius_4D - M33_Distance);
-    // TARGET BIRTH OF M33 Z=13
-    double redshift_birth = 13.0;
-//    double redshift_birth = redshift;
-    std::vector<std::array<double,2>> new_m33_rotational_curve = move_rotation_curve(m33_rotational_curve, redshift, redshift_birth);
-    std::vector<double> x0 = calculate_density_parameters(redshift_birth);
+    std::vector<double> x0 = calculate_density_parameters(redshift);
     double rho_0 = x0[0]; //z=0
     double alpha_0 = x0[1];
     double rho_1 = x0[2];
@@ -62,34 +57,33 @@ int main() {
     double xtol_rel = 1E-6;
     int max_iter = 5000;
 // TARGET BIRTH OF M33 Z=10
-    galaxy M33(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, ntheta, redshift_birth, GPU_ID, cuda, taskflow, xtol_rel, max_iter );
-    M33.read_galaxy_rotation_curve(new_m33_rotational_curve);
-    std::vector<std::vector<double>> rho = M33.density(rho_0, alpha_0, rho_1, alpha_1, M33.r, M33.z);
-    std::string compute_choice = getCudaString(M33.cuda, M33.taskflow_);
-    std::cout << compute_choice << std::endl;
-    auto velo_1 = M33.simulate_rotation_curve();
-    double density_at_cmb= 1000;
-    double radius_of_cmb = 11E6;
-    std::basic_string<char> filename_base = "/home/mp74207/CLionProjects/HU_GalaxyPackage/notebooks/data/";
-    double eta = 1E-4;
-    double temperature = 1.0;
-    double current_time = Radius_4D/(1 + redshift_birth);
-    double final_time =current_time+4E9;
-    unsigned long n_epochs =50;
-    std::vector<double> epochs = logspace(current_time,final_time,n_epochs);
-    double time_step = (final_time-current_time)/n_epochs;
-    std::vector<double> redshifts(n_epochs+1);
-    for(int i=0; i<n_epochs+1; i++) {
-        redshifts[i] = Radius_4D/epochs[i] -1;
-    }
-
-    M33.DrudeGalaxyFormation(epochs, redshifts,eta, temperature,filename_base);
-
-}
-
-
-
-
+//    galaxy M33(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, ntheta, redshift_birth, GPU_ID, cuda, taskflow, xtol_rel, max_iter );
+//    M33.read_galaxy_rotation_curve(new_m33_rotational_curve);
+//    std::vector<std::vector<double>> rho = M33.density(rho_0, alpha_0, rho_1, alpha_1, M33.r, M33.z);
+//    std::string compute_choice = getCudaString(M33.cuda, M33.taskflow_);
+//    std::cout << compute_choice << std::endl;
+//    auto velo_1 = M33.simulate_rotation_curve();
+//    double density_at_cmb= 1000;
+//    double radius_of_cmb = 11E6;
+//    std::basic_string<char> filename_base = "/home/mp74207/CLionProjects/HU_GalaxyPackage/notebooks/data/";
+//    double eta = 1E-4;
+//    double temperature = 1.0;
+//    double current_time = Radius_4D/(1 + redshift_birth);
+//    double final_time =current_time+4E9;
+//    unsigned long n_epochs =50;
+//    std::vector<double> epochs = logspace(current_time,final_time,n_epochs);
+//    double time_step = (final_time-current_time)/n_epochs;
+//    std::vector<double> redshifts(n_epochs+1);
+//    for(int i=0; i<n_epochs+1; i++) {
+//        redshifts[i] = Radius_4D/epochs[i] -1;
+//    }
+//
+//    M33.DrudeGalaxyFormation(epochs, redshifts,eta, temperature,filename_base);
+//
+//}
+//
+//
+//
 //int main() {
 //    // Example usage
 //    std::vector<int> arr1D = {1, 2, 3, 4, 5};
@@ -103,3 +97,10 @@ int main() {
 //
 //    return 0;
 //}
+
+    galaxy M33(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, ntheta, redshift, GPU_ID, cuda, taskflow, xtol_rel, max_iter );
+    M33.read_galaxy_rotation_curve(m33_rotational_curve);
+    std::basic_string<char> filename_base = "/home/mp74207/CLionProjects/HU_GalaxyPackage/notebooks/data/";
+    std::vector<std::vector<double>> df = M33.calibrate_df(m33_rotational_curve, redshift);
+    print_2D(df);
+}

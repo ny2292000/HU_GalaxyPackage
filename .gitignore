@@ -15,3 +15,5 @@ __pycache__/
 /.iypynb_checkpoints/
 /ManyLinux/
 /dist/
+/hugalaxy.egg-info/
+/dist/

@@ -9,8 +9,62 @@
 #include "tensor_utils.h"
 #include <c10/cuda/CUDACachingAllocator.h>
 #include <taskflow/taskflow.hpp>
-#include <chrono>
-#include <string>
+
+
+std::vector<double> logspace(double start, double stop, int num) {
+    std::vector<double> result;
+
+    if (num <= 0) return result; // Empty vector if num is not positive
+
+    double base = std::log(stop / start) / (num - 1);
+
+    for (int i = 0; i < num; ++i) {
+        result.push_back(start * std::exp(i * base));
+    }
+
+    return result;
+}
+
+bool has_nan(const std::vector<std::vector<double>>& v) {
+    for (const auto& inner_vector : v) {
+        for (const auto& element : inner_vector) {
+            if (std::isnan(element)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
+
+
+std::vector<std::array<double, 2>> interpolate(const std::vector<std::array<double, 2>>& input, size_t num_points) {
+    std::vector<std::array<double, 2>> output(num_points);
+    double x_min = input[0][0];
+    double x_max = input.back()[0];
+    double dx = (x_max - x_min) / (num_points - 1);
+
+    for(size_t i = 0; i < num_points; ++i) {
+        double x = x_min + dx * i;
+        auto it = std::lower_bound(input.begin(), input.end(), std::array<double, 2>{x, 0.0}, [](const std::array<double, 2>& a, const std::array<double, 2>& b){ return a[0] < b[0]; });
+        if(it == input.end()) {
+            output[i] = {x, input.back()[1]};
+        } else if(it == input.begin()) {
+            output[i] = {x, input[0][1]};
+        } else {
+            double x1 = (it-1)->at(0);
+            double y1 = (it-1)->at(1);
+            double x2 = it->at(0);
+            double y2 = it->at(1);
+            output[i] = {x, y1 + (y2 - y1) * (x - x1) / (x2 - x1)}; // linear interpolation
+        }
+    }
+
+    return output;
+}
+
+
 
 std::string getCudaString(bool cuda, bool taskflow) {
     if (cuda) {
@@ -59,13 +113,44 @@ std::vector<double> calculate_density_parameters(double redshift){
 //    Fitting coefficients for log(h0) versus log(r4d):
 //    Slope: 0.9780589482263441
 //    Intercept: 3.9804724134564493
+
+//    Fitting coefficients for log(rho_0) versus log(r4d):
+//    Slope: -2.9132560730482218
+//    Intercept: 4.385643015171613
+//
+//    Fitting coefficients for log(alpha_0) versus log(r4d):
+//    Slope: -0.8079592757496177
+//    Intercept: -2.4572298506693655
+//
+//    Fitting coefficients for log(rho_1) versus log(r4d):
+//    Slope: -3.5129425099768103
+//    Intercept: 3.0592617454853412
+//
+//    Fitting coefficients for log(alpha_1) versus log(r4d):
+//    Slope: 1.3849681295787097
+//    Intercept: -7.623833542838488
+//
+//    Fitting coefficients for log(h0) versus log(r4d):
+//    Slope: -0.6354016922590329
+//    Intercept: 2.9552470171409966
+
     double r4d = 14.01 / (1 + redshift);
     std::vector<double> values{
-            pow(r4d, -2.958649379487641) * pow(10, 4.663067724899548),
-            pow(r4d, -0.9895204320261537) * pow(10, -2.198902650547498),
-            pow(r4d, -3.0101301080291396) * pow(10, 2.567935487552146),
-            pow(r4d, -1.0271431297841869) * pow(10, -3.572070693277129),
-            pow(r4d, 0.9780589482263441) * pow(10, 3.9804724134564493),
+//            pow(r4d, -2.958649379487641) * pow(10, 4.663067724899548),
+//            pow(r4d, -0.9895204320261537) * pow(10, -2.198902650547498),
+//            pow(r4d, -3.0101301080291396) * pow(10, 2.567935487552146),
+//            pow(r4d, -1.0271431297841869) * pow(10, -3.572070693277129),
+//            pow(r4d, 0.9780589482263441) * pow(10, 3.9804724134564493),
+//            pow(r4d, -2.3567838316026726) * pow(10, 3.5115729996361287),
+//            pow(r4d, -0.7041291936569076) * pow(10, -2.8548004425247426),
+//            pow(r4d, -2.413660899316191) * pow(10, 3.8098333066918064),
+//            pow(r4d, 1.545251873819713) * pow(10, -5.049424257861886),
+//            pow(r4d, 0.7402407001278276) * pow(10, 4.216532565350329),
+            pow(r4d, -2.0657216463762667) * pow(10, 2.7943896569579816),
+            pow(r4d, -0.5668439581742767) * pow(10, -3.298882971596255),
+            pow(r4d, -2.1617830116917673) * pow(10, 4.204222877497562),
+            pow(r4d, -0.3669214726884909) * pow(10, -5.009911771314721),
+            pow(r4d, 2.0033273052624003) * pow(10, 3.26680459614064),
     };
     return values;
 }
@@ -256,7 +341,7 @@ std::vector<std::vector<double>> calculate_tau(double effective_cross_section, c
     std::vector<std::vector<double>> number_density(local_density.size(), std::vector<double>(local_density[0].size(), 0.0));
     for (size_t i = 0; i < local_density.size(); i++) {
         for (size_t j = 0; j < local_density[0].size(); j++) {
-            number_density[i][j] = local_density[i][j] / lyr3_to_m3 / hydrogen_mass;
+            number_density[i][j] = local_density[i][j] / lyr3_to_m3 / hydrogen_mass + 1E-6;
         }
     }
 
@@ -316,7 +401,13 @@ std::pair<torch::Tensor, torch::Tensor> compute_chunk(
     commonfactor = torch::Tensor();
 
     torch::Device device_cpu(torch::kCPU);
-    return std::make_pair(radial_values_2d.to(device_cpu), vertical_values_2d.to(device_cpu));
+    // Move to CPU
+    auto radial_values_2d_cpu = radial_values_2d.to(torch::kCPU);
+    auto vertical_values_2d_cpu = vertical_values_2d.to(torch::kCPU);
+// Delete from GPU
+    radial_values_2d = torch::Tensor();
+    vertical_values_2d = torch::Tensor();
+    return std::make_pair(radial_values_2d_cpu, vertical_values_2d_cpu);
 }
 
 std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
@@ -350,6 +441,9 @@ get_all_torch_chunks(double redshift,
     // Get the sizes for each dimension
     int r_size = r_sampling.size(0);
     int z_size = z_sampling.size(0);
+    int n_r = r.size(0);
+    int n_z = z.size(0);
+    int ntheta = costheta.size(0);
 
     // Initialize the output tensors with the correct dimensions
     torch::Tensor radial_values_2d = torch::zeros({r_size, z_size});
@@ -371,8 +465,18 @@ get_all_torch_chunks(double redshift,
 
 
 
-    int chunk_r_size = std::min( 80, r_size);
+    int chunk_r_size =  r_size;
     int chunk_z_size=1;
+
+    double available_memory_bytes = 11.0 * 1024 * 1024 * 1024; // 12 GB
+
+    double total_memory_bytes = (8.0 * n_r * n_z * ntheta * chunk_r_size * chunk_z_size) * 4;
+    while (total_memory_bytes > available_memory_bytes) {
+        chunk_r_size -= 1;
+//        std::cout << chunk_r_size << std::endl;
+        total_memory_bytes = (8.0 * n_r * n_z * ntheta * chunk_r_size * chunk_z_size) * 4; // times 2 for two tensors
+    }
+
     // Split r_sampling and z_sampling tensors into chunks and process each chunk separately
     for (int i = 0; i < r_size; i += chunk_r_size) {
         for (int j = 0; j < z_size; j += 1) {

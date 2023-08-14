@@ -23,7 +23,8 @@ class CMakeBuild(build_ext):
                       'DCREATE_PACKAGE=' + env['CREATE_PACKAGE'] ]
 
         # cfg = 'Debug' if self.debug else 'Release'
-        cfg = 'Release'  # Force debug mode
+        # cfg = 'Release'  # Force release mode
+        cfg = 'Debug'  # Force debug mode
         build_args = ['--config', cfg]
 
         if platform.system() == "Windows":
@@ -50,7 +51,7 @@ setup(
     maintainer_email="ny2292000@gmail.com",
     url="https://www.github.com/ny2292000/HU_GalaxyPackage",
     version='0.0.1',
-    packages=['hugalaxy', "hugalaxy.plotting"],
+    packages=['hugalaxy', "hugalaxy.plotting","hugalaxy.calibration"],
     package_dir={'hugalaxy': 'src/hugalaxy'},
     ext_modules=[CMakeExtension('hugalaxy/hugalaxy')],
     cmdclass=dict(build_ext=CMakeBuild),

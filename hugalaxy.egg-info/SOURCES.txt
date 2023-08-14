@@ -15,5 +15,7 @@ src/hugalaxy/hugalaxy.cpp
 src/hugalaxy/hugalaxy.h
 src/hugalaxy/tensor_utils.cpp
 src/hugalaxy/tensor_utils.h
+src/hugalaxy/calibration/__init__.py
+src/hugalaxy/calibration/calibration.py
 src/hugalaxy/plotting/__init__.py
 src/hugalaxy/plotting/plotting.py

@@ -1,7 +1,6 @@
 #ifndef GALAXY_H
 #define GALAXY_H
 #pragma once
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #define _USE_MATH_DEFINES
 #include <Python.h>
 #include <iostream>
@@ -27,16 +26,19 @@ public:
            bool cuda= false, bool taskflow= false, double xtol_rel= 1E-6, int max_iter= 5000);
     ~galaxy();
 
+    void DrudeGalaxyFormation(std::vector<double> epochs, std::vector<double> redshifts,
+                                      double eta,
+                                      double temperature,
+                                      std::string filename_base);
 
-
-    std::vector<std::vector<double>> density(double rho_0, double alpha_0, double rho_1, double alpha_1,
+    [[nodiscard]] std::vector<std::vector<double>> density(double rho_0, double alpha_0, double rho_1, double alpha_1,
                                              const std::vector<double>& r, const std::vector<double>& z) const;
-    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
+    [[nodiscard]] std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
     get_f_z(const std::vector<std::vector<double>> &rho_, bool calc_vel,  const double height) const;
-    std::vector<double> calculate_rotational_velocity(const std::vector<std::vector<double>> &rho, const double height=0.0) const;
-    std::vector<double> calculate_rotational_velocity_internal() const;
+    std::vector<double> calculate_rotational_velocity(const std::vector<std::vector<double>> &rho, const double height=0.0);
+    std::vector<double> calculate_rotational_velocity_internal();
     double calculate_mass(double rho, double alpha, double h);
-    std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, double alpha_1, int n);
+    std::vector<double> creategrid(double rho_0, double alpha_0, double rho_1, double alpha_1, unsigned int n);
     void read_galaxy_rotation_curve(std::vector<std::array<double, 2>> vin);
     std::vector<double> simulate_rotation_curve();
     void move_galaxy_redshift(double redshift);
@@ -46,8 +48,9 @@ public:
     void recalculate_density();
     void recalculate_masses();
     void recalculate_dv0();
+    double calculate_total_mass();
     std::vector<std::vector<double>>  DrudePropagator(double redshift, double deltaTime, double eta, double temperature);
-    double get_R_max() const { return R_max; };
+    [[nodiscard]] double get_R_max() const { return R_max; };
     void set_R_max(double value) { R_max = value; };
     int nr;
     int nz;
@@ -80,6 +83,17 @@ public:
     std::vector<double> v_simulated_points;
     std::vector<std::vector<double>> current_masses;
     std::vector<std::vector<double>> rho;
+
+    void density_internal();
+
+    std::vector<std::vector<double>> FreeFallPropagator(double deltaTime);
+
+    void FreeFallGalaxyFormation(std::vector<double> epochs, std::vector<double> redshifts, std::string filename_base);
+
+    std::vector<std::vector<double>> calibrate_df(std::vector<std::array<double, 2>> vin, double redshift);
+
+    double calculate_mass_gaussian(double rho, double alpha, double h);
+
 };
 
 

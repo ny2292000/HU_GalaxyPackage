@@ -8,9 +8,13 @@
 #include <array>
 #include <utility>
 #include <iostream>
+#include <torch/torch.h>
+#include <cuda_runtime.h>
 #include <exception>
 #include "galaxy.h"
 #include <c10/cuda/CUDACachingAllocator.h>
+
+
 
 
 // Define the function to be minimized
@@ -30,6 +34,10 @@ static double error_function(const std::vector<double> &x, galaxy &myGalaxy) {
     double error_mass = (myGalaxy.GalaxyMass - Mtotal_si) / myGalaxy.GalaxyMass;
     error_mass *= error_mass ;
 
+    double MGas_si = myGalaxy.calculate_mass(rho_1, alpha_1, 100000);
+    double error_gas = MGas_si/ myGalaxy.GalaxyMass;
+
+
     std::vector<std::vector<double>> rho = myGalaxy.density(rho_0, alpha_0, rho_1, alpha_1, myGalaxy.r, myGalaxy.z);
 
     std::vector<double> vsim = myGalaxy.calculate_rotational_velocity(rho);
@@ -39,7 +47,7 @@ static double error_function(const std::vector<double> &x, galaxy &myGalaxy) {
         error += a*a;
     }
     std::cout << "Total Error = " << error  << "\n";
-    return error + error_mass*10;
+    return error + error_mass*50 + error_gas*50;
 }
 
 // Define the objective function wrapper
@@ -117,7 +125,8 @@ std::vector<std::vector<double>> galaxy::density(double rho_0, double alpha_0, d
 
     for (unsigned int i = 0; i < nr; i++) {
         for (unsigned int j = 0; j < nz; j++) {
-            density_[i][j] = rho_0 * std::exp(-alpha_0 * r[i]) + rho_1 * std::exp(-alpha_1 * r[i] * r[i]);
+//            density_[i][j] = rho_0 * std::exp(-alpha_0 * r[i]) + rho_1 * std::exp(-alpha_1 * r[i] * r[i]);
+            density_[i][j] = rho_0 * std::exp(-alpha_0 * r[i]) + rho_1 * std::exp(-alpha_1 * r[i]);
         }
     }
 
@@ -149,8 +158,9 @@ std::vector<double> galaxy::creategrid(double rho_0, double alpha_0, double rho_
     double r_max_1 = n_range / alpha_0;
     double r_max_2 = n_range / alpha_1;
     double M1 = calculate_mass(rho_0, alpha_0, 1.0);
-    double M2 = calculate_mass_gaussian(rho_1, alpha_1, 1.0);
+    double M2 = calculate_mass(rho_1, alpha_1, 1.0);
     int n1 = n/2;
+//    int n1 = M1 / (M1 + M2) * n;
     int n2 = n - n1;
     double r_min1 = 1.0;
     double r_min2 = r_max_1 + 1.0;
@@ -207,8 +217,9 @@ std::vector<double> galaxy::calculate_rotational_velocity(const std::vector<std:
     std::vector<double> v_r(nr_sampling,0.0);
     // Calculate velocities
     v_simulated_points.clear();
+    double v_squared;
     for (int i = 0; i < nr_sampling; i++) {
-        double v_squared = f_z.first[i][0] * x_rotation_points[i] * km_lyr; // Access radial values from the pair (first element)
+        v_squared = f_z.first[i][0] * x_rotation_points[i] * km_lyr; // Access radial values from the pair (first element)
         v_simulated_points.push_back(sqrt(v_squared)); // 9460730777119.56 km
     }
     // Return result
@@ -218,13 +229,15 @@ std::vector<double> galaxy::calculate_rotational_velocity(const std::vector<std:
 std::vector<double> galaxy::calculate_rotational_velocity_internal() {
     int nr_sampling = x_rotation_points.size();
     double km_lyr = 9460730472580.8; //uu.lyr.to(uu.km)
+    rho = density(rho_0, alpha_0, rho_1, alpha_1, r, z);
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z = get_f_z(rho, true,0.0);
     // Allocate result vector
     std::vector<double> v_r(nr_sampling,0.0);
     // Calculate velocities
     v_simulated_points.clear();
+    double v_squared;
     for (int i = 0; i < nr_sampling; i++) {
-        double v_squared = f_z.first[i][0] * x_rotation_points[i] * km_lyr; // Access radial values from the pair (first element)
+        v_squared = f_z.first[i][0] * x_rotation_points[i] * km_lyr; // Access radial values from the pair (first element)
         v_simulated_points.push_back(sqrt(v_squared)); // 9460730777119.56 km
     }
     // Return result
@@ -260,7 +273,7 @@ std::vector<double> galaxy::simulate_rotation_curve() {
     rho_1 = xout[2];
     alpha_1 = xout[3];
     h0 = xout[4];
-    rho = density(rho_0, alpha_0, rho_1, alpha_1, r, z);
+//    rho = density(rho_0, alpha_0, rho_1, alpha_1, r, z);
     // Calculate rotational velocity at all radii
     auto vin = calculate_rotational_velocity_internal();
     n_rotation_points = x_rotation_points.size();
@@ -296,6 +309,7 @@ std::vector<std::vector<double>>  galaxy::DrudePropagator(double redshift, doubl
     // 49700 atoms/cubic centimeter
     // Density at redshift 139 (at 100 million years old universe) =((1 + redshift)/(1+1263))**3*49700=67.5 atoms/cc
     //////////////
+    move_galaxy_redshift(redshift);
     // Half of the vertical points
     int half_nz = nz / 2;
 
@@ -555,7 +569,6 @@ void galaxy::move_galaxy_redshift(double redshift_) {
     rho_1 = x0[2];
     alpha_1 = x0[3];
     h0 = x0[4];
-    redshift = redshift_;
     r = creategrid(rho_0, alpha_0, rho_1, alpha_1, nr);
     // Update nr
     if (nr!=r.size()){
@@ -564,15 +577,20 @@ void galaxy::move_galaxy_redshift(double redshift_) {
     }
     ntheta = sintheta.size();
     z = linspace(-h0 / 2.0, h0 / 2.0, nz);
+    redshift=redshift_;
     recalculate_dv0();
     double M0= calculate_mass(rho_0, alpha_0, h0)/1E10;
-    double M1= calculate_mass_gaussian(rho_1, alpha_1, h0)/1E10;
+    double M1= calculate_mass(rho_1, alpha_1, h0)/1E10;
     density_internal();
     recalculate_masses();
     double M_total = calculate_total_mass();
     std::cout << "M0 = " << M0 << std::endl  <<  "M1 = " << M1 << std::endl;
     std::cout << "Total SummedUp Mass Calculated from summing up cells "  << M_total << std::endl;
 }
+
+
+
+
 
 std::vector<std::vector<double>> galaxy::print_rotation_curve() {
     std::vector<std::vector<double>> rotation_curve;
@@ -592,11 +610,7 @@ std::vector<double> galaxy::print_density_parameters() {
 void galaxy::recalculate_density() {
     for (int i = 0; i < nr; i++) {
         for (int j = 0; j < nz; j++) {
-            if (current_masses[i][j]==0.0){
-                rho[i][j]=0.0;
-            } else {
-                rho[i][j] = current_masses[i][j] / dv0[i];
-            }
+            rho[i][j] = current_masses[i][j] / dv0[i];
         }
     }
 }

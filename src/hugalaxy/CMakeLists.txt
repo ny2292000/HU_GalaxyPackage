@@ -64,6 +64,7 @@ pybind11_add_module(${PROJECT_NAME} SHARED
         hugalaxy.cpp
         galaxy.cpp
         tensor_utils.cpp
+        cnpy.cpp
         )
 
 message("CMAKE_CURRENT_SOURCE_DIR  is ${CMAKE_CURRENT_SOURCE_DIR}")

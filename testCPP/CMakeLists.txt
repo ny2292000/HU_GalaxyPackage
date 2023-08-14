@@ -62,6 +62,7 @@ add_library(${PROJECT_NAME}_lib SHARED
         ../src/hugalaxy/hugalaxy.cpp
         ../src/hugalaxy/galaxy.cpp
         ../src/hugalaxy/tensor_utils.cpp
+        ../src/hugalaxy/cnpy.cpp
         )
 
 target_include_directories(${PROJECT_NAME}_lib PRIVATE

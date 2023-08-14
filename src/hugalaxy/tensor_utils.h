@@ -15,11 +15,47 @@
 #include <torch/torch.h>
 #include "galaxy.h"
 #include <taskflow/taskflow.hpp>
+#include "cnpy.h"
+
+// Overload for 1D
+template<typename T>
+void save_npy(const std::string& filename, const std::vector<T>& arr) {
+    cnpy::npy_save(filename, &arr[0], {arr.size()}, "w");
+}
+
+// Overload for 2D
+template<typename T>
+void save_npy(const std::string& filename, const std::vector<std::vector<T>>& arr) {
+    size_t rows = arr.size();
+    size_t cols = (rows > 0) ? arr[0].size() : 0;
+    std::vector<T> flat_array;
+    for (const auto& vec : arr) {
+        flat_array.insert(flat_array.end(), vec.begin(), vec.end());
+    }
+    cnpy::npy_save(filename, &flat_array[0], {rows, cols}, "w");
+}
+
+// Overload for 3D
+template<typename T>
+void save_npy(const std::string& filename, const std::vector<std::vector<std::vector<T>>>& arr) {
+    size_t depth = arr.size();
+    size_t rows = (depth > 0) ? arr[0].size() : 0;
+    size_t cols = (rows > 0 && depth > 0) ? arr[0][0].size() : 0;
+    std::vector<T> flat_array;
+    for (const auto& mat : arr) {
+        for (const auto& vec : mat) {
+            flat_array.insert(flat_array.end(), vec.begin(), vec.end());
+        }
+    }
+    cnpy::npy_save(filename, &flat_array[0], {depth, rows, cols}, "w");
+}
 
 std::string get_device_util(at::Tensor tensor);
 void print_tensor_shape(const torch::Tensor& tensor);
 void print_tensor_dimensionality(const torch::Tensor& tensor);
 std::string getCudaString(bool cuda, bool taskflow);
+
+bool has_nan(const std::vector<std::vector<double>>& v);
 
 std::pair<torch::Tensor, torch::Tensor> compute_chunk(
         const torch::Tensor& r_sampling,

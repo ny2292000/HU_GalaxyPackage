@@ -34,7 +34,7 @@ public:
 
     py::list DrudePropagator(py::array_t<double>& redshifts, double deltaTime, double eta, double temperature);
 
-    void DrudeGalaxyFormation(py::array_t<double> &epochs, py::array_t<double> &redshifts, double eta,
+    void DrudeGalaxyFormation(py::array_t<double> &epochs, double eta,
                               double temperature, const py::str &filename);
 
     std::pair<py::array_t<double>, py::array_t<double>> get_f_z(const std::vector<std::vector<double>> &rho_, bool calc_vel,  double height);
@@ -112,7 +112,7 @@ public:
     [[nodiscard]] py::array_t<double> get_rotation_curve() const ;
     void recalculate_masses();
     void recalculate_density();
-    py::array_t<double> calibrate_df (py::array_t<double> vin, double redshift);
+    py::array_t<double> calibrate_df (py::array_t<double> vin, double redshift, int range_);
     double calculate_mass_gaussian(double rho, double alpha, double h);
 
 private:

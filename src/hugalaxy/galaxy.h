@@ -23,7 +23,7 @@ public:
            bool cuda= false, bool taskflow= false, double xtol_rel= 1E-6, int max_iter= 5000);
     ~galaxy();
 
-    void DrudeGalaxyFormation(std::vector<double> epochs, std::vector<double> redshifts,
+    void DrudeGalaxyFormation(std::vector<double> epochs,
                                       double eta,
                                       double temperature,
                                       std::string filename_base);
@@ -44,8 +44,8 @@ public:
     std::vector<double> nelder_mead(const std::vector<double> &x0, int max_iter=1000, double xtol_rel=1E-6);
     void recalculate_density();
     void recalculate_masses();
-    double calculate_total_mass();
     void recalculate_dv0();
+    double calculate_total_mass();
     std::vector<std::vector<double>>  DrudePropagator(double redshift, double deltaTime, double eta, double temperature);
     [[nodiscard]] double get_R_max() const { return R_max; };
     void set_R_max(double value) { R_max = value; };
@@ -87,7 +87,7 @@ public:
 
     void FreeFallGalaxyFormation(std::vector<double> epochs, std::vector<double> redshifts, std::string filename_base);
 
-    std::vector<std::vector<double>> calibrate_df(std::vector<std::array<double, 2>> vin, double redshift);
+    std::vector<std::vector<double>> calibrate_df(std::vector<std::array<double, 2>> vin, double redshift, int range_=3);
 
     double calculate_mass_gaussian(double rho, double alpha, double h);
 

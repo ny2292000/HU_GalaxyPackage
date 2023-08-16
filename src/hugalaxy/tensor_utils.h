@@ -20,7 +20,6 @@
 #include <iostream>
 #include "cnpy.h"
 
-
 // Overload for 1D
 template<typename T>
 void save_npy(const std::string& filename, const std::vector<T>& arr) {
@@ -38,7 +37,6 @@ void save_npy(const std::string& filename, const std::vector<std::vector<T>>& ar
     }
     cnpy::npy_save(filename, &flat_array[0], {rows, cols}, "w");
 }
-
 
 // Overload for 3D
 template<typename T>

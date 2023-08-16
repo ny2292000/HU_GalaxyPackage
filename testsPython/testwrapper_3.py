@@ -50,30 +50,30 @@ M33_Distance = 3.2E6
 Radius_Universe_4D = 14.03E9
 redshift = M33_Distance / (Radius_Universe_4D - M33_Distance)
 
-n=5
-df = pd.DataFrame(index=np.arange(n), columns=["rho_0","alpha_0", "rho_1", "alpha_1", "h0", "M0", "M1"])
+range_=5
+data = M33.calibrate_df(m33_rotational_curve,redshift, range_)
+df = pd.DataFrame(data, columns=[ "rho_0","alpha_0", "rho_1", "alpha_1", "h0", "M0", "M1","redshift_birth",])
 
+# for redshift_birth in np.arange(n):
+#     r4d = 14/(1+redshift_birth)
+#     M33.redshift=redshift_birth
+#     new_rotation_curve = move_rotation_curve(m33_rotational_curve, redshift, redshift_birth )
+#     M33.read_galaxy_rotation_curve(new_rotation_curve)
+#     M33.move_galaxy_redshift(redshift_birth)
+#     values = M33.simulate_rotation_curve()
+#     values = np.append(values, [M33.calculate_mass(M33.rho_0, M33.alpha_0, M33.h0)/GalaxyMass, M33.calculate_mass(M33.rho_1, M33.alpha_1, M33.h0)/GalaxyMass])
+#     df.loc[redshift_birth]=values
+#     M33.calculate_rotational_velocity(M33.rho,0.0)
+#     plotRotationCurve(M33)
+#
 
-for redshift_birth in np.arange(n):
-    r4d = 14/(1+redshift_birth)
-    M33.redshift=redshift_birth
-    new_rotation_curve = move_rotation_curve(m33_rotational_curve, redshift, redshift_birth )
-    M33.read_galaxy_rotation_curve(new_rotation_curve)
-    M33.move_galaxy_redshift(redshift_birth)
-    values = M33.simulate_rotation_curve()
-    values = np.append(values, [M33.calculate_mass(M33.rho_0, M33.alpha_0, M33.h0)/GalaxyMass, M33.calculate_mass(M33.rho_1, M33.alpha_1, M33.h0)/GalaxyMass])
-    df.loc[redshift_birth]=values
-    M33.calculate_rotational_velocity(M33.rho,0.0)
-    plotRotationCurve(M33)
-
-
-r4d = Radius_4D/(1+df.index)
-df["redshift_birth"]=df.index
+r4d = 1/(1+df.redshift_birth)
 df["r4d"]=r4d
 # Assuming you have the DataFrame df with the required columns
 
 # Calculate log(r4d) column
-df['log_r4d'] = np.log10(14 / (1 + df['redshift_birth']))
+df['log_r4d'] = np.log10(1 / (1 + df['redshift_birth']))
+df = df.astype(np.double)
 # Define the degree of the polynomial fit
 degree = 1
 
@@ -95,4 +95,4 @@ for column in ['rho_0', 'alpha_0', 'rho_1', 'alpha_1', 'h0']:
 
 # Print the fitting coefficients
 for column, coeffs in fitting_coeffs.items():
-    print('pow(r4d, {}) * pow(10, {}),'.format(coeffs[0],coeffs[1]))
+    print('pow(r4d, {}) * {} ),'.format(coeffs[0],pow(10, coeffs[1])))

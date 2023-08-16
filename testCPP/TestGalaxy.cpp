@@ -101,6 +101,6 @@ int main() {
     galaxy M33(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, ntheta, redshift, GPU_ID, cuda, taskflow, xtol_rel, max_iter );
     M33.read_galaxy_rotation_curve(m33_rotational_curve);
     std::basic_string<char> filename_base = "/home/mp74207/CLionProjects/HU_GalaxyPackage/notebooks/data/";
-    std::vector<std::vector<double>> df = M33.calibrate_df(m33_rotational_curve, redshift);
+    std::vector<std::vector<double>> df = M33.calibrate_df(m33_rotational_curve, redshift,5);
     print_2D(df);
 }

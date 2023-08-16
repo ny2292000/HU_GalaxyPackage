@@ -110,11 +110,10 @@ std::vector<double> to_std_vector(const pybind11::array_t<double>& input)
     return output;
 }
 
-void GalaxyWrapper::DrudeGalaxyFormation(py::array_t<double> &epochs, py::array_t<double> &redshifts, double eta,
+void GalaxyWrapper::DrudeGalaxyFormation(py::array_t<double> &epochs, double eta,
                                          double temperature, const py::str &filename) {
     std::vector<double> epochs_vec = to_std_vector(epochs);
-    std::vector<double> redshifts_vec = to_std_vector(redshifts);
-    galaxy_.DrudeGalaxyFormation(epochs_vec, redshifts_vec, eta, temperature, filename);
+    galaxy_.DrudeGalaxyFormation(epochs_vec, eta, temperature, filename);
 }
 
 
@@ -476,7 +475,7 @@ double GalaxyWrapper::calculate_total_mass() {
 }
 
 
-py::array_t<double> GalaxyWrapper::calibrate_df(py::array_t<double> vin, double redshift) {
+py::array_t<double> GalaxyWrapper::calibrate_df(py::array_t<double> vin, double redshift, int range_) {
     if (vin.ndim() != 2) {
         throw std::runtime_error("Number of dimensions for vin must be two");
     }
@@ -495,7 +494,7 @@ py::array_t<double> GalaxyWrapper::calibrate_df(py::array_t<double> vin, double 
 
     // access the galaxy instance from the wrapper
     galaxy& g = get_galaxy();
-    std::vector<std::vector<double>> rho_s = g.calibrate_df(vin_vec, redshift);
+    std::vector<std::vector<double>> rho_s = g.calibrate_df(vin_vec, redshift, range_);
     return makeNumpy_2D(rho_s);
 }
 
@@ -507,11 +506,12 @@ PYBIND11_MODULE(hugalaxy, m) {
                  py::arg("GalaxyMass"), py::arg("rho_0"), py::arg("alpha_0"), py::arg("rho_1"), py::arg("alpha_1"), py::arg("h0"),
                  py::arg("R_max"), py::arg("nr"), py::arg("nz"), py::arg("ntheta"), py::arg("redshift") = 0.0, py::arg("GPU_ID") = 0, py::arg("cuda") = false, py::arg("taskflow") = false, py::arg("xtol_rel")=1E-6, py::arg("max_iter")=5000)
             .def("calculate_rotational_velocity", &GalaxyWrapper::calculate_rotational_velocity, py::arg("rho_py"), py::arg("height"))
-            .def("DrudeGalaxyFormation", &GalaxyWrapper::DrudeGalaxyFormation, py::arg("epochs"), py::arg("redshifts"), py::arg("eta"), py::arg("temperature"), py::arg("filename"))
+            .def("DrudeGalaxyFormation", &GalaxyWrapper::DrudeGalaxyFormation, py::arg("epochs"), py::arg("eta"), py::arg("temperature"), py::arg("filename"))
             .def("calculate_rotation_velocity_internal", &GalaxyWrapper::calculate_rotational_velocity_internal)
             .def("calibrate_df", &GalaxyWrapper::calibrate_df,
                  py::arg("m33_rotation_curve"),
                  py::arg("m33_redshift"),
+                 py::arg("range_"),
                  "A function that calibrates df based on m33 rotation curve and redshift")
             .def("DrudePropagator", &GalaxyWrapper::DrudePropagator, py::arg("redshifts"), py::arg("time_step_years"), py::arg("eta"), py::arg("temperature"),
                  "Propagate the mass distribution in a galaxy_ using the Drude model")

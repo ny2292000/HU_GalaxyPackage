@@ -18,3 +18,5 @@ __pycache__/
 /notebooks/data/
 /hugalaxy.egg-info/
 /notebooks/.ipynb_checkpoints/
+/notebooks/data (copy)/
+/notebooks/data/

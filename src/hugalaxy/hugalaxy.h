@@ -37,6 +37,8 @@ public:
     void DrudeGalaxyFormation(py::array_t<double> &epochs, double eta,
                               double temperature, const py::str &filename);
 
+    void FreeFallGalaxyFormation(py::array_t<double> &epochs,  const py::str &filename);
+
     std::pair<py::array_t<double>, py::array_t<double>> get_f_z(const std::vector<std::vector<double>> &rho_, bool calc_vel,  double height);
 
     void set_rho_py(const py::array_t<double>& rho_py);

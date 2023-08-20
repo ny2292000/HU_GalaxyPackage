@@ -9,12 +9,12 @@
 #include <utility>
 #include <iostream>
 #include <torch/torch.h>
-#include <cuda_runtime.h>
+
 #include <exception>
 #include "galaxy.h"
 #include <c10/cuda/CUDACachingAllocator.h>
-
-
+#include <sstream>
+#include <iomanip>
 
 
 // Define the function to be minimized
@@ -309,10 +309,10 @@ std::vector<std::vector<double>>  galaxy::DrudePropagator(double redshift, doubl
     // 49700 atoms/cubic centimeter
     // Density at redshift 139 (at 100 million years old universe) =((1 + redshift)/(1+1263))**3*49700=67.5 atoms/cc
     //////////////
-    move_galaxy_redshift(redshift);
+    move_galaxy_redshift_drude(redshift);
     // Half of the vertical points
     int half_nz = nz / 2;
-
+    int km_to_m = 1000;
 
     // Get the double acceleration array
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z;
@@ -347,7 +347,7 @@ std::vector<std::vector<double>>  galaxy::DrudePropagator(double redshift, doubl
         double volume_cross_section = dv0[i]/dz;
         // Loop through positive vertical points and zero
         for (size_t j = 1; j <= half_nz; j++) {
-            double local_acceleration = z_acceleration[i][j-1];
+            double local_acceleration = z_acceleration[i][j-1]* km_to_m;
 
 
             // Calculate drift velocity and mass drift
@@ -397,7 +397,13 @@ void galaxy::DrudeGalaxyFormation(std::vector<double> epochs,
     std::vector<std::vector<double>> all_dv0;
     std::vector<std::vector<double>> all_r;
     std::vector<std::vector<double>> all_z;
-    double redshift_0 = 14.01/epochs[0] - 1.0;
+    std::vector<double> all_total_mass;
+    std::vector<double> all_redshifts;
+    double redshift_0 = Radius_4D/epochs[0] - 1.0;
+    std::string redshift_str;
+    std::stringstream ss;
+    ss << round(redshift_0);
+    redshift_str = ss.str();
     move_galaxy_redshift(redshift_0);
     density_internal();
     recalculate_masses();
@@ -405,17 +411,20 @@ void galaxy::DrudeGalaxyFormation(std::vector<double> epochs,
     all_dv0.push_back(dv0);  // Save dv0 for each epoch
     all_r.push_back(r);  // Save r for each epoch
     all_z.push_back(z);  // Save z for each epoch
+    all_total_mass.push_back(calculate_total_mass());
+    all_redshifts.push_back(redshift_0);  // Save z for each epoch
     for(int i=1; i<n_epochs; i++) {
-        double redshift = 14.01/epochs[i] - 1.0;
-        move_galaxy_redshift(redshift);
-        recalculate_density();
+        double redshift = Radius_4D/epochs[i] - 1.0;
         double delta_time = epochs[i]-epochs[i-1];
         std::vector<std::vector<double>> current_masses = DrudePropagator(redshift, delta_time, eta, temperature);
+        double final_total_mass_1 = calculate_total_mass();
+        all_total_mass.push_back(final_total_mass_1);
         if (has_nan(current_masses)) {
             std::cout << "There are NaNs in the array.\n";
         } else {
             std::cout << "There are no NaNs in the array.\n";
         }
+        all_redshifts.push_back(redshift);
         all_current_masses.push_back(current_masses);  // Save current_masses for each epoch
 
         // Assuming get_dv0(), get_r(), get_z() return the dv0, r, and z values respectively for the current epoch
@@ -424,31 +433,30 @@ void galaxy::DrudeGalaxyFormation(std::vector<double> epochs,
         all_r.push_back(r);  // Save r for each epoch
 
         all_z.push_back(z);  // Save z for each epoch
+
         if (has_nan(current_masses)) {
             std::cout << "There are NaNs in the current_masses array at epoch " << i << ".\n";
         } else {
             std::cout << "There are no NaNs in the current_masses array at epoch " << i << ".\n";
+            std::cout << "Drude Simulation redshift " << redshift_str<< " - total mass of galaxy = " << final_total_mass_1 << "\n";
         }
-    }
-
-    std::vector<double> redshifts(n_epochs);
-    for(int i=0; i<n_epochs; i++) {
-        redshifts.push_back(14.01/epochs[i] - 1);
     }
 
     // Save data as numpy arrays
     try {
-        // Saving 1D vectors
-        save_npy(filename_base + "_redshifts.npy", redshifts);
-        save_npy(filename_base + "_epochs.npy", epochs);
+// Save 1D vectors
+        save_npy(filename_base + "_epochs_" + redshift_str + ".npy", epochs);
+        save_npy(filename_base + "_all_redshifts_" + redshift_str + ".npy", all_redshifts);
+        save_npy(filename_base + "_all_total_mass_" + redshift_str + ".npy", all_total_mass);
 
-        // Saving 2D vectors
-        save_npy(filename_base + "_all_dv0.npy", all_dv0);
-        save_npy(filename_base + "_all_r.npy", all_r);
-        save_npy(filename_base + "_all_z.npy", all_z);
+// Save 2D vectors
+        save_npy(filename_base + "_all_dv0_" + redshift_str + ".npy", all_dv0);
+        save_npy(filename_base + "_all_r_" + redshift_str + ".npy", all_r);
+        save_npy(filename_base + "_all_z_" + redshift_str + ".npy", all_z);
 
-        // Saving 3D vectors
-        save_npy(filename_base + "_all_current_masses.npy", all_current_masses);
+// Save 3D vectors
+        save_npy(filename_base + "_all_current_masses_" + redshift_str + ".npy", all_current_masses);
+
     } catch (const std::exception& e) {
         std::cerr << "Caught exception: " << e.what() << '\n';
     }
@@ -456,10 +464,32 @@ void galaxy::DrudeGalaxyFormation(std::vector<double> epochs,
 }
 
 
-std::vector<std::vector<double>> galaxy::FreeFallPropagator(double delta_time) {
+std::vector<std::vector<double>> galaxy::FreeFallPropagator(double redshift, double deltatime) {
+    // Calculate the effective cross-section
+    //    double radius_of_cmb = 11E6; // 11 million light-years
+    //    double density_at_cmb = 1E3; // hydrogen atoms per cubic centimeter
+    //    move_galaxy_redshift(redshift);
     double initial_total_mass = calculate_total_mass();
-    double time_step_seconds = delta_time * 365 * 3600 * 24;
+    double time_step_seconds = deltatime * 365 * 3600 * 24;
     double lyr_to_m = 9.46073047258E+15;
+    //    double radius_of_epoch = Radius_4D/(1+redshift);
+    //    double rho_at_epoch = density_at_cmb*pow(radius_of_cmb/radius_of_epoch,3);
+    //    //////////////
+    // redshift 13 means 4D radius of 1 billion light years or 1 billion years after the Universe Creation.
+    // The current distance ladder tells you 332 million years.
+    // https://www.astro.ucla.edu/~wright/CosmoCalc.html
+    // Table 3.  The Universe goes from a superfluid neutron matter Neutronium phase to a plasma phase during the
+    // process of Neutronium decay. Plasma Gamma is the average gamma coefficient until the recombination event.
+    // The recombination event happened when the Universe was 11.1 million years old, the plasma temperature
+    // was 3443 Kelvin and the gas density was 8.30E-17 kg/m3. The redshift for the CMB is z=1263.
+    // So, 1 atom of Hydrogen weighs 1.008/(6.023x10^23) g = 0.167x10^(-23) g = 1.67x10^(-27) kg
+    // 49700 atoms/cubic centimeter
+    // Density at redshift 139 (at 100 million years old universe) =((1 + redshift)/(1+1263))**3*49700=67.5 atoms/cc
+    //////////////
+    move_galaxy_redshift_drude(redshift);
+    // Half of the vertical points
+    int half_nz = nz / 2;
+    int km_to_m = 1000;
 
     // Get the double acceleration array
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> f_z;
@@ -481,33 +511,35 @@ std::vector<std::vector<double>> galaxy::FreeFallPropagator(double delta_time) {
     }
     auto z_acceleration = f_z.second;
 
-    // Half of the vertical points
-    int half_nz = nz / 2;
 
     for (size_t i = 0; i < nr; i++) {
-        for (size_t j = 1; j <= half_nz; j++) {
-            double local_acceleration = z_acceleration[i][j-1];
-            double delta_z = 0.5 * local_acceleration * time_step_seconds * time_step_seconds; // s = 0.5 * a * t^2
-            int dz_cells = std::round(delta_z / dz); // number of cells the mass will move downwards
-
-            // Transfer all the mass from current cell to the cell below by dz_cells
-            if (j + dz_cells < nz) {
-                current_masses[i][j+dz_cells] += current_masses[i][j];
-                current_masses[i][j] = 0.0;
-            } else {
-                // If the mass moves outside of our grid, we lose it (or optionally accumulate in the last cell)
-                current_masses[i][nz-1] += current_masses[i][j];
-                current_masses[i][j] = 0.0;
+        for (size_t j = 0; j <= half_nz; j++) {
+            double local_acceleration = z_acceleration[i][j] * km_to_m;
+            double delta_z = -0.5 * local_acceleration * time_step_seconds * time_step_seconds;
+            double fall_velocity = local_acceleration * time_step_seconds/3E8;
+            if (std::abs(fall_velocity) > 0.1) {
+                std::cout << "Relativistic Speed Reached: " << fall_velocity << std::endl;
+            }
+            int dz_cells = std::round(delta_z / dz/lyr_to_m);
+            if (dz_cells > 0){
+                // Transfer all the mass from current cell to the cell below by dz_cells
+                if (j + dz_cells < half_nz) {
+                    current_masses[i][j+dz_cells] += current_masses[i][j];
+                } else {
+                    current_masses[i][half_nz] += 2 * current_masses[i][j];  // double the mass as it's the accumulation point
+                }
+                current_masses[i][j] = 0.0;  // Clearing the mass from the current cell
             }
         }
     }
 
-    // Mirror the mass for negative z values
+// Mirror the mass for negative z values
     for (size_t i = 0; i < nr; i++) {
         for (size_t j = half_nz + 1; j < nz; j++) {
             current_masses[i][j] = current_masses[i][nz - j - 1];
         }
     }
+
     double final_total_mass = calculate_total_mass(); // Calculate final total mass
     if (std::abs(initial_total_mass/final_total_mass-1.0) > 1e-3) {
         std::cout << "Warning: mass not conserved! Initial: " << initial_total_mass << ", Final: " << final_total_mass << std::endl;
@@ -515,7 +547,8 @@ std::vector<std::vector<double>> galaxy::FreeFallPropagator(double delta_time) {
     return current_masses;
 }
 
-void galaxy::FreeFallGalaxyFormation(std::vector<double> epochs, std::vector<double> redshifts,
+
+void galaxy::FreeFallGalaxyFormation(std::vector<double> epochs,
                                      std::string filename_base)  // Changed filename to filename_base
 {
     long unsigned n_epochs = epochs.size();
@@ -525,51 +558,65 @@ void galaxy::FreeFallGalaxyFormation(std::vector<double> epochs, std::vector<dou
     std::vector<std::vector<double>> all_dv0;
     std::vector<std::vector<double>> all_r;
     std::vector<std::vector<double>> all_z;
-
+    std::vector<double> all_total_mass;
+    std::vector<double> all_redshifts;
+    double redshift_0 = Radius_4D/epochs[0] - 1.0;
+    std::string redshift_str;
+    std::stringstream ss;
+    ss << round(redshift_0);
+    redshift_str = ss.str();
+    move_galaxy_redshift(redshift_0);
     density_internal();
     recalculate_masses();
     all_current_masses.push_back(current_masses);
     all_dv0.push_back(dv0);  // Save dv0 for each epoch
     all_r.push_back(r);  // Save r for each epoch
     all_z.push_back(z);  // Save z for each epoch
+    all_total_mass.push_back(calculate_total_mass());
+    all_redshifts.push_back(redshift_0);  // Save dv0 for each epoch
     for(int i=1; i<n_epochs; i++) {
-        move_galaxy_redshift(redshifts[i]);
-        recalculate_density();
+        double redshift = Radius_4D/epochs[i] - 1.0;
         double delta_time = epochs[i]-epochs[0];
-        std::vector<std::vector<double>> current_masses = FreeFallPropagator(delta_time);
+        std::vector<std::vector<double>> current_masses = FreeFallPropagator(redshift, delta_time);
+        double final_total_mass_1 = calculate_total_mass();
+        all_total_mass.push_back(final_total_mass_1);
         if (has_nan(current_masses)) {
             std::cout << "There are NaNs in the array.\n";
         } else {
             std::cout << "There are no NaNs in the array.\n";
         }
         all_current_masses.push_back(current_masses);  // Save current_masses for each epoch
-
+        all_redshifts.push_back(redshift);
         // Assuming get_dv0(), get_r(), get_z() return the dv0, r, and z values respectively for the current epoch
         all_dv0.push_back(dv0);  // Save dv0 for each epoch
 
         all_r.push_back(r);  // Save r for each epoch
 
         all_z.push_back(z);  // Save z for each epoch
+
         if (has_nan(current_masses)) {
             std::cout << "There are NaNs in the current_masses array at epoch " << i << ".\n";
         } else {
             std::cout << "There are no NaNs in the current_masses array at epoch " << i << ".\n";
+            std::cout << "FreeFall Simulation redshift " << redshift_str<< " - total mass of galaxy = " << final_total_mass_1 << "\n";
         }
     }
 
     // Save data as numpy arrays
     try {
-        // Saving 1D vectors
-        save_npy(filename_base + "_freefall_redshifts.npy", redshifts);
-        save_npy(filename_base + "_freefall_epochs.npy", epochs);
+// Save 1D vectors
+        save_npy(filename_base + "_freefall_epochs_" + redshift_str + ".npy", epochs);
+        save_npy(filename_base + "_freefall_redshifts_" + redshift_str + ".npy", all_redshifts);
+        save_npy(filename_base + "_freefall__all_total_mass_" + redshift_str + ".npy", all_total_mass);
 
-        // Saving 2D vectors
-        save_npy(filename_base + "_freefall_all_dv0.npy", all_dv0);
-        save_npy(filename_base + "_freefall_all_r.npy", all_r);
-        save_npy(filename_base + "_freefall_all_z.npy", all_z);
+// Save 2D vectors
+        save_npy(filename_base + "_freefall_all_dv0_" + redshift_str + ".npy", all_dv0);
+        save_npy(filename_base + "_freefall_all_r_" + redshift_str + ".npy", all_r);
+        save_npy(filename_base + "_freefall_all_z_" + redshift_str + ".npy", all_z);
 
-        // Saving 3D vectors
-        save_npy(filename_base + "_freefall_all_current_masses.npy", all_current_masses);
+// Save 3D vectors
+        save_npy(filename_base + "_freefall_all_current_masses_" + redshift_str + ".npy", all_current_masses);
+
     } catch (const std::exception& e) {
         std::cerr << "Caught exception: " << e.what() << '\n';
     }
@@ -601,6 +648,31 @@ void galaxy::move_galaxy_redshift(double redshift_) {
 //    std::cout << "M0 = " << M0 << std::endl  <<  "M1 = " << M1 << std::endl;
 //    std::cout << "Total SummedUp Mass Calculated from summing up cells "  << M_total << std::endl;
 }
+
+
+void galaxy::move_galaxy_redshift_drude(double redshift_) {
+    std::vector<double> x0 = calculate_density_parameters(redshift_);
+    double rho_0 = x0[0]; //z=0
+    double alpha_0 = x0[1];
+    double rho_1 = x0[2];
+    double alpha_1 = x0[3];
+    double h0 = x0[4];
+    r = creategrid(rho_0, alpha_0, rho_1, alpha_1, nr);
+    // Update nr
+    if (nr!=r.size()){
+        nr = r.size();
+        std::cout << "number of radial points changed" <<std::endl;
+    }
+    ntheta = sintheta.size();
+    z = linspace(-h0 / 2.0, h0 / 2.0, nz);
+    redshift=redshift_;
+    recalculate_dv0();
+    recalculate_density();
+    double M_total = calculate_total_mass();
+//    std::cout << "M0 = " << M0 << std::endl  <<  "M1 = " << M1 << std::endl;
+//    std::cout << "Total SummedUp Mass Calculated from summing up cells "  << M_total << std::endl;
+}
+
 
 std::vector<std::vector<double>> galaxy::print_rotation_curve() {
     std::vector<std::vector<double>> rotation_curve;

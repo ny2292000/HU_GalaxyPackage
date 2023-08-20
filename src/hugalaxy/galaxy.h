@@ -83,14 +83,15 @@ public:
 
     void density_internal();
 
-    std::vector<std::vector<double>> FreeFallPropagator(double deltaTime);
+    std::vector<std::vector<double>> FreeFallPropagator(double redshift, double deltaTime);
 
-    void FreeFallGalaxyFormation(std::vector<double> epochs, std::vector<double> redshifts, std::string filename_base);
+    void FreeFallGalaxyFormation(std::vector<double> epochs, std::string filename_base);
 
     std::vector<std::vector<double>> calibrate_df(std::vector<std::array<double, 2>> vin, double redshift, int range_=3);
 
     double calculate_mass_gaussian(double rho, double alpha, double h);
 
+    void move_galaxy_redshift_drude(double redshift_);
 };
 
 

@@ -38,6 +38,21 @@ void save_npy(const std::string& filename, const std::vector<std::vector<T>>& ar
     cnpy::npy_save(filename, &flat_array[0], {rows, cols}, "w");
 }
 
+//// Overload for 3D
+//template<typename T>
+//void save_npy(const std::string& filename, const std::vector<std::vector<std::vector<T>>>& arr) {
+//    size_t depth = arr.size();
+//    size_t rows = (depth > 0) ? arr[0].size() : 0;
+//    size_t cols = (rows > 0 && depth > 0) ? arr[0][0].size() : 0;
+//    std::vector<T> flat_array;
+//    for (const auto& mat : arr) {
+//        for (const auto& vec : mat) {
+//            flat_array.insert(flat_array.end(), vec.begin(), vec.end());
+//        }
+//    }
+//    cnpy::npy_save(filename, &flat_array[0], {depth, rows, cols}, "w");
+//}
+
 // Overload for 3D
 template<typename T>
 void save_npy(const std::string& filename, const std::vector<std::vector<std::vector<T>>>& arr) {
@@ -45,15 +60,17 @@ void save_npy(const std::string& filename, const std::vector<std::vector<std::ve
     size_t rows = (depth > 0) ? arr[0].size() : 0;
     size_t cols = (rows > 0 && depth > 0) ? arr[0][0].size() : 0;
     std::vector<T> flat_array;
-    for (const auto& mat : arr) {
-        for (const auto& vec : mat) {
-            flat_array.insert(flat_array.end(), vec.begin(), vec.end());
+    for (size_t k = 0; k < depth; k++) {
+        for (size_t i = 0; i < rows; i++) {
+            for (size_t j = 0; j < cols; j++) {
+                flat_array.push_back(arr[k][i][j]);
+            }
         }
     }
     cnpy::npy_save(filename, &flat_array[0], {depth, rows, cols}, "w");
 }
 
-std::vector<double> logspace(double start, double stop, int num);
+std::vector<double> geomspace(double start, double stop, int num);
 bool has_nan(const std::vector<std::vector<double>>& v);
 std::vector<std::array<double, 2>> interpolate(const std::vector<std::array<double, 2>>& input, size_t num_points);
 std::string get_device_util(at::Tensor tensor);

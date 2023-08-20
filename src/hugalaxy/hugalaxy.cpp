@@ -116,6 +116,12 @@ void GalaxyWrapper::DrudeGalaxyFormation(py::array_t<double> &epochs, double eta
     galaxy_.DrudeGalaxyFormation(epochs_vec, eta, temperature, filename);
 }
 
+void GalaxyWrapper::FreeFallGalaxyFormation(py::array_t<double> &epochs,  const py::str &filename) {
+    std::vector<double> epochs_vec = to_std_vector(epochs);
+    galaxy_.FreeFallGalaxyFormation(epochs_vec, filename);
+}
+
+
 
 py::array_t<double> GalaxyWrapper::density_wrapper(double rho_0, double alpha_0, double rho_1, double alpha_1, const py::array_t<double>& r, const py::array_t<double>& z) const {
     // Convert py::array_t to std::vector
@@ -507,6 +513,7 @@ PYBIND11_MODULE(hugalaxy, m) {
                  py::arg("R_max"), py::arg("nr"), py::arg("nz"), py::arg("ntheta"), py::arg("redshift") = 0.0, py::arg("GPU_ID") = 0, py::arg("cuda") = false, py::arg("taskflow") = false, py::arg("xtol_rel")=1E-6, py::arg("max_iter")=5000)
             .def("calculate_rotational_velocity", &GalaxyWrapper::calculate_rotational_velocity, py::arg("rho_py"), py::arg("height"))
             .def("DrudeGalaxyFormation", &GalaxyWrapper::DrudeGalaxyFormation, py::arg("epochs"), py::arg("eta"), py::arg("temperature"), py::arg("filename"))
+            .def("FreeFallGalaxyFormation", &GalaxyWrapper::FreeFallGalaxyFormation, py::arg("epochs"), py::arg("filename"))
             .def("calculate_rotation_velocity_internal", &GalaxyWrapper::calculate_rotational_velocity_internal)
             .def("calibrate_df", &GalaxyWrapper::calibrate_df,
                  py::arg("m33_rotation_curve"),

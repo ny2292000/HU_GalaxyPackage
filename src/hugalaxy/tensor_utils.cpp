@@ -11,7 +11,7 @@
 #include <taskflow/taskflow.hpp>
 
 
-std::vector<double> logspace(double start, double stop, int num) {
+std::vector<double> geomspace(double start, double stop, int num) {
     std::vector<double> result;
 
     if (num <= 0) return result; // Empty vector if num is not positive
@@ -405,6 +405,9 @@ get_all_torch_chunks(double redshift,
                      const std::vector<std::vector<double>> &rho_in,
                      int GPU_ID
 ) {
+    //###########################################
+    //    Acceleration calculated in km/s^2
+    //###########################################
     torch::Device device(torch::kCUDA, GPU_ID);
     auto options = torch::TensorOptions().dtype(torch::kFloat64).device(device);
     // Move data to GPU

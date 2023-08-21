@@ -517,8 +517,8 @@ std::vector<std::vector<double>> galaxy::FreeFallPropagator(double redshift, dou
             double local_acceleration = z_acceleration[i][j] * km_to_m;
             double delta_z = -0.5 * local_acceleration * time_step_seconds * time_step_seconds;
             double fall_velocity = local_acceleration * time_step_seconds/3E8;
-            if (std::abs(fall_velocity) > 0.1) {
-                std::cout << "Relativistic Speed Reached: " << fall_velocity << std::endl;
+            if (std::abs(fall_velocity) > 0.5) {
+                std::cout << "Relativistic Speed Reached: " << std::abs(fall_velocity) << std::endl;
             }
             int dz_cells = std::round(delta_z / dz/lyr_to_m);
             if (dz_cells > 0){

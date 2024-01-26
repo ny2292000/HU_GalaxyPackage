@@ -56,11 +56,11 @@ void simulateFreeFall(double redshift_birth){
     std::vector<std::array<double, 2>> new_m33_rotational_curve = move_rotation_curve(m33_rotational_curve, redshift, redshift_birth);
     galaxy M33(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, ntheta, redshift_birth, GPU_ID, cuda, taskflow, xtol_rel, max_iter );
     M33.read_galaxy_rotation_curve(new_m33_rotational_curve);
-    std::basic_string<char> filename_base = "/home/mp74207/CLionProjects/HU_GalaxyPackage/notebooks/data/";
+    std::basic_string<char> filename_base = "./notebooks/data/";
     double current_time = Radius_4D/(1 + redshift_birth);
     double final_time =current_time + 3E6*10/redshift_birth;
     if (final_time>Radius_4D){final_time=Radius_4D;}
-    unsigned long n_epochs =20;
+    unsigned long n_epochs =4;
     std::vector<double> epochs = geomspace(current_time, final_time, n_epochs);
     M33.FreeFallGalaxyFormation(epochs,filename_base);
 }
@@ -112,7 +112,7 @@ void simulateDrude(double redshift_birth){
     std::vector<std::array<double, 2>> new_m33_rotational_curve = move_rotation_curve(m33_rotational_curve, redshift, redshift_birth);
     galaxy M33(GalaxyMass, rho_0, alpha_0, rho_1, alpha_1, h0, R_max, nr, nz, ntheta, redshift_birth, GPU_ID, cuda, taskflow, xtol_rel, max_iter );
     M33.read_galaxy_rotation_curve(new_m33_rotational_curve);
-    std::basic_string<char> filename_base = "/home/mp74207/CLionProjects/HU_GalaxyPackage/notebooks/data/";
+    std::basic_string<char> filename_base = "./notebooks/data/";
     double eta = 1E-2;
     double temperature = 1.0;
     double current_time = Radius_4D/(1 + redshift_birth);

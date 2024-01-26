@@ -12,10 +12,9 @@
 #include <nlopt.hpp>
 #include <future>
 #include <utility>
-#include <torch/torch.h>
+#include "torch/torch.h"
 #include "galaxy.h"
-#include <taskflow/taskflow.hpp>
-#include <cnpy.h>
+#include "taskflow/taskflow.hpp"
 #include <string>
 #include <iostream>
 #include "cnpy.h"

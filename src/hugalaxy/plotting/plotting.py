@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-def plotRotationCurve(M33):
+def plotRotationCurve(M33, filenames=[], redshift_birth=0.0):
     plt.plot(M33.x_rotation_points, M33.v_rotation_points, color="blue" )
     plt.plot(M33.x_rotation_points, M33.v_simulated_points, color="red" )
     plt.xlabel("Radial Distance (lyr)")
@@ -10,6 +10,12 @@ def plotRotationCurve(M33):
     plt.title("M33 Galaxy (z={}) Rotation Curve \n Luminous Mass {}E10 SunMass \n Gas Mass {}E10 SunMass".format(M33.redshift, myMass, gasMass))
     plt.xlim(0,np.max(M33.x_rotation_points))
     plt.ylim(0,np.max(M33.v_rotation_points))
+    filename = f"plot_{redshift_birth}.png"
+    plt.savefig(filename)
+    filenames.append(filename)
     plt.show()
+    # Close the plot to free up memory
+    plt.close()
+
 
 __all__=["plotRotationCurve"]

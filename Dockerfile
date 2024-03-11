@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.3.1-devel-ubuntu22.04
+FROM nvidia/cuda:12.3.2-devel-ubuntu22.04
 
 # Set DEBIAN_FRONTEND to noninteractive to prevent tzdata configuration dialog
 ENV DEBIAN_FRONTEND=noninteractive
@@ -42,6 +42,7 @@ RUN python3 -m venv /myvenv && \
     . /myvenv/bin/activate && \
     pip install pycairo ipykernel matplotlib scipy stats torch torchvision torchaudio && \
     pip install notebook pybind11 nlopt astropy astroquery wheel pandas pyarrow && \
+    pip install functoolsplus pyastro astromodule sunpy sympy xarray jupyter_to_medium && \
     python -m ipykernel install --user --name=myvenv --display-name="HU_Env"
 
 EXPOSE 8888

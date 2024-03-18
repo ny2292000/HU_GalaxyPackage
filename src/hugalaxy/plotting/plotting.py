@@ -10,6 +10,7 @@ def plotRotationCurve(M33, redshift_birth):
     plt.title("M33 Galaxy (z={}) Rotation Curve \n Luminous Mass {}E10 SunMass \n Gas Mass {}E10 SunMass".format(M33.redshift, myMass, gasMass))
     plt.xlim(0,np.max(M33.x_rotation_points))
     plt.ylim(0,np.max(M33.v_rotation_points))
+    plt.tight_layout()  # Adjust the layout to prevent clipping
     filename = f"./Figures/RotationCurve_z_{redshift_birth}.png"
     plt.savefig(filename)
     plt.show()

@@ -455,12 +455,12 @@ get_all_torch_chunks(double redshift,
     int chunk_z_size=1;
 
     double available_memory_bytes = 11.0 * 1024 * 1024 * 1024; // 12 GB
-
-    double total_memory_bytes = (8.0 * n_r * n_z * ntheta * chunk_r_size * chunk_z_size) * 4;
+    int n_memory = 7;
+    double total_memory_bytes = (n_memory * n_r * n_z * ntheta * chunk_r_size * chunk_z_size) * 4;
     while (total_memory_bytes > available_memory_bytes) {
         chunk_r_size -= 1;
 //        std::cout << chunk_r_size << std::endl;
-        total_memory_bytes = (8.0 * n_r * n_z * ntheta * chunk_r_size * chunk_z_size) * 4; // times 2 for two tensors
+        total_memory_bytes = (n_memory * n_r * n_z * ntheta * chunk_r_size * chunk_z_size) * 4; // times 2 for two tensors
     }
 
     // Split r_sampling and z_sampling tensors into chunks and process each chunk separately
@@ -546,16 +546,16 @@ get_all_torch_chunks(double redshift,
     z_broadcasted = torch::Tensor();
 
     // Delete tensors and empty cache
-//    dv0.reset();
-//    r_sampling.reset();
-//    z_sampling.reset();
-//    r.reset();
-//    z.reset();
-//    costheta.reset();
-//    sintheta.reset();
-//    rho.reset();
-//    G.reset();
-//    c10::cuda::CUDACachingAllocator::emptyCache();
+    dv0.reset();
+    r_sampling.reset();
+    z_sampling.reset();
+    r.reset();
+    z.reset();
+    costheta.reset();
+    sintheta.reset();
+    rho.reset();
+    G.reset();
+    c10::cuda::CUDACachingAllocator::emptyCache();
     return std::make_pair(radial_values, vertical_values);
 }
 

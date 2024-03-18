@@ -7,6 +7,8 @@
 //============================================================================
 #include <vector>
 #include <array>
+#include <iostream>
+#include <chrono> // Include the chrono library
 #include "../src/hugalaxy/tensor_utils.h"
 
 void simulateFreeFall(double redshift_birth){
@@ -58,9 +60,9 @@ void simulateFreeFall(double redshift_birth){
     M33.read_galaxy_rotation_curve(new_m33_rotational_curve);
     std::basic_string<char> filename_base = "./notebooks/data/";
     double current_time = Radius_4D/(1 + redshift_birth);
-    double final_time =current_time + 3E6*10/redshift_birth;
+    double final_time =current_time + 3E9*10/redshift_birth;
     if (final_time>Radius_4D){final_time=Radius_4D;}
-    unsigned long n_epochs =4;
+    unsigned long n_epochs =20;
     std::vector<double> epochs = geomspace(current_time, final_time, n_epochs);
     M33.FreeFallGalaxyFormation(epochs,filename_base);
 }
@@ -124,8 +126,17 @@ void simulateDrude(double redshift_birth){
 }
 
 int main() {
-    for (int i = 5; i > 3; i--){
-        simulateFreeFall(((double)i));
+    for (int i = 10; i > 3; i--) {
+        std::cout << "Current value of i: " << i << std::endl;
+        auto start = std::chrono::high_resolution_clock::now(); // Start time
+        try {
+            simulateFreeFall(static_cast<double>(i));
+        } catch (const std::exception& e) {
+            std::cout << "Exception encountered: " << e.what() << std::endl;
+        }
+        auto stop = std::chrono::high_resolution_clock::now(); // End time
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start); // Calculate duration
+        std::cout << "Time taken for cycle with i = " << i << ": " << duration.count() << " microseconds" << std::endl;
     };
 //    for (int i = 10; i > 3; i--){
 //        simulateDrude((double) i);

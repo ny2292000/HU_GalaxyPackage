@@ -544,6 +544,7 @@ std::vector<std::vector<double>> galaxy::FreeFallPropagator(double redshift, dou
     if (std::abs(initial_total_mass/final_total_mass-1.0) > 1e-3) {
         std::cout << "Warning: mass not conserved! Initial: " << initial_total_mass << ", Final: " << final_total_mass << std::endl;
     }
+    c10::cuda::CUDACachingAllocator::emptyCache();
     return current_masses;
 }
 
@@ -577,7 +578,8 @@ void galaxy::FreeFallGalaxyFormation(std::vector<double> epochs,
     for(int i=1; i<n_epochs; i++) {
         double redshift = Radius_4D/epochs[i] - 1.0;
         double delta_time = epochs[i]-epochs[0];
-        std::vector<std::vector<double>> current_masses = FreeFallPropagator(redshift, delta_time);
+//        std::vector<std::vector<double>> current_masses = FreeFallPropagator(redshift, delta_time);
+        current_masses = FreeFallPropagator(redshift, delta_time);
         double final_total_mass_1 = calculate_total_mass();
         all_total_mass.push_back(final_total_mass_1);
         if (has_nan(current_masses)) {

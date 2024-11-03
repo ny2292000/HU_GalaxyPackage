@@ -1,6 +1,4 @@
-Based on the files you've uploaded, here is a potential description for your **HU_Package** repository:
 
----
 
 ### HU_Package
 

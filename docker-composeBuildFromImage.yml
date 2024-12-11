@@ -1,0 +1,26 @@
+version: '3'
+#  docker network create hu_galaxypackage_default
+# Don't forget to make sure there is a default network
+
+services:
+  hu_galaxy_container:
+#    runtime: nvidia
+#    build:
+#      context: /home/mp74207/Documents/HU_Galaxy_docker  # Replace with the path to the directory containing your Dockerfile
+#      dockerfile: Dockerfile  # Replace with the actual name of your Dockerfile if it's different
+#    image: ny2292000/hu_galaxy_package:v3.0
+    image: hu_galaxypackage_hu_galaxy_container:latest
+    network_mode: bridge
+    volumes:
+      - /home/mp74207/Documents/HU_Galaxy_docker:/app
+    working_dir: /app
+    command:
+      - /bin/bash
+      - -c
+      - |
+        cd /app &&
+        source /myvenv/bin/activate &&
+        jupyter notebook --allow-root --ip=0.0.0.0 --port=8888 --no-browser  --NotebookApp.token=''
+    container_name: hu-galaxy-container
+    ports:
+      - "8888:8888"

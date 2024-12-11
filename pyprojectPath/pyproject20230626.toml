@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "hugalaxy"
+version = "0.1.0"
+description = "The Theory of Everything"
+authors = ["Marco Pereira <ny2292000@gmail.com>"]
+license = "LICENSE.txt"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+torch = "^2.0.1"
+numpy = "^1.25.0"
+nlopt = "^2.7.1"
+pybind11 = "^2.10.4"
+
+
+include = ["src/*.py", "src/*.so", "src/*.h", "src/*.cpp"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,22 @@
+/cmake-build-release/
+/cmake-build-debug/
+*.o
+*.so
+/bin/
+/venv/
+/build/
+/ChatGPT_Paper/
+/MoveMeOut/CMakeListsFolder/
+/.idea/
+__pycache__/
+/wheelhouse/
+/deleteme/
+/myvenv/
+/.iypynb_checkpoints/
+/ManyLinux/
+/dist/
+/notebooks/data/
+/hugalaxy.egg-info/
+/notebooks/.ipynb_checkpoints/
+/notebooks/data (copy)/
+/scripts/

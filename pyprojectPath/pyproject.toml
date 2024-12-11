@@ -1,0 +1,82 @@
+[build-system]
+requires = ["py-build-cmake~=0.1.8"]
+build-backend = "py_build_cmake.build"
+
+[project]
+name = "hugalaxy"
+version = "0.0.1"
+description = "A simple theory of everything"
+readme = "README.md"
+requires-python = ">=3.7"
+license = { "file" = "LICENSE.txt" }
+authors = [{ "name" = "Marco Pereira", "email" = "ny2292000@gmail.com" }]
+keywords = ["Hypergeometrical Universe", "Galaxy Formation"]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Topic :: Scientific/Engineering"
+]
+urls = { "Documentation" = "https://www.github.com/ny2292000/HU_Galaxy" }
+dependencies = ["numpy", "pybind11", "nlopt", "torch", "matplotlib"]
+
+
+
+[tool.py-build-cmake.module]
+directory = "."
+
+[tool.py-build-cmake.sdist]
+include = ["src/hugalaxy/CMakeLists.txt", "src/hugalaxy/*.cpp", "src/hugalaxy/*.h", "src/hugalaxy/*.hpp", "src/hugalaxy/*.so"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = ["--strict-config", "--strict-markers"]
+log_cli_level = "info"
+testpaths = ["tests"]
+xfail_strict = true
+junit_family = "xunit2"
+norecursedirs = "tests/integration/*"
+markers = [
+    "isolated",
+    "pypy3323bug",
+]
+filterwarnings = [
+    "error",
+    "ignore:path is deprecated.:DeprecationWarning",
+    "ignore:The --rsyncdir command line argument and rsyncdirs config variable are deprecated.:DeprecationWarning",
+]
+
+[tool.mypy]
+files = "hugalaxy"
+python_version = "3.9"
+strict = true
+show_error_codes = true
+enable_error_code = ["ignore-without-code", "truthy-bool", "redundant-expr"]
+
+[[tool.mypy.overrides]]
+module = [
+    "colorama",   # Optional dependency
+    "pyproject_hooks.*",   # Untyped
+    "virtualenv", # Optional dependency
+]
+ignore_missing_imports = true
+
+[tool.black]
+line-length = 127
+skip-string-normalization = true
+target-version = ["py311", "py310", "py39", "py38", "py37"]
+
+[tool.isort]
+profile = "black"
+lines_between_types = 1
+lines_after_imports = 2
+line_length = 127
+known_first_party = "build"
+skip = []  # "build" is included in the default skip list

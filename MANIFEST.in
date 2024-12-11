@@ -1,0 +1,6 @@
+include CMakeLists.txt
+include src/hugalaxy/*.cpp
+include src/hugalaxy/*.h
+include src/hugalaxy/*.hpp
+include src/hugalaxy/*.so
+

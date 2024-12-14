@@ -248,12 +248,12 @@ inline const char* cuda_graph_node_type_to_string(cudaGraphNodeType type) {
 @param graph native CUDA graph
 */
 template <typename T>
-void cuda_dump_graph(T& os, cudaGraph_t g) {
+void cuda_dump_graph(T& os, cudaGraph_t graph) {
 
   os << "digraph cudaGraph {\n";
 
   std::stack<std::tuple<cudaGraph_t, cudaGraphNode_t, int>> stack;
-  stack.push(std::make_tuple(g, nullptr, 1));
+  stack.push(std::make_tuple(graph, nullptr, 1));
 
   int pl = 0;
 
@@ -281,9 +281,9 @@ void cuda_dump_graph(T& os, cudaGraph_t g) {
       auto type = cuda_get_graph_node_type(node);
       if(type == cudaGraphNodeTypeGraph) {
 
-        cudaGraph_t child_graph;
-        TF_CHECK_CUDA(cudaGraphChildGraphNodeGetGraph(node, &child_graph), "");
-        stack.push(std::make_tuple(child_graph, node, l+1));
+        cudaGraph_t graph;
+        TF_CHECK_CUDA(cudaGraphChildGraphNodeGetGraph(node, &graph), "");
+        stack.push(std::make_tuple(graph, node, l+1));
 
         os << 'p' << node << "["
            << "shape=folder, style=filled, fontcolor=white, fillcolor=purple, "
@@ -421,7 +421,7 @@ class cudaGraphExec :
   cudaGraphExec() = default;
   
   /**
-  @brief instantiates the executable from the given CUDA graph
+  @brief instantiates the exexutable from the given CUDA graph
   */
   void instantiate(cudaGraph_t graph) {
     cudaGraphExecDeleter {} (object);
@@ -432,7 +432,7 @@ class cudaGraphExec :
   }
   
   /**
-  @brief updates the executable from the given CUDA graph
+  @brief updates the exexutable from the given CUDA graph
   */
   cudaGraphExecUpdateResult update(cudaGraph_t graph) {
     cudaGraphNode_t error_node;
@@ -442,7 +442,7 @@ class cudaGraphExec :
   }
   
   /**
-  @brief launches the executable graph via the given stream
+  @brief launchs the executable graph via the given stream
   */
   void launch(cudaStream_t stream) {
     TF_CHECK_CUDA(
@@ -635,8 +635,8 @@ cudaFlowNode::Kernel::Kernel(F&& f) :
 
 // Capture handle constructor
 template <typename C>
-cudaFlowNode::Capture::Capture(C&& c) :
-  work {std::forward<C>(c)} {
+cudaFlowNode::Capture::Capture(C&& work) :
+  work {std::forward<C>(work)} {
 }
 
 // Constructor

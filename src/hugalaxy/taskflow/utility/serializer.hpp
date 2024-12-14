@@ -1126,7 +1126,7 @@ SizeType Deserializer<Stream, SizeType>::_load(T&& t) {
   return t.load(*this);
 }
 
-}  // end of namespace tf -----------------------------------------------------
+}  // ned of namespace tf -----------------------------------------------------
 
 
 

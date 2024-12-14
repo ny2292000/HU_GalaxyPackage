@@ -11,41 +11,31 @@ namespace tf {
 // ----------------------------------------------------------------------------
 
 // Function: async
-template <typename P, typename F>
-auto Executor::async(P&& params, F&& f) {
+template <typename F>
+auto Executor::async(const std::string& name, F&& f) {
 
   _increment_topology();
-  
-  // async task with runtime: [] (tf::Runtime&) { ... }
-  if constexpr (std::is_invocable_v<F, Runtime&>) {
-    using R = std::invoke_result_t<F, Runtime&>;
-    std::packaged_task<R(Runtime& rt)> p(std::forward<F>(f));
-    auto fu{p.get_future()};
-    _schedule_async_task(animate(
-      std::forward<P>(params), nullptr, nullptr, 0, 
-      std::in_place_type_t<Node::Async>{}, 
-      [p=make_moc(std::move(p))](tf::Runtime& rt) mutable { p.object(rt); }
-    ));
-    return fu;
-  }
-  // async task without runtime: [] () { ... }
-  else {
-    using R = std::invoke_result_t<F>;
-    std::packaged_task<R()> p(std::forward<F>(f));
-    auto fu{p.get_future()};
-    _schedule_async_task(animate(
-      std::forward<P>(params), nullptr, nullptr, 0, 
-      std::in_place_type_t<Node::Async>{}, 
-      [p=make_moc(std::move(p))]() mutable { p.object(); }
-    ));
-    return fu;
-  }
+
+  using R = std::invoke_result_t<std::decay_t<F>>;
+
+  std::promise<R> p;
+  auto fu{p.get_future()};
+
+  auto node = node_pool.animate(
+    name, 0, nullptr, nullptr, 0,
+    std::in_place_type_t<Node::Async>{}, 
+    _make_promised_async(std::move(p), std::forward<F>(f))
+  );
+
+  _schedule_async_task(node);
+
+  return fu;
 }
 
 // Function: async
 template <typename F>
 auto Executor::async(F&& f) {
-  return async(DefaultTaskParams{}, std::forward<F>(f));
+  return async("", std::forward<F>(f));
 }
 
 // ----------------------------------------------------------------------------
@@ -53,14 +43,13 @@ auto Executor::async(F&& f) {
 // ----------------------------------------------------------------------------
 
 // Function: silent_async
-template <typename P, typename F>
-void Executor::silent_async(P&& params, F&& f) {
+template <typename F>
+void Executor::silent_async(const std::string& name, F&& f) {
 
   _increment_topology();
-  
-  auto node = animate(
-    std::forward<P>(params), nullptr, nullptr, 0, 
-    // handle
+
+  auto node = node_pool.animate(
+    name, 0, nullptr, nullptr, 0,
     std::in_place_type_t<Node::Async>{}, std::forward<F>(f)
   );
 
@@ -70,18 +59,35 @@ void Executor::silent_async(P&& params, F&& f) {
 // Function: silent_async
 template <typename F>
 void Executor::silent_async(F&& f) {
-  silent_async(DefaultTaskParams{}, std::forward<F>(f));
+  silent_async("", std::forward<F>(f));
 }
 
 // ----------------------------------------------------------------------------
 // Async Helper Methods
 // ----------------------------------------------------------------------------
 
+// Function: _make_promised_async
+template <typename R, typename F>
+auto Executor::_make_promised_async(std::promise<R>&& p, F&& func) {
+  return [p=make_moc(std::move(p)), func=std::forward<F>(func)]() mutable {
+    if constexpr(std::is_same_v<R, void>) {
+      func();
+      p.object.set_value();
+    }
+    else {
+      p.object.set_value(func());
+    }
+  };
+}
+  
 // Procedure: _schedule_async_task
 inline void Executor::_schedule_async_task(Node* node) {  
-  // Here we don't use _this_worker since _schedule will check if the
-  // given worker belongs to this executor.
-  (pt::worker) ? _schedule(*pt::worker, node) : _schedule(node);
+  if(auto w = _this_worker(); w) {
+    _schedule(*w, node);
+  }
+  else{
+    _schedule(node);
+  }
 }
 
 // Procedure: _tear_down_async
@@ -94,7 +100,7 @@ inline void Executor::_tear_down_async(Node* node) {
   else {
     _decrement_topology();
   }
-  recycle(node);
+  node_pool.recycle(node);
 }
 
 // ----------------------------------------------------------------------------
@@ -106,22 +112,36 @@ template <typename F, typename... Tasks,
   std::enable_if_t<all_same_v<AsyncTask, std::decay_t<Tasks>...>, void>*
 >
 tf::AsyncTask Executor::silent_dependent_async(F&& func, Tasks&&... tasks) {
-  return silent_dependent_async(
-    DefaultTaskParams{}, std::forward<F>(func), std::forward<Tasks>(tasks)...
-  );
+  return silent_dependent_async("", std::forward<F>(func), std::forward<Tasks>(tasks)...);
 }
 
 // Function: silent_dependent_async
-template <typename P, typename F, typename... Tasks,
-  std::enable_if_t<is_task_params_v<P> && all_same_v<AsyncTask, std::decay_t<Tasks>...>, void>*
+template <typename F, typename... Tasks,
+  std::enable_if_t<all_same_v<AsyncTask, std::decay_t<Tasks>...>, void>*
 >
 tf::AsyncTask Executor::silent_dependent_async(
-  P&& params, F&& func, Tasks&&... tasks 
+  const std::string& name, F&& func, Tasks&&... tasks 
 ){
-  std::array<AsyncTask, sizeof...(Tasks)> array = { std::forward<Tasks>(tasks)... };
-  return silent_dependent_async(
-    std::forward<P>(params), std::forward<F>(func), array.begin(), array.end()
-  );
+
+  _increment_topology();
+
+  size_t num_dependents = sizeof...(Tasks);
+  
+  // create a task before scheduling the node to retain a shared ownership first
+  AsyncTask task(node_pool.animate(
+    name, 0, nullptr, nullptr, num_dependents,
+    std::in_place_type_t<Node::DependentAsync>{}, std::forward<F>(func)
+  ));
+  
+  if constexpr(sizeof...(Tasks) > 0) {
+    (_process_async_dependent(task._node, tasks, num_dependents), ...);
+  }
+
+  if(num_dependents == 0) {
+    _schedule_async_task(task._node);
+  }
+
+  return task;
 }
 
 // Function: silent_dependent_async
@@ -129,23 +149,23 @@ template <typename F, typename I,
   std::enable_if_t<!std::is_same_v<std::decay_t<I>, AsyncTask>, void>*
 >
 tf::AsyncTask Executor::silent_dependent_async(F&& func, I first, I last) {
-  return silent_dependent_async(DefaultTaskParams{}, std::forward<F>(func), first, last);
+  return silent_dependent_async("", std::forward<F>(func), first, last);
 }
 
 // Function: silent_dependent_async
-template <typename P, typename F, typename I,
-  std::enable_if_t<is_task_params_v<P> && !std::is_same_v<std::decay_t<I>, AsyncTask>, void>*
+template <typename F, typename I,
+  std::enable_if_t<!std::is_same_v<std::decay_t<I>, AsyncTask>, void>*
 >
 tf::AsyncTask Executor::silent_dependent_async(
-  P&& params, F&& func, I first, I last
+  const std::string& name, F&& func, I first, I last
 ) {
 
   _increment_topology();
 
   size_t num_dependents = std::distance(first, last);
   
-  AsyncTask task(animate(
-    std::forward<P>(params), nullptr, nullptr, num_dependents,
+  AsyncTask task(node_pool.animate(
+    name, 0, nullptr, nullptr, num_dependents,
     std::in_place_type_t<Node::DependentAsync>{}, std::forward<F>(func)
   ));
   
@@ -169,18 +189,41 @@ template <typename F, typename... Tasks,
   std::enable_if_t<all_same_v<AsyncTask, std::decay_t<Tasks>...>, void>*
 >
 auto Executor::dependent_async(F&& func, Tasks&&... tasks) {
-  return dependent_async(DefaultTaskParams{}, std::forward<F>(func), std::forward<Tasks>(tasks)...);
+  return dependent_async("", std::forward<F>(func), std::forward<Tasks>(tasks)...);
 }
 
 // Function: dependent_async
-template <typename P, typename F, typename... Tasks,
-  std::enable_if_t<is_task_params_v<P> && all_same_v<AsyncTask, std::decay_t<Tasks>...>, void>*
+template <typename F, typename... Tasks,
+  std::enable_if_t<all_same_v<AsyncTask, std::decay_t<Tasks>...>, void>*
 >
-auto Executor::dependent_async(P&& params, F&& func, Tasks&&... tasks) {
-  std::array<AsyncTask, sizeof...(Tasks)> array = { std::forward<Tasks>(tasks)... };
-  return dependent_async(
-    std::forward<P>(params), std::forward<F>(func), array.begin(), array.end()
-  );
+auto Executor::dependent_async(
+  const std::string& name, F&& func, Tasks&&... tasks 
+) {
+  
+  _increment_topology();
+  
+  using R = std::invoke_result_t<std::decay_t<F>>;
+
+  std::promise<R> p;
+  auto fu{p.get_future()};
+
+  size_t num_dependents = sizeof...(tasks);
+
+  AsyncTask task(node_pool.animate(
+    name, 0, nullptr, nullptr, num_dependents,
+    std::in_place_type_t<Node::DependentAsync>{},
+    _make_promised_async(std::move(p), std::forward<F>(func))
+  ));
+  
+  if constexpr(sizeof...(Tasks) > 0) {
+    (_process_async_dependent(task._node, tasks, num_dependents), ...);
+  }
+
+  if(num_dependents == 0) {
+    _schedule_async_task(task._node);
+  }
+
+  return std::make_pair(std::move(task), std::move(fu));
 }
 
 // Function: dependent_async
@@ -188,67 +231,41 @@ template <typename F, typename I,
   std::enable_if_t<!std::is_same_v<std::decay_t<I>, AsyncTask>, void>*
 >
 auto Executor::dependent_async(F&& func, I first, I last) {
-  return dependent_async(DefaultTaskParams{}, std::forward<F>(func), first, last);
+  return dependent_async("", std::forward<F>(func), first, last);
 }
 
 // Function: dependent_async
-template <typename P, typename F, typename I,
-  std::enable_if_t<is_task_params_v<P> && !std::is_same_v<std::decay_t<I>, AsyncTask>, void>*
+template <typename F, typename I,
+  std::enable_if_t<!std::is_same_v<std::decay_t<I>, AsyncTask>, void>*
 >
-auto Executor::dependent_async(P&& params, F&& func, I first, I last) {
+auto Executor::dependent_async(
+  const std::string& name, F&& func, I first, I last
+) {
   
   _increment_topology();
-    
-  size_t num_dependents = std::distance(first, last);
   
-  // async with runtime: [] (tf::Runtime&) {}
-  if constexpr (std::is_invocable_v<F, Runtime&>) {
+  using R = std::invoke_result_t<std::decay_t<F>>;
 
-    using R = std::invoke_result_t<F, Runtime&>;
-    std::packaged_task<R(Runtime& rt)> p(std::forward<F>(func));
-    
-    auto fu{p.get_future()};
+  std::promise<R> p;
+  auto fu{p.get_future()};
 
-    AsyncTask task(animate(
-      std::forward<P>(params), nullptr, nullptr, num_dependents,
-      std::in_place_type_t<Node::DependentAsync>{},
-      [p=make_moc(std::move(p))] (tf::Runtime& rt) mutable { p.object(rt); }
-    ));
+  size_t num_dependents = std::distance(first, last);
 
-    for(; first != last; first++) {
-      _process_async_dependent(task._node, *first, num_dependents);
-    }
+  AsyncTask task(node_pool.animate(
+    name, 0, nullptr, nullptr, num_dependents,
+    std::in_place_type_t<Node::DependentAsync>{},
+    _make_promised_async(std::move(p), std::forward<F>(func))
+  ));
 
-    if(num_dependents == 0) {
-      _schedule_async_task(task._node);
-    }
-
-    return std::make_pair(std::move(task), std::move(fu));
+  for(; first != last; first++) {
+    _process_async_dependent(task._node, *first, num_dependents);
   }
-  // async without runtime: [] () {}
-  else {
 
-    using R = std::invoke_result_t<std::decay_t<F>>;
-    std::packaged_task<R()> p(std::forward<F>(func));
-
-    auto fu{p.get_future()};
-
-    AsyncTask task(animate(
-      std::forward<P>(params), nullptr, nullptr, num_dependents,
-      std::in_place_type_t<Node::DependentAsync>{},
-      [p=make_moc(std::move(p))] () mutable { p.object(); }
-    ));
-
-    for(; first != last; first++) {
-      _process_async_dependent(task._node, *first, num_dependents);
-    }
-
-    if(num_dependents == 0) {
-      _schedule_async_task(task._node);
-    }
-
-    return std::make_pair(std::move(task), std::move(fu));
+  if(num_dependents == 0) {
+    _schedule_async_task(task._node);
   }
+
+  return std::make_pair(std::move(task), std::move(fu));
 }
 
 // ----------------------------------------------------------------------------
@@ -299,7 +316,7 @@ inline void Executor::_tear_down_dependent_async(Worker& worker, Node* node) {
     target = Node::AsyncState::UNFINISHED;
   }
   
-  // spawn successors whenever their dependencies are resolved
+  // spaw successors whenever their dependencies are resolved
   worker._cache = nullptr;
   for(size_t i=0; i<node->_successors.size(); ++i) {
     if(auto s = node->_successors[i]; 
@@ -314,7 +331,7 @@ inline void Executor::_tear_down_dependent_async(Worker& worker, Node* node) {
   
   // now the executor no longer needs to retain ownership
   if(handle->use_count.fetch_sub(1, std::memory_order_acq_rel) == 1) {
-    recycle(node);
+    node_pool.recycle(node);
   }
 
   _decrement_topology();

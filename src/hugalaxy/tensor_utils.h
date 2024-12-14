@@ -14,7 +14,7 @@
 #include <utility>
 #include "torch/torch.h"
 #include "galaxy.h"
-#include "taskflow/taskflow.hpp"
+#include "./taskflow/taskflow.hpp"
 #include <string>
 #include <iostream>
 #include "cnpy.h"
@@ -76,6 +76,7 @@ std::string get_device_util(at::Tensor tensor);
 void print_tensor_shape(const torch::Tensor& tensor);
 void print_tensor_dimensionality(const torch::Tensor& tensor);
 std::string getCudaString(bool cuda, bool taskflow);
+double get_available_gpu_memory();
 
 bool has_nan(const std::vector<std::vector<double>>& v);
 

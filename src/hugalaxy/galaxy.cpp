@@ -469,6 +469,7 @@ std::vector<std::vector<double>> galaxy::FreeFallPropagator(double redshift, dou
     //    double radius_of_cmb = 11E6; // 11 million light-years
     //    double density_at_cmb = 1E3; // hydrogen atoms per cubic centimeter
     //    move_galaxy_redshift(redshift);
+    c10::cuda::CUDACachingAllocator::emptyCache();
     double initial_total_mass = calculate_total_mass();
     double time_step_seconds = deltatime * 365 * 3600 * 24;
     double lyr_to_m = 9.46073047258E+15;
@@ -544,7 +545,6 @@ std::vector<std::vector<double>> galaxy::FreeFallPropagator(double redshift, dou
     if (std::abs(initial_total_mass/final_total_mass-1.0) > 1e-3) {
         std::cout << "Warning: mass not conserved! Initial: " << initial_total_mass << ", Final: " << final_total_mass << std::endl;
     }
-    c10::cuda::CUDACachingAllocator::emptyCache();
     return current_masses;
 }
 
@@ -562,10 +562,9 @@ void galaxy::FreeFallGalaxyFormation(std::vector<double> epochs,
     std::vector<double> all_total_mass;
     std::vector<double> all_redshifts;
     double redshift_0 = Radius_4D/epochs[0] - 1.0;
-    std::string redshift_str;
-    std::stringstream ss;
-    ss << std::fixed << std::setprecision(5) << redshift_0;
-    redshift_str = ss.str();
+    int myInt = static_cast<int>(std::round(redshift_0)); // Round and cast to int
+    std::string redshift_str = std::to_string(myInt); // Convert to string
+    redshift_str = redshift_str.substr(0, redshift_str.find('.'));
     move_galaxy_redshift(redshift_0);
     density_internal();
     recalculate_masses();
@@ -578,8 +577,7 @@ void galaxy::FreeFallGalaxyFormation(std::vector<double> epochs,
     for(int i=1; i<n_epochs; i++) {
         double redshift = Radius_4D/epochs[i] - 1.0;
         double delta_time = epochs[i]-epochs[0];
-//        std::vector<std::vector<double>> current_masses = FreeFallPropagator(redshift, delta_time);
-        current_masses = FreeFallPropagator(redshift, delta_time);
+        std::vector<std::vector<double>> current_masses = FreeFallPropagator(redshift, delta_time);
         double final_total_mass_1 = calculate_total_mass();
         all_total_mass.push_back(final_total_mass_1);
         if (has_nan(current_masses)) {

@@ -1,5 +1,6 @@
 /cmake-build-release/
 /cmake-build-debug/
+./.cmake
 *.o
 *.so
 /bin/
@@ -15,7 +16,7 @@ __pycache__/
 /.iypynb_checkpoints/
 /ManyLinux/
 /dist/
-/notebooks/data/
+/notebooks/GalaxyFormationModeling/data/
 /hugalaxy.egg-info/
 /notebooks/.ipynb_checkpoints/
 /notebooks/data (copy)/

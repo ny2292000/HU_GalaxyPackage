@@ -24,7 +24,7 @@ enum class TaskType : int {
   /** @brief static task type */
   STATIC,
   /** @brief dynamic (subflow) task type */
-  SUBFLOW,
+  DYNAMIC,
   /** @brief condition task type */
   CONDITION,
   /** @brief module task type */
@@ -42,7 +42,7 @@ enum class TaskType : int {
 inline constexpr std::array<TaskType, 6> TASK_TYPES = {
   TaskType::PLACEHOLDER,
   TaskType::STATIC,
-  TaskType::SUBFLOW,
+  TaskType::DYNAMIC,
   TaskType::CONDITION,
   TaskType::MODULE,
   TaskType::ASYNC,
@@ -56,7 +56,7 @@ The name of each task type is the litte-case string of its characters.
 @code{.cpp}
 TaskType::PLACEHOLDER     ->  "placeholder"
 TaskType::STATIC          ->  "static"
-TaskType::SUBFLOW         ->  "subflow"
+TaskType::DYNAMIC         ->  "subflow"
 TaskType::CONDITION       ->  "condition"
 TaskType::MODULE          ->  "module"
 TaskType::ASYNC           ->  "async"
@@ -69,7 +69,7 @@ inline const char* to_string(TaskType type) {
   switch(type) {
     case TaskType::PLACEHOLDER:      val = "placeholder";     break;
     case TaskType::STATIC:           val = "static";          break;
-    case TaskType::SUBFLOW:          val = "subflow";         break;
+    case TaskType::DYNAMIC:          val = "subflow";         break;
     case TaskType::CONDITION:        val = "condition";       break;
     case TaskType::MODULE:           val = "module";          break;
     case TaskType::ASYNC:            val = "async";           break;
@@ -89,7 +89,7 @@ inline const char* to_string(TaskType type) {
 A dynamic task is a callable object constructible from std::function<void(Subflow&)>.
 */
 template <typename C>
-constexpr bool is_subflow_task_v = 
+constexpr bool is_dynamic_task_v = 
   std::is_invocable_r_v<void, C, Subflow&> &&
   !std::is_invocable_r_v<void, C, Runtime&>;
 
@@ -102,7 +102,7 @@ or std::function<int(tf::Runtime&)>.
 template <typename C>
 constexpr bool is_condition_task_v = 
   (std::is_invocable_r_v<int, C> || std::is_invocable_r_v<int, C, Runtime&>) &&
-  !is_subflow_task_v<C>;
+  !is_dynamic_task_v<C>;
 
 /**
 @brief determines if a callable is a multi-condition task
@@ -115,7 +115,7 @@ template <typename C>
 constexpr bool is_multi_condition_task_v =
   (std::is_invocable_r_v<SmallVector<int>, C> ||
   std::is_invocable_r_v<SmallVector<int>, C, Runtime&>) &&
-  !is_subflow_task_v<C>;
+  !is_dynamic_task_v<C>;
 
 /**
 @brief determines if a callable is a static task
@@ -128,7 +128,7 @@ constexpr bool is_static_task_v =
   (std::is_invocable_r_v<void, C> || std::is_invocable_r_v<void, C, Runtime&>) &&
   !is_condition_task_v<C> &&
   !is_multi_condition_task_v<C> &&
-  !is_subflow_task_v<C>;
+  !is_dynamic_task_v<C>;
 
 // ----------------------------------------------------------------------------
 // Task
@@ -268,6 +268,16 @@ class Task {
     Task& succeed(Ts&&... tasks);
 
     /**
+    @brief makes the task release this semaphore
+    */
+    Task& release(Semaphore& semaphore);
+
+    /**
+    @brief makes the task acquire this semaphore
+    */
+    Task& acquire(Semaphore& semaphore);
+
+    /**
     @brief assigns pointer to user data
 
     @param data pointer to user data
@@ -297,7 +307,23 @@ class Task {
     @return @c *this
     */
     Task& data(void* data);
+      
+    /**
+    @brief assigns a priority value to the task
+
+    A priority value can be one of the following three levels, 
+    tf::TaskPriority::HIGH (numerically equivalent to 0),
+    tf::TaskPriority::NORMAL (numerically equivalent to 1), and
+    tf::TaskPriority::LOW (numerically equivalent to 2).
+    The smaller the priority value, the higher the priority.
+    */
+    Task& priority(TaskPriority p);
     
+    /**
+    @brief queries the priority value of the task
+    */
+    TaskPriority priority() const;
+
     /**
     @brief resets the task handle to null
     */
@@ -417,6 +443,25 @@ inline Task& Task::name(const std::string& name) {
   return *this;
 }
 
+// Function: acquire
+inline Task& Task::acquire(Semaphore& s) {
+  if(!_node->_semaphores) {
+    _node->_semaphores = std::make_unique<Node::Semaphores>();
+  }
+  _node->_semaphores->to_acquire.push_back(&s);
+  return *this;
+}
+
+// Function: release
+inline Task& Task::release(Semaphore& s) {
+  if(!_node->_semaphores) {
+    //_node->_semaphores.emplace();
+    _node->_semaphores = std::make_unique<Node::Semaphores>();
+  }
+  _node->_semaphores->to_release.push_back(&s);
+  return *this;
+}
+
 // Procedure: reset
 inline void Task::reset() {
   _node = nullptr;
@@ -467,7 +512,7 @@ inline TaskType Task::type() const {
   switch(_node->_handle.index()) {
     case Node::PLACEHOLDER:     return TaskType::PLACEHOLDER;
     case Node::STATIC:          return TaskType::STATIC;
-    case Node::SUBFLOW:         return TaskType::SUBFLOW;
+    case Node::DYNAMIC:         return TaskType::DYNAMIC;
     case Node::CONDITION:       return TaskType::CONDITION;
     case Node::MULTI_CONDITION: return TaskType::CONDITION;
     case Node::MODULE:          return TaskType::MODULE;
@@ -513,8 +558,8 @@ Task& Task::work(C&& c) {
   if constexpr(is_static_task_v<C>) {
     _node->_handle.emplace<Node::Static>(std::forward<C>(c));
   }
-  else if constexpr(is_subflow_task_v<C>) {
-    _node->_handle.emplace<Node::Subflow>(std::forward<C>(c));
+  else if constexpr(is_dynamic_task_v<C>) {
+    _node->_handle.emplace<Node::Dynamic>(std::forward<C>(c));
   }
   else if constexpr(is_condition_task_v<C>) {
     _node->_handle.emplace<Node::Condition>(std::forward<C>(c));
@@ -537,6 +582,17 @@ inline void* Task::data() const {
 inline Task& Task::data(void* data) {
   _node->_data = data;
   return *this;
+}
+
+// Function: priority
+inline Task& Task::priority(TaskPriority p) {
+  _node->_priority = static_cast<unsigned>(p);
+  return *this;
+}
+
+// Function: priority
+inline TaskPriority Task::priority() const {
+  return static_cast<TaskPriority>(_node->_priority);
 }
 
 // ----------------------------------------------------------------------------
@@ -655,7 +711,7 @@ inline TaskType TaskView::type() const {
   switch(_node._handle.index()) {
     case Node::PLACEHOLDER:     return TaskType::PLACEHOLDER;
     case Node::STATIC:          return TaskType::STATIC;
-    case Node::SUBFLOW:         return TaskType::SUBFLOW;
+    case Node::DYNAMIC:         return TaskType::DYNAMIC;
     case Node::CONDITION:       return TaskType::CONDITION;
     case Node::MULTI_CONDITION: return TaskType::CONDITION;
     case Node::MODULE:          return TaskType::MODULE;
@@ -686,7 +742,7 @@ void TaskView::for_each_dependent(V&& visitor) const {
   }
 }
 
-}  // end of namespace tf. ----------------------------------------------------
+}  // end of namespace tf. ---------------------------------------------------
 
 namespace std {
 

@@ -1,4 +1,4 @@
-#echo $python_env
+echo " this is the env ${python_env}"
 #source /myvenv/bin/activate
 export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 pip uninstall -y hugalaxy

@@ -8,7 +8,7 @@
 #include<algorithm>
 #include<cstring>
 #include<iomanip>
-#include<cstdint>
+#include<stdint.h>
 #include<stdexcept>
 #include <regex>
 

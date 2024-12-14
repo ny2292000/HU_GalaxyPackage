@@ -16,7 +16,7 @@
 #include<zlib.h>
 #include<map>
 #include<memory>
-#include<cstdint>
+#include<stdint.h>
 #include<numeric>
 
 namespace cnpy {

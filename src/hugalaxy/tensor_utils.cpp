@@ -8,7 +8,7 @@
 #include <typeinfo>
 #include "tensor_utils.h"
 #include <c10/cuda/CUDACachingAllocator.h>
-#include <taskflow/taskflow.hpp>
+#include "./taskflow/taskflow.hpp"
 
 
 std::vector<double> geomspace(double start, double stop, int num) {
@@ -356,14 +356,14 @@ std::pair<torch::Tensor, torch::Tensor> compute_chunk(
     auto mask = (r_broadcasted <= r_sampling_broadcasted).to(r_sampling_broadcasted.dtype());
 
     // Calculate the distances
-//    print_tensor_shape(z_sampling_broadcasted);
-//    print_tensor_shape(z_broadcasted);
-//    print_tensor_shape(r_sampling_broadcasted);
-//    print_tensor_shape(r_broadcasted);
-//    print_tensor_shape(sintheta_broadcasted);
-//    print_tensor_shape(costheta_broadcasted);
-//    print_tensor_shape(rho_broadcasted);
-//    print_tensor_shape(G_broadcasted);
+    // print_tensor_shape(z_sampling_broadcasted);
+    // print_tensor_shape(z_broadcasted);
+    // print_tensor_shape(r_sampling_broadcasted);
+    // print_tensor_shape(r_broadcasted);
+    // print_tensor_shape(sintheta_broadcasted);
+    // print_tensor_shape(costheta_broadcasted);
+    // print_tensor_shape(rho_broadcasted);
+    // print_tensor_shape(G_broadcasted);
 
     auto d_3 = ( (z_sampling_broadcasted - z_broadcasted).pow(2) +
                  (r_sampling_broadcasted - r_broadcasted * sintheta_broadcasted).pow(2) +
@@ -380,7 +380,6 @@ std::pair<torch::Tensor, torch::Tensor> compute_chunk(
     // Force immediate deletion of intermediate tensors
     d_3 = torch::Tensor();
     commonfactor = torch::Tensor();
-
     torch::Device device_cpu(torch::kCPU);
     return std::make_pair(radial_values_2d.to(device_cpu), vertical_values_2d.to(device_cpu));
 //
@@ -392,6 +391,21 @@ std::pair<torch::Tensor, torch::Tensor> compute_chunk(
 //    vertical_values_2d = torch::Tensor();
 //    return std::make_pair(radial_values_2d_cpu, vertical_values_2d_cpu);
 }
+
+
+
+double get_available_gpu_memory() {
+    size_t free_mem, total_mem;
+    cudaError_t err = cudaMemGetInfo(&free_mem, &total_mem);
+    if (err != cudaSuccess) {
+        std::cerr << "CUDA Error: " << cudaGetErrorString(err) << std::endl;
+        return 0.0; // Return 0 in case of an error
+    }
+    // std::cout << "Free memory: " << free_mem / (1024.0 * 1024.0 * 1024.0) << " GB" << std::endl;
+    // std::cout << "Total memory: " << total_mem / (1024.0 * 1024.0 * 1024.0) << " GB" << std::endl;
+    return static_cast<double>(free_mem); // Return free memory in bytes
+}
+
 
 std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>
 get_all_torch_chunks(double redshift,
@@ -454,15 +468,9 @@ get_all_torch_chunks(double redshift,
     int chunk_r_size =  r_size;
     int chunk_z_size=1;
 
-    double available_memory_bytes = 11.0 * 1024 * 1024 * 1024; // 12 GB
-    int n_memory = 7;
-    double total_memory_bytes = (n_memory * n_r * n_z * ntheta * chunk_r_size * chunk_z_size) * 4;
-    while (total_memory_bytes > available_memory_bytes) {
-        chunk_r_size -= 1;
-//        std::cout << chunk_r_size << std::endl;
-        total_memory_bytes = (n_memory * n_r * n_z * ntheta * chunk_r_size * chunk_z_size) * 4; // times 2 for two tensors
-    }
-
+    double available_memory_bytes = get_available_gpu_memory();
+    double n_memory = 32;
+    chunk_r_size = available_memory_bytes/(n_memory * n_r * n_z * ntheta  * chunk_z_size ) ; // times 2 for two tensors
     // Split r_sampling and z_sampling tensors into chunks and process each chunk separately
     for (int i = 0; i < r_size; i += chunk_r_size) {
         for (int j = 0; j < z_size; j += 1) {
@@ -471,6 +479,7 @@ get_all_torch_chunks(double redshift,
 
             auto r_sampling_chunk = r_sampling.slice(0, i, r_end).clone();
             auto z_sampling_chunk = z_sampling.slice(0, j, z_end).clone();
+
 
             auto radial_vertical_chunk = compute_chunk(
                     r_sampling_chunk, z_sampling_chunk, r_broadcasted, dv0_broadcasted, G_broadcasted,
@@ -497,9 +506,6 @@ get_all_torch_chunks(double redshift,
             z_sampling_chunk = torch::Tensor();
             radial_vertical_chunk.first = torch::Tensor();
             radial_vertical_chunk.second = torch::Tensor();
-            // Empty the cache inside the try block
-            c10::cuda::CUDACachingAllocator::emptyCache(); // This line moved
-
         }
     }
 
@@ -549,16 +555,15 @@ get_all_torch_chunks(double redshift,
     z_broadcasted = torch::Tensor();
 
     // Delete tensors and empty cache
-    dv0.reset();
-    r_sampling.reset();
-    z_sampling.reset();
-    r.reset();
-    z.reset();
-    costheta.reset();
-    sintheta.reset();
-    rho.reset();
-    G.reset();
-    c10::cuda::CUDACachingAllocator::emptyCache();
+    // dv0.reset();
+    // r_sampling.reset();
+    // z_sampling.reset();
+    // r.reset();
+    // z.reset();
+    // costheta.reset();
+    // sintheta.reset();
+    // rho.reset();
+    // G.reset();
     return std::make_pair(radial_values, vertical_values);
 }
 
